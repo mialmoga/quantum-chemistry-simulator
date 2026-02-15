@@ -403,8 +403,8 @@ class Molecule {
 async function loadData() {
     try {
         const [elementsRes, moleculesRes] = await Promise.all([
-            fetch('elementos.json'),
-            fetch('moleculas.json')
+            fetch('data/elementos.json'),
+            fetch('data/moleculas.json')
         ]);
         
         ELEMENT_DATABASE = await elementsRes.json();
