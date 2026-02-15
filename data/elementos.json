@@ -1,1 +1,92 @@
-
+{
+  "H": {
+    "name": "Hidrógeno",
+    "number": 1,
+    "valence": 1,
+    "electronegativity": 2.20,
+    "color": "0xff6b6b",
+    "mass": 1,
+    "shells": [1],
+    "category": "nonmetal"
+  },
+  "C": {
+    "name": "Carbono",
+    "number": 6,
+    "valence": 4,
+    "electronegativity": 2.55,
+    "color": "0x4a4a4a",
+    "mass": 12,
+    "shells": [2, 4],
+    "category": "nonmetal"
+  },
+  "N": {
+    "name": "Nitrógeno",
+    "number": 7,
+    "valence": 3,
+    "electronegativity": 3.04,
+    "color": "0x3050f8",
+    "mass": 14,
+    "shells": [2, 5],
+    "category": "nonmetal"
+  },
+  "O": {
+    "name": "Oxígeno",
+    "number": 8,
+    "valence": 2,
+    "electronegativity": 3.44,
+    "color": "0xff0d0d",
+    "mass": 16,
+    "shells": [2, 6],
+    "category": "nonmetal"
+  },
+  "P": {
+    "name": "Fósforo",
+    "number": 15,
+    "valence": 3,
+    "electronegativity": 2.19,
+    "color": "0xff8000",
+    "mass": 31,
+    "shells": [2, 8, 5],
+    "category": "nonmetal"
+  },
+  "S": {
+    "name": "Azufre",
+    "number": 16,
+    "valence": 2,
+    "electronegativity": 2.58,
+    "color": "0xffff30",
+    "mass": 32,
+    "shells": [2, 8, 6],
+    "category": "nonmetal"
+  },
+  "Cl": {
+    "name": "Cloro",
+    "number": 17,
+    "valence": 1,
+    "electronegativity": 3.16,
+    "color": "0x1ff01f",
+    "mass": 35,
+    "shells": [2, 8, 7],
+    "category": "nonmetal"
+  },
+  "Na": {
+    "name": "Sodio",
+    "number": 11,
+    "valence": 1,
+    "electronegativity": 0.93,
+    "color": "0xab5cf2",
+    "mass": 23,
+    "shells": [2, 8, 1],
+    "category": "metal"
+  },
+  "Ca": {
+    "name": "Calcio",
+    "number": 20,
+    "valence": 2,
+    "electronegativity": 1.00,
+    "color": "0x3dff00",
+    "mass": 40,
+    "shells": [2, 8, 8, 2],
+    "category": "metal"
+  }
+}
