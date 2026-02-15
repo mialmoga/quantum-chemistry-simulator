@@ -1,1 +1,220 @@
+/**
+ * Atom.js
+ * Core class for atomic structure and visualization
+ */
 
+export class Atom {
+    constructor(position, elementSymbol, elementDatabase, scene, config = {}) {
+        this.element = elementDatabase[elementSymbol];
+        this.symbol = elementSymbol;
+        this.group = new THREE.Group();
+        this.bonds = [];
+        this.velocity = new THREE.Vector3(0, 0, 0);
+        this.force = new THREE.Vector3(0, 0, 0);
+        this.radius = 0.5; // For raycasting
+        
+        // Config (visualization modes)
+        this.config = config;
+        this.scene = scene;
+        
+        this._createNucleus();
+        this._createShells();
+        this._createCloudParticles();
+        
+        this.group.position.copy(position);
+        this.scene.add(this.group);
+    }
+    
+    _createNucleus() {
+        const nucleusGeo = new THREE.SphereGeometry(this.radius, 32, 32);
+        const nucleusMat = new THREE.MeshPhongMaterial({
+            color: this.element.color,
+            emissive: this.element.color,
+            emissiveIntensity: 0.3,
+            shininess: 100
+        });
+        this.nucleus = new THREE.Mesh(nucleusGeo, nucleusMat);
+        this.group.add(this.nucleus);
+    }
+    
+    _createShells() {
+        this.shells = [];
+        this.shellElectrons = [];
+        let radius = 1;
+        
+        const visualizationMode = this.config.visualizationMode || 'clouds';
+        
+        this.element.shells.forEach((electronCount, shellIndex) => {
+            // Shell ring
+            const shellGeo = new THREE.TorusGeometry(radius, 0.02, 8, 32);
+            const shellMat = new THREE.MeshBasicMaterial({
+                color: 0x64c8ff,
+                transparent: true,
+                opacity: 0.3
+            });
+            const shell = new THREE.Mesh(shellGeo, shellMat);
+            shell.rotation.x = Math.random() * Math.PI;
+            shell.rotation.y = Math.random() * Math.PI;
+            shell.visible = visualizationMode === 'shells';
+            this.group.add(shell);
+            this.shells.push(shell);
+            
+            // Electrons in shell
+            const isValenceShell = shellIndex === this.element.shells.length - 1;
+            const shellElectronGroup = [];
+            
+            for(let i = 0; i < electronCount; i++) {
+                const electronGeo = new THREE.SphereGeometry(0.08, 16, 16);
+                const electronMat = new THREE.MeshPhongMaterial({
+                    color: 0x00ffff,
+                    emissive: 0x00ffff,
+                    emissiveIntensity: 0.5
+                });
+                const electron = new THREE.Mesh(electronGeo, electronMat);
+                
+                electron.userData = { 
+                    angle: (i / electronCount) * Math.PI * 2, 
+                    radius, 
+                    speed: 0.02 + Math.random() * 0.01, 
+                    shellIndex,
+                    isValence: isValenceShell,
+                    inBond: false
+                };
+                electron.visible = visualizationMode === 'shells';
+                
+                this.group.add(electron);
+                shellElectronGroup.push(electron);
+            }
+            this.shellElectrons.push(shellElectronGroup);
+            
+            radius += 0.8;
+        });
+    }
+    
+    _createCloudParticles() {
+        this.cloudParticles = [];
+        const particleGeo = new THREE.SphereGeometry(0.05, 8, 8);
+        const particleMat = new THREE.MeshBasicMaterial({
+            color: this.element.color,
+            transparent: true,
+            opacity: 0.3
+        });
+        
+        const totalElectrons = this.element.shells.reduce((a, b) => a + b, 0);
+        const particlesPerElectron = 8;
+        const visualizationMode = this.config.visualizationMode || 'clouds';
+        
+        for(let i = 0; i < totalElectrons * particlesPerElectron; i++) {
+            const particle = new THREE.Mesh(particleGeo.clone(), particleMat.clone());
+            const r = (Math.random() * 0.5 + 0.5) * (2 + Math.random() * 2);
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            particle.userData = {
+                baseR: r,
+                theta: theta,
+                phi: phi,
+                speed: 0.01 + Math.random() * 0.02,
+                phase: Math.random() * Math.PI * 2
+            };
+            
+            particle.visible = visualizationMode === 'clouds';
+            this.group.add(particle);
+            this.cloudParticles.push(particle);
+        }
+    }
+    
+    consumeValenceElectrons(count) {
+        const valenceShell = this.shellElectrons[this.shellElectrons.length - 1];
+        let consumed = 0;
+        for(let electron of valenceShell) {
+            if(!electron.userData.inBond && consumed < count) {
+                electron.userData.inBond = true;
+                electron.visible = false;
+                consumed++;
+            }
+        }
+    }
+    
+    setVisualizationMode(mode) {
+        this.config.visualizationMode = mode;
+        const showShells = mode === 'shells';
+        const showClouds = mode === 'clouds';
+        
+        this.shells.forEach(shell => shell.visible = showShells);
+        this.updateElectronVisibility();
+        this.cloudParticles.forEach(particle => particle.visible = showClouds);
+    }
+    
+    updateElectronVisibility() {
+        const visualizationMode = this.config.visualizationMode || 'clouds';
+        const electronMode = this.config.electronMode || 'all';
+        const showShells = visualizationMode === 'shells';
+        
+        this.shellElectrons.forEach(group => {
+            group.forEach(electron => {
+                if(electron.userData.inBond) {
+                    electron.visible = false;
+                } else if(electronMode === 'valence') {
+                    electron.visible = showShells && electron.userData.isValence;
+                } else {
+                    electron.visible = showShells;
+                }
+            });
+        });
+    }
+    
+    applyForce(force) {
+        this.force.add(force);
+    }
+    
+    updatePhysics(damping = 0.95) {
+        this.velocity.add(this.force);
+        this.velocity.multiplyScalar(damping);
+        this.group.position.add(this.velocity);
+        this.force.set(0, 0, 0);
+    }
+    
+    update() {
+        // Nucleus rotation
+        this.nucleus.rotation.x += 0.01;
+        this.nucleus.rotation.y += 0.01;
+        
+        // Energy-based glow
+        const energy = this.velocity.length();
+        this.nucleus.material.emissiveIntensity = 0.3 + energy * 2;
+        
+        const visualizationMode = this.config.visualizationMode || 'clouds';
+        
+        if(visualizationMode === 'shells') {
+            // Rotate shells
+            this.shells.forEach(shell => shell.rotation.z += 0.005);
+            
+            // Animate electrons in orbits
+            this.group.children.forEach(child => {
+                if(child.userData.angle !== undefined && child.visible && !child.userData.inBond) {
+                    child.userData.angle += child.userData.speed;
+                    const x = Math.cos(child.userData.angle) * child.userData.radius;
+                    const z = Math.sin(child.userData.angle) * child.userData.radius;
+                    child.position.set(x, 0, z);
+                }
+            });
+        } else {
+            // Animate cloud particles
+            this.cloudParticles.forEach(particle => {
+                const userData = particle.userData;
+                userData.phase += userData.speed;
+                const r = userData.baseR * (1 + Math.sin(userData.phase) * 0.2);
+                const x = r * Math.sin(userData.phi) * Math.cos(userData.theta);
+                const y = r * Math.sin(userData.phi) * Math.sin(userData.theta);
+                const z = r * Math.cos(userData.phi);
+                particle.position.set(x, y, z);
+                particle.material.opacity = 0.2 + Math.sin(userData.phase) * 0.15;
+            });
+        }
+    }
+    
+    remove() {
+        this.scene.remove(this.group);
+    }
+}
