@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Quantum Chemistry Simulator</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="src/styles/main.css">
+    <link rel="stylesheet" href="src/styles/panels.css">
+    <link rel="stylesheet" href="src/styles/themes.css">
+</head>
+<body>
 
+<!-- Collapse Buttons -->
+<button class="collapse-btn" id="collapseUI">◀</button>
+<button class="collapse-btn" id="collapseElements">▼</button>
+<button class="collapse-btn" id="collapseMolecules">▶</button>
+
+<!-- Main UI Panel -->
+<div id="ui">
+    <h3>⚛️ Quantum Chemistry Simulator</h3>
+    <div class="info-text">
+        Tap para agregar • Arrastra para rotar • Pinch para zoom
+    </div>
+    <div class="stat-row">
+        <span>Átomos:</span>
+        <span class="stat-value" id="atomCount">0</span>
+    </div>
+    <div class="stat-row">
+        <span>Moléculas:</span>
+        <span class="stat-value" id="moleculeCount">0</span>
+    </div>
+    <div class="stat-row">
+        <span>Enlaces:</span>
+        <span class="stat-value" id="bondCount">0</span>
+    </div>
+    <div class="stat-row">
+        <span>Seleccionado:</span>
+        <span class="stat-value" id="selectedElement">-</span>
+    </div>
+    <div class="toggle-group">
+        <button class="control-btn" id="toggleVisualization">☁️ Nubes</button>
+        <button class="control-btn" id="toggleElectrons">⚛️ Todos</button>
+        <button class="control-btn" id="modeBtn">➕ Agregar</button>
+        <button class="control-btn" id="clearBtn">🗑️ Limpiar</button>
+    </div>
+</div>
+
+<!-- Molecule Panel -->
+<div class="molecule-panel">
+    <div class="molecule-panel-title">Moléculas Preestablecidas</div>
+    <div id="moleculeButtons"></div>
+</div>
+
+<!-- Element Selector -->
+<div class="element-selector" id="elementSelector">
+    <div class="element-grid" id="elementGrid"></div>
+</div>
+
+<!-- Hint -->
+<div id="hint"></div>
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- NOTE: Por ahora mantenemos el código inline hasta completar modularización -->
+<!-- TODO: Migrar a módulos ES6 en src/ -->
+<script>
+// Por ahora, importar el código completo del quantum-chemistry-3d.html aquí
+// PRÓXIMO PASO: Separar en módulos
+console.log('🚧 Modularization in progress...');
+console.log('💡 Para usar ahora: abrir quantum-chemistry-3d.html directamente');
+console.log('📋 Esta estructura está lista para recibir los módulos');
+</script>
+
+</body>
+</html>
