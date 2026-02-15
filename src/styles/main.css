@@ -1,0 +1,91 @@
+/* ========================================
+   QUANTUM CHEMISTRY SIMULATOR - MAIN STYLES
+   ======================================== */
+
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+body {
+    background: radial-gradient(ellipse at center, #0a0a15 0%, #000000 100%);
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    touch-action: none;
+    color: #64c8ff;
+}
+
+canvas {
+    display: block;
+    touch-action: none;
+}
+
+/* Hint Notification */
+#hint {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    text-align: center;
+    z-index: 102;
+}
+
+#hint.show {
+    opacity: 1;
+}
+
+/* Buttons */
+.control-btn {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    color: #64c8ff;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+}
+
+.control-btn:hover {
+    background: rgba(20, 20, 35, 0.95);
+    border-color: #64c8ff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(100, 200, 255, 0.3);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+.collapse-btn {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    color: #64c8ff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    z-index: 101;
+}
+
+.collapse-btn:hover {
+    background: rgba(20, 20, 35, 0.95);
+    border-color: #64c8ff;
+}

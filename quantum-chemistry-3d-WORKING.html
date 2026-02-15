@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Quantum Chemistry 3D • Claude</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background: radial-gradient(ellipse at center, #0a0a15 0%, #000000 100%);
+            overflow: hidden;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            touch-action: none;
+            color: #64c8ff;
+        }
+
+        canvas {
+            display: block;
+            touch-action: none;
+        }
+
+        #ui {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            padding: 18px 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            font-size: 13px;
+            max-width: 320px;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        #ui.hidden {
+            transform: translateY(-150%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #ui h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
+        }
+
+        .info-text {
+            font-size: 11px;
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 6px 0;
+            font-size: 12px;
+        }
+
+        .stat-value {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .molecule-panel {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            transition: all 0.3s ease;
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 60vh;
+            overflow-y: auto;
+            max-width: 300px;
+        }
+
+        .molecule-panel.hidden {
+            transform: translateY(-150%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .molecule-panel-title {
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .control-btn {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            color: #64c8ff;
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+        }
+
+        .control-btn:hover {
+            background: rgba(20, 20, 35, 0.95);
+            border-color: #64c8ff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(100, 200, 255, 0.3);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .element-selector {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            transition: all 0.3s ease;
+            max-width: 95%;
+            z-index: 100;
+        }
+
+        .element-selector.hidden {
+            transform: translateX(-50%) translateY(150%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .element-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-height: 35vh;
+            overflow-y: auto;
+        }
+
+        /* ESTÉTICA DEL 2D */
+        .element-btn {
+            background: linear-gradient(135deg, rgba(100, 200, 255, 0.2), rgba(50, 100, 150, 0.2));
+            border: 1px solid rgba(100, 200, 255, 0.5);
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.2s;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .element-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(100, 200, 255, 0.4);
+            background: linear-gradient(135deg, rgba(100, 200, 255, 0.4), rgba(50, 100, 150, 0.4));
+        }
+
+        .element-btn:active {
+            transform: translateY(0);
+        }
+
+        .element-btn.selected {
+            background: linear-gradient(135deg, #64c8ff, #3264ff);
+            box-shadow: 0 0 20px rgba(100, 200, 255, 0.8);
+        }
+
+        .element-number {
+            font-size: 9px;
+            opacity: 0.7;
+        }
+
+        .element-symbol {
+            font-size: 16px;
+            margin: 4px 0;
+        }
+
+        .element-name {
+            font-size: 8px;
+            opacity: 0.8;
+        }
+
+        .collapse-btn {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            color: #64c8ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            z-index: 101;
+        }
+
+        .collapse-btn:hover {
+            background: rgba(20, 20, 35, 0.95);
+            border-color: #64c8ff;
+        }
+
+        #collapseElements {
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #collapseUI {
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #collapseMolecules {
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #hint {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            text-align: center;
+            z-index: 102;
+        }
+
+        #hint.show {
+            opacity: 1;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(100, 200, 255, 0.2);
+        }
+
+        .toggle-group .control-btn {
+            flex: 1;
+            min-width: 100px;
+            font-size: 11px;
+            padding: 8px 10px;
+        }
+    </style>
+</head>
+<body>
+
+<button class="collapse-btn" id="collapseUI">◀</button>
+<button class="collapse-btn" id="collapseElements">▼</button>
+<button class="collapse-btn" id="collapseMolecules">▶</button>
+
+<div id="ui">
+    <h3>⚛️ Quantum Chemistry 3D</h3>
+    <div class="info-text">
+        Tap para agregar • Arrastra para rotar • Pinch para zoom
+    </div>
+    <div class="stat-row">
+        <span>Átomos:</span>
+        <span class="stat-value" id="atomCount">0</span>
+    </div>
+    <div class="stat-row">
+        <span>Moléculas:</span>
+        <span class="stat-value" id="moleculeCount">0</span>
+    </div>
+    <div class="stat-row">
+        <span>Enlaces:</span>
+        <span class="stat-value" id="bondCount">0</span>
+    </div>
+    <div class="stat-row">
+        <span>Seleccionado:</span>
+        <span class="stat-value" id="selectedElement">-</span>
+    </div>
+    <div class="toggle-group">
+        <button class="control-btn" id="toggleVisualization">☁️ Nubes</button>
+        <button class="control-btn" id="toggleElectrons">⚛️ Todos</button>
+        <button class="control-btn" id="modeBtn">➕ Agregar</button>
+        <button class="control-btn" id="clearBtn">🗑️ Limpiar</button>
+    </div>
+</div>
+
+<div class="molecule-panel">
+    <div class="molecule-panel-title">Moléculas Preestablecidas</div>
+    <div id="moleculeButtons"></div>
+</div>
+
+<div class="element-selector" id="elementSelector">
+    <div class="element-grid" id="elementGrid"></div>
+</div>
+
+<div id="hint"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+
+let visualizationMode = 'clouds';
+let electronMode = 'all';
+let interactionMode = 'add'; // 'add' or 'delete'
+
+let ELEMENT_DATABASE = {};
+let MOLECULES = [];
+let selectedElement = null;
+
+// ========= MOLECULE CLASS =========
+class Molecule {
+    constructor(atoms) {
+        this.atoms = atoms;
+        this.bonds = [];
+        this.centerOfMass = new THREE.Vector3();
+        this.updateBonds();
+        this.updateCenterOfMass();
+    }
+    
+    updateBonds() {
+        this.bonds = [];
+        bonds.forEach(bond => {
+            if(this.atoms.includes(bond.atom1) && this.atoms.includes(bond.atom2)) {
+                this.bonds.push(bond);
+            }
+        });
+    }
+    
+    updateCenterOfMass() {
+        this.centerOfMass.set(0, 0, 0);
+        this.atoms.forEach(atom => {
+            this.centerOfMass.add(atom.group.position);
+        });
+        this.centerOfMass.divideScalar(this.atoms.length);
+    }
+    
+    moveAll(delta) {
+        this.atoms.forEach(atom => {
+            atom.group.position.add(delta);
+        });
+        this.updateCenterOfMass();
+    }
+    
+    highlight(intensity) {
+        this.atoms.forEach(atom => {
+            atom.nucleus.material.emissiveIntensity = 0.3 + intensity;
+        });
+    }
+    
+    remove() {
+        // Remove all bonds
+        this.bonds.forEach(bond => {
+            const index = bonds.indexOf(bond);
+            if(index > -1) {
+                bond.remove();
+                bonds.splice(index, 1);
+            }
+        });
+        
+        // Remove all atoms
+        this.atoms.forEach(atom => {
+            const index = atoms.indexOf(atom);
+            if(index > -1) {
+                atom.remove();
+                atoms.splice(index, 1);
+            }
+        });
+    }
+}
+
+async function loadData() {
+    try {
+        const [elementsRes, moleculesRes] = await Promise.all([
+            fetch('elementos.json'),
+            fetch('moleculas.json')
+        ]);
+        
+        ELEMENT_DATABASE = await elementsRes.json();
+        MOLECULES = await moleculesRes.json();
+        
+        Object.values(ELEMENT_DATABASE).forEach(el => {
+            if (typeof el.color === 'string') {
+                el.color = parseInt(el.color, 16);
+            }
+        });
+        
+        initUI();
+        showHint('🧪 Selecciona un elemento y toca para agregar átomos');
+    } catch (error) {
+        console.error('Error loading data:', error);
+        showHint('❌ Error cargando datos');
+    }
+}
+
+function initUI() {
+    const grid = document.getElementById('elementGrid');
+    Object.entries(ELEMENT_DATABASE).forEach(([symbol, element]) => {
+        const btn = document.createElement('button');
+        btn.className = 'element-btn';
+        btn.innerHTML = `
+            <div class="element-number">${element.number}</div>
+            <div class="element-symbol">${symbol}</div>
+            <div class="element-name">${element.name}</div>
+        `;
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.element-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedElement = symbol;
+            document.getElementById('selectedElement').textContent = element.name;
+        });
+        grid.appendChild(btn);
+    });
+    
+    const moleculeContainer = document.getElementById('moleculeButtons');
+    MOLECULES.forEach((mol, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'control-btn';
+        btn.textContent = `${mol.icon} ${mol.formula}`;
+        btn.title = mol.name;
+        btn.addEventListener('click', () => createMolecule(idx));
+        moleculeContainer.appendChild(btn);
+    });
+}
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000000, 0.015);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 0, 25);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x000000, 0);
+document.body.appendChild(renderer.domElement);
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+const pointLight = new THREE.PointLight(0x64c8ff, 1, 100);
+pointLight.position.set(10, 10, 10);
+scene.add(pointLight);
+
+const bgParticles = [];
+for(let i = 0; i < 100; i++) {
+    const geo = new THREE.SphereGeometry(0.05, 8, 8);
+    const mat = new THREE.MeshBasicMaterial({
+        color: 0x64c8ff,
+        transparent: true,
+        opacity: 0.1
+    });
+    const particle = new THREE.Mesh(geo, mat);
+    particle.position.set(
+        (Math.random() - 0.5) * 50,
+        (Math.random() - 0.5) * 50,
+        (Math.random() - 0.5) * 50
+    );
+    particle.userData = { speed: Math.random() * 0.02 + 0.01 };
+    scene.add(particle);
+    bgParticles.push(particle);
+}
+
+class Atom {
+    constructor(position, elementSymbol) {
+        this.element = ELEMENT_DATABASE[elementSymbol];
+        this.symbol = elementSymbol;
+        this.group = new THREE.Group();
+        this.bonds = [];
+        this.velocity = new THREE.Vector3(0, 0, 0);
+        this.force = new THREE.Vector3(0, 0, 0);
+        
+        const nucleusGeo = new THREE.SphereGeometry(0.5, 32, 32);
+        const nucleusMat = new THREE.MeshPhongMaterial({
+            color: this.element.color,
+            emissive: this.element.color,
+            emissiveIntensity: 0.3,
+            shininess: 100
+        });
+        this.nucleus = new THREE.Mesh(nucleusGeo, nucleusMat);
+        this.group.add(this.nucleus);
+        
+        this.shells = [];
+        this.shellElectrons = [];
+        let radius = 1;
+        
+        this.element.shells.forEach((electronCount, shellIndex) => {
+            const shellGeo = new THREE.TorusGeometry(radius, 0.02, 8, 32);
+            const shellMat = new THREE.MeshBasicMaterial({
+                color: 0x64c8ff,
+                transparent: true,
+                opacity: 0.3
+            });
+            const shell = new THREE.Mesh(shellGeo, shellMat);
+            shell.rotation.x = Math.random() * Math.PI;
+            shell.rotation.y = Math.random() * Math.PI;
+            shell.visible = visualizationMode === 'shells';
+            this.group.add(shell);
+            this.shells.push(shell);
+            
+            const isValenceShell = shellIndex === this.element.shells.length - 1;
+            const shellElectronGroup = [];
+            
+            for(let i = 0; i < electronCount; i++) {
+                const electronGeo = new THREE.SphereGeometry(0.08, 16, 16);
+                const electronMat = new THREE.MeshPhongMaterial({
+                    color: 0x00ffff,
+                    emissive: 0x00ffff,
+                    emissiveIntensity: 0.5
+                });
+                const electron = new THREE.Mesh(electronGeo, electronMat);
+                
+                electron.userData = { 
+                    angle: (i / electronCount) * Math.PI * 2, 
+                    radius, 
+                    speed: 0.02 + Math.random() * 0.01, 
+                    shellIndex,
+                    isValence: isValenceShell,
+                    inBond: false
+                };
+                electron.visible = visualizationMode === 'shells';
+                
+                this.group.add(electron);
+                shellElectronGroup.push(electron);
+            }
+            this.shellElectrons.push(shellElectronGroup);
+            
+            radius += 0.8;
+        });
+        
+        this.cloudParticles = [];
+        const particleGeo = new THREE.SphereGeometry(0.05, 8, 8);
+        const particleMat = new THREE.MeshBasicMaterial({
+            color: this.element.color,
+            transparent: true,
+            opacity: 0.3
+        });
+        
+        const totalElectrons = this.element.shells.reduce((a, b) => a + b, 0);
+        const particlesPerElectron = 8;
+        
+        for(let i = 0; i < totalElectrons * particlesPerElectron; i++) {
+            const particle = new THREE.Mesh(particleGeo.clone(), particleMat.clone());
+            const r = (Math.random() * 0.5 + 0.5) * (2 + Math.random() * 2);
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            particle.userData = {
+                baseR: r,
+                theta: theta,
+                phi: phi,
+                speed: 0.01 + Math.random() * 0.02,
+                phase: Math.random() * Math.PI * 2
+            };
+            
+            particle.visible = visualizationMode === 'clouds';
+            this.group.add(particle);
+            this.cloudParticles.push(particle);
+        }
+        
+        this.group.position.copy(position);
+        scene.add(this.group);
+    }
+    
+    consumeValenceElectrons(count) {
+        // Hide valence electrons when forming bonds
+        const valenceShell = this.shellElectrons[this.shellElectrons.length - 1];
+        let consumed = 0;
+        for(let electron of valenceShell) {
+            if(!electron.userData.inBond && consumed < count) {
+                electron.userData.inBond = true;
+                electron.visible = false;
+                consumed++;
+            }
+        }
+    }
+    
+    setVisualizationMode(mode) {
+        const showShells = mode === 'shells';
+        const showClouds = mode === 'clouds';
+        
+        this.shells.forEach(shell => shell.visible = showShells);
+        this.updateElectronVisibility();
+        this.cloudParticles.forEach(particle => particle.visible = showClouds);
+    }
+    
+    updateElectronVisibility() {
+        const showShells = visualizationMode === 'shells';
+        this.shellElectrons.forEach(group => {
+            group.forEach(electron => {
+                if(electron.userData.inBond) {
+                    electron.visible = false; // Always hide bonded electrons
+                } else if(electronMode === 'valence') {
+                    electron.visible = showShells && electron.userData.isValence;
+                } else {
+                    electron.visible = showShells;
+                }
+            });
+        });
+    }
+    
+    applyForce(force) {
+        this.force.add(force);
+    }
+    
+    updatePhysics(damping = 0.95) {
+        this.velocity.add(this.force);
+        this.velocity.multiplyScalar(damping);
+        this.group.position.add(this.velocity);
+        this.force.set(0, 0, 0);
+    }
+    
+    update() {
+        this.nucleus.rotation.x += 0.01;
+        this.nucleus.rotation.y += 0.01;
+        
+        const energy = this.velocity.length();
+        this.nucleus.material.emissiveIntensity = 0.3 + energy * 2;
+        
+        if(visualizationMode === 'shells') {
+            this.shells.forEach(shell => shell.rotation.z += 0.005);
+            this.group.children.forEach(child => {
+                if(child.userData.angle !== undefined && child.visible && !child.userData.inBond) {
+                    child.userData.angle += child.userData.speed;
+                    const x = Math.cos(child.userData.angle) * child.userData.radius;
+                    const z = Math.sin(child.userData.angle) * child.userData.radius;
+                    child.position.set(x, 0, z);
+                }
+            });
+        } else {
+            this.cloudParticles.forEach(particle => {
+                const userData = particle.userData;
+                userData.phase += userData.speed;
+                const r = userData.baseR * (1 + Math.sin(userData.phase) * 0.2);
+                const x = r * Math.sin(userData.phi) * Math.cos(userData.theta);
+                const y = r * Math.sin(userData.phi) * Math.sin(userData.theta);
+                const z = r * Math.cos(userData.phi);
+                particle.position.set(x, y, z);
+                particle.material.opacity = 0.2 + Math.sin(userData.phase) * 0.15;
+            });
+        }
+    }
+    
+    remove() {
+        scene.remove(this.group);
+    }
+}
+
+class Bond {
+    constructor(atom1, atom2) {
+        this.atom1 = atom1;
+        this.atom2 = atom2;
+        
+        const geometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 8);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0x888888,
+            emissive: 0x444444,
+            emissiveIntensity: 0.2
+        });
+        this.mesh = new THREE.Mesh(geometry, material);
+        scene.add(this.mesh);
+        
+        this.electrons = [];
+        for(let i = 0; i < 2; i++) {
+            const electronGeo = new THREE.SphereGeometry(0.1, 16, 16);
+            const electronMat = new THREE.MeshPhongMaterial({
+                color: 0x00ffff,
+                emissive: 0x00ffff,
+                emissiveIntensity: 0.8
+            });
+            const electron = new THREE.Mesh(electronGeo, electronMat);
+            electron.userData = { progress: i * 0.5, speed: 0.01 };
+            scene.add(electron);
+            this.electrons.push(electron);
+        }
+        
+        // Consume valence electrons from both atoms
+        atom1.consumeValenceElectrons(1);
+        atom2.consumeValenceElectrons(1);
+        
+        atom1.bonds.push(this);
+        atom2.bonds.push(this);
+        
+        this.update();
+    }
+    
+    update() {
+        const start = this.atom1.group.position;
+        const end = this.atom2.group.position;
+        
+        this.mesh.position.copy(start).add(end).multiplyScalar(0.5);
+        
+        const direction = new THREE.Vector3().subVectors(end, start);
+        const length = direction.length();
+        this.mesh.scale.y = length;
+        
+        const axis = new THREE.Vector3(0, 1, 0);
+        const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction.normalize());
+        this.mesh.quaternion.copy(quaternion);
+        
+        const targetDist = 3.5;
+        const force = (length - targetDist) * 0.005;
+        const springForce = direction.clone().normalize().multiplyScalar(force);
+        this.atom1.applyForce(springForce.clone());
+        this.atom2.applyForce(springForce.clone().negate());
+        
+        const tension = Math.abs(force);
+        this.mesh.material.emissiveIntensity = 0.2 + tension * 50;
+        
+        this.electrons.forEach(electron => {
+            electron.userData.progress += electron.userData.speed;
+            if(electron.userData.progress > 1) electron.userData.progress -= 1;
+            
+            const t = electron.userData.progress;
+            electron.position.lerpVectors(start, end, t);
+        });
+    }
+    
+    isValid() {
+        return this.atom1.group.parent && this.atom2.group.parent;
+    }
+    
+    remove() {
+        scene.remove(this.mesh);
+        this.electrons.forEach(e => scene.remove(e));
+    }
+}
+
+const atoms = [];
+const bonds = [];
+
+function addAtom(position, elementSymbol) {
+    const atom = new Atom(position, elementSymbol);
+    atoms.push(atom);
+    
+    atoms.forEach(other => {
+        if(other !== atom) {
+            const distance = atom.group.position.distanceTo(other.group.position);
+            if(distance < 5) {
+                const atomBondCount = atom.bonds.length;
+                const otherBondCount = other.bonds.length;
+                
+                if(atomBondCount < atom.element.valence && otherBondCount < other.element.valence) {
+                    bonds.push(new Bond(atom, other));
+                    playSound('bond');
+                }
+            }
+        }
+    });
+    
+    updateStats();
+    playSound('add');
+}
+
+function updateStats() {
+    document.getElementById('atomCount').textContent = atoms.length;
+    
+    const visited = new Set();
+    let moleculeCount = 0;
+    
+    function dfs(atom) {
+        visited.add(atom);
+        atom.bonds.forEach(bond => {
+            const neighbor = bond.atom1 === atom ? bond.atom2 : bond.atom1;
+            if(!visited.has(neighbor)) dfs(neighbor);
+        });
+    }
+    
+    for(const atom of atoms) {
+        if(!visited.has(atom)) {
+            moleculeCount++;
+            dfs(atom);
+        }
+    }
+    
+    document.getElementById('moleculeCount').textContent = moleculeCount;
+    document.getElementById('bondCount').textContent = bonds.length;
+}
+
+function clearAll() {
+    atoms.forEach(a => a.remove());
+    bonds.forEach(b => b.remove());
+    atoms.length = 0;
+    bonds.length = 0;
+    updateStats();
+}
+
+// ========= MOLECULE DETECTION =========
+function findMoleculeContaining(atom) {
+    const moleculeAtoms = [];
+    const visited = new Set();
+    
+    function dfs(currentAtom) {
+        visited.add(currentAtom);
+        moleculeAtoms.push(currentAtom);
+        
+        currentAtom.bonds.forEach(bond => {
+            const neighbor = bond.atom1 === currentAtom ? bond.atom2 : bond.atom1;
+            if(!visited.has(neighbor)) {
+                dfs(neighbor);
+            }
+        });
+    }
+    
+    dfs(atom);
+    return new Molecule(moleculeAtoms);
+}
+
+function findAtomAtPoint(point) {
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(point, camera);
+    
+    // Recopilar todos los meshes de núcleos
+    const nucleusMeshes = [];
+    atoms.forEach(atom => {
+        if(atom.nucleus) {
+            nucleusMeshes.push(atom.nucleus);
+        }
+    });
+    
+    // Hacer intersección con los meshes
+    const intersects = raycaster.intersectObjects(nucleusMeshes);
+    
+    if(intersects.length > 0) {
+        // Encontrar el átomo que corresponde al mesh intersectado
+        const intersectedMesh = intersects[0].object;
+        return atoms.find(atom => atom.nucleus === intersectedMesh);
+    }
+    
+    return null;
+}
+
+function deleteAtomOrMolecule(atom) {
+    if(atom.bonds.length === 0) {
+        // Átomo suelto - borrar solo él
+        const index = atoms.indexOf(atom);
+        if(index > -1) {
+            atom.remove();
+            atoms.splice(index, 1);
+        }
+        showHint('Átomo eliminado');
+    } else {
+        // Átomo enlazado - borrar molécula completa
+        const molecule = findMoleculeContaining(atom);
+        molecule.remove();
+        showHint(`Molécula eliminada (${molecule.atoms.length} átomos)`);
+    }
+    updateStats();
+}
+
+function createMolecule(index) {
+    const mol = MOLECULES[index];
+    // NO clearAll() - permitir múltiples moléculas
+    
+    // Offset aleatorio para no sobrelapar
+    const offset = new THREE.Vector3(
+        (Math.random() - 0.5) * 15,
+        (Math.random() - 0.5) * 15,
+        (Math.random() - 0.5) * 5
+    );
+    
+    mol.atoms.forEach(atomData => {
+        const pos = new THREE.Vector3(...atomData.position);
+        pos.multiplyScalar(50); // Escalar posiciones
+        pos.add(offset);
+        addAtom(pos, atomData.element);
+    });
+    
+    showHint(`${mol.icon} ${mol.name} agregada`);
+}
+
+function showHint(text) {
+    const hint = document.getElementById('hint');
+    hint.textContent = text;
+    hint.classList.add('show');
+    setTimeout(() => hint.classList.remove('show'), 2000);
+}
+
+function playSound(type) {
+    const audioContext = window.AudioContext || window.webkitAudioContext;
+    if(!audioContext) return;
+    
+    const ctx = new audioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    if(type === 'add') {
+        osc.frequency.value = 800;
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+    } else if(type === 'bond') {
+        osc.frequency.value = 600;
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+    }
+    
+    osc.start();
+    osc.stop(ctx.currentTime + 0.2);
+}
+
+// ========= RAYCAST HELPER (FIXED FOR ROTATION) =========
+function getWorldPosition(clientX, clientY) {
+    const mouse = new THREE.Vector2(
+        (clientX / window.innerWidth) * 2 - 1,
+        -(clientY / window.innerHeight) * 2 + 1
+    );
+    
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    
+    // Get point at camera's Z distance
+    const distance = camera.position.z;
+    const worldPosition = raycaster.ray.origin.clone().add(
+        raycaster.ray.direction.clone().multiplyScalar(distance)
+    );
+    
+    // Transform from world space to scene's local space
+    // (because scene is rotated, atoms are in scene's local coordinates)
+    const localPosition = scene.worldToLocal(worldPosition.clone());
+    
+    return localPosition;
+}
+
+// CAMERA CONTROLS - TOLERANT PAN THRESHOLD
+let isPointerDown = false;
+let pointerStart = { x: 0, y: 0 };
+let pointerMoved = 0;
+let previousMouse = { x: 0, y: 0 };
+const DRAG_THRESHOLD = 15;
+
+// Drag system for atoms/molecules
+let draggedObject = null; // Can be Atom or Molecule
+let dragStartWorld = null;
+
+let touchState = {
+    touches: [],
+    initialDistance: 0,
+    initialCameraZ: 0,
+    mode: null,
+    hasMoved: false,
+    wasTwoFinger: false,
+    gestureType: null // 'pinch' or 'pan'
+};
+
+function handlePointerDown(e) {
+    if(e.target === renderer.domElement) {
+        const mouse = new THREE.Vector2(
+            (e.clientX / window.innerWidth) * 2 - 1,
+            -(e.clientY / window.innerHeight) * 2 + 1
+        );
+        
+        const atom = findAtomAtPoint(mouse);
+        
+        if(atom && interactionMode === 'delete') {
+            // Delete mode
+            deleteAtomOrMolecule(atom);
+            return;
+        }
+        
+        if(atom && interactionMode === 'add') {
+            // Drag mode
+            if(atom.bonds.length === 0) {
+                draggedObject = atom;
+            } else {
+                draggedObject = findMoleculeContaining(atom);
+                draggedObject.highlight(0.5);
+            }
+            dragStartWorld = getWorldPosition(e.clientX, e.clientY);
+        } else {
+            // Rotate scene
+            isPointerDown = true;
+            pointerMoved = 0;
+            pointerStart = { x: e.clientX, y: e.clientY };
+            previousMouse = { x: e.clientX, y: e.clientY };
+        }
+    }
+}
+
+function handlePointerMove(e) {
+    if(draggedObject) {
+        // Dragging atom/molecule
+        const currentWorld = getWorldPosition(e.clientX, e.clientY);
+        if(currentWorld) {
+            const delta = currentWorld.clone().sub(dragStartWorld);
+            
+            if(draggedObject.group) { // It's an Atom
+                draggedObject.group.position.add(delta);
+            } else if(draggedObject.atoms) { // It's a Molecule
+                draggedObject.moveAll(delta);
+            }
+            
+            dragStartWorld = currentWorld;
+        }
+    } else if(isPointerDown) {
+        // Rotating scene
+        const deltaX = e.clientX - previousMouse.x;
+        const deltaY = e.clientY - previousMouse.y;
+        
+        pointerMoved += Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        scene.rotation.y += deltaX * 0.01;
+        scene.rotation.x += deltaY * 0.01;
+        
+        previousMouse = { x: e.clientX, y: e.clientY };
+    }
+}
+
+function handlePointerUp(e) {
+    if(draggedObject) {
+        // Release dragged object
+        if(draggedObject.atoms) { // Molecule
+            draggedObject.highlight(0); // Remove highlight
+        }
+        draggedObject = null;
+        dragStartWorld = null;
+    } else if(isPointerDown && pointerMoved < DRAG_THRESHOLD && e && e.target === renderer.domElement && selectedElement && interactionMode === 'add') {
+        // Add new atom
+        const position = getWorldPosition(e.clientX, e.clientY);
+        addAtom(position, selectedElement);
+    }
+    isPointerDown = false;
+    pointerMoved = 0;
+}
+
+renderer.domElement.addEventListener('mousedown', handlePointerDown);
+renderer.domElement.addEventListener('mousemove', handlePointerMove);
+renderer.domElement.addEventListener('mouseup', handlePointerUp);
+
+renderer.domElement.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    const touches = Array.from(e.touches);
+    touchState.touches = touches.map(t => ({ x: t.clientX, y: t.clientY }));
+    touchState.hasMoved = false;
+    
+    if(touches.length === 1) {
+        const touch = touches[0];
+        const mouse = new THREE.Vector2(
+            (touch.clientX / window.innerWidth) * 2 - 1,
+            -(touch.clientY / window.innerHeight) * 2 + 1
+        );
+        
+        const atom = findAtomAtPoint(mouse);
+        
+        if(atom && interactionMode === 'delete') {
+            // Delete mode
+            deleteAtomOrMolecule(atom);
+            touchState.mode = null;
+            return;
+        }
+        
+        if(atom && interactionMode === 'add') {
+            // Drag mode
+            touchState.mode = 'drag';
+            if(atom.bonds.length === 0) {
+                draggedObject = atom;
+            } else {
+                draggedObject = findMoleculeContaining(atom);
+                draggedObject.highlight(0.5);
+            }
+            dragStartWorld = getWorldPosition(touch.clientX, touch.clientY);
+        } else {
+            // Rotate scene
+            touchState.mode = 'rotate';
+            touchState.wasTwoFinger = false;
+            pointerStart = { x: touch.clientX, y: touch.clientY };
+            previousMouse = { x: touch.clientX, y: touch.clientY };
+            isPointerDown = true;
+            pointerMoved = 0;
+        }
+    } else if(touches.length === 2) {
+        touchState.mode = 'gesture';
+        touchState.wasTwoFinger = true;
+        touchState.gestureType = null;
+        const dx = touches[1].clientX - touches[0].clientX;
+        const dy = touches[1].clientY - touches[0].clientY;
+        touchState.initialDistance = Math.sqrt(dx * dx + dy * dy);
+        touchState.initialCameraZ = camera.position.z;
+        isPointerDown = false;
+        pointerMoved = 9999;
+    }
+}, { passive: false });
+
+renderer.domElement.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const touches = Array.from(e.touches);
+    
+    if(touches.length === 1 && touchState.mode === 'drag' && draggedObject) {
+        // Dragging atom/molecule
+        touchState.hasMoved = true;
+        const touch = touches[0];
+        const currentWorld = getWorldPosition(touch.clientX, touch.clientY);
+        if(currentWorld) {
+            const delta = currentWorld.clone().sub(dragStartWorld);
+            
+            if(draggedObject.group) { // It's an Atom
+                draggedObject.group.position.add(delta);
+            } else if(draggedObject.atoms) { // It's a Molecule
+                draggedObject.moveAll(delta);
+            }
+            
+            dragStartWorld = currentWorld;
+        }
+    } else if(touches.length === 1 && touchState.mode === 'rotate') {
+        touchState.hasMoved = true;
+        const touch = touches[0];
+        const deltaX = touch.clientX - previousMouse.x;
+        const deltaY = touch.clientY - previousMouse.y;
+        
+        pointerMoved += Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        scene.rotation.y += deltaX * 0.01;
+        scene.rotation.x += deltaY * 0.01;
+        
+        previousMouse = { x: touch.clientX, y: touch.clientY };
+    } else if(touches.length === 2 && touchState.mode === 'gesture') {
+        touchState.hasMoved = true;
+        pointerMoved = 9999;
+        
+        const dx = touches[1].clientX - touches[0].clientX;
+        const dy = touches[1].clientY - touches[0].clientY;
+        const currentDistance = Math.sqrt(dx * dx + dy * dy);
+        
+        const distanceChange = Math.abs(currentDistance - touchState.initialDistance);
+        const center = {
+            x: (touches[0].clientX + touches[1].clientX) / 2,
+            y: (touches[0].clientY + touches[1].clientY) / 2
+        };
+        const oldCenter = {
+            x: (touchState.touches[0].x + touchState.touches[1].x) / 2,
+            y: (touchState.touches[0].y + touchState.touches[1].y) / 2
+        };
+        const centerDelta = Math.sqrt(
+            Math.pow(center.x - oldCenter.x, 2) + 
+            Math.pow(center.y - oldCenter.y, 2)
+        );
+        
+        // TOLERANT THRESHOLD: Once a gesture type is established, stick with it
+        if(!touchState.gestureType) {
+            // First move - determine gesture type
+            if(distanceChange > 15) {
+                touchState.gestureType = 'pinch';
+            } else if(centerDelta > 10) {
+                touchState.gestureType = 'pan';
+            }
+        }
+        
+        // Execute established gesture type
+        if(touchState.gestureType === 'pinch') {
+            const scale = currentDistance / touchState.initialDistance;
+            camera.position.z = touchState.initialCameraZ / scale;
+            camera.position.z = Math.max(5, Math.min(50, camera.position.z));
+        } else if(touchState.gestureType === 'pan') {
+            const deltaX = (center.x - oldCenter.x) * 0.02;
+            const deltaY = (center.y - oldCenter.y) * 0.02;
+            camera.position.x -= deltaX;
+            camera.position.y += deltaY;
+        }
+        
+        touchState.touches = touches.map(t => ({ x: t.clientX, y: t.clientY }));
+    }
+}, { passive: false });
+
+renderer.domElement.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    
+    if(e.touches.length === 0) {
+        // Release dragged object if any
+        if(draggedObject) {
+            if(draggedObject.atoms) { // Molecule
+                draggedObject.highlight(0);
+            }
+            draggedObject = null;
+            dragStartWorld = null;
+        }
+        
+        const shouldPlaceAtom = (
+            touchState.mode === 'rotate' && 
+            !touchState.hasMoved && 
+            !touchState.wasTwoFinger &&
+            selectedElement && 
+            pointerMoved < DRAG_THRESHOLD &&
+            interactionMode === 'add'
+        );
+        
+        if(shouldPlaceAtom) {
+            const position = getWorldPosition(pointerStart.x, pointerStart.y);
+            addAtom(position, selectedElement);
+        }
+        
+        touchState.mode = null;
+        touchState.touches = [];
+        touchState.hasMoved = false;
+        touchState.wasTwoFinger = false;
+        touchState.gestureType = null;
+        isPointerDown = false;
+        pointerMoved = 0;
+    } else if(e.touches.length === 1) {
+        if(touchState.wasTwoFinger) {
+            touchState.mode = null;
+            isPointerDown = false;
+            pointerMoved = 9999;
+        } else {
+            touchState.mode = 'rotate';
+            touchState.hasMoved = false;
+            const touch = e.touches[0];
+            pointerStart = { x: touch.clientX, y: touch.clientY };
+            previousMouse = { x: touch.clientX, y: touch.clientY };
+            isPointerDown = true;
+            pointerMoved = 0;
+        }
+    }
+}, { passive: false });
+
+renderer.domElement.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    camera.position.z += e.deltaY * 0.01;
+    camera.position.z = Math.max(5, Math.min(50, camera.position.z));
+}, { passive: false });
+
+// UI CONTROLS
+document.getElementById('clearBtn').addEventListener('click', clearAll);
+
+document.getElementById('modeBtn').addEventListener('click', (e) => {
+    interactionMode = interactionMode === 'add' ? 'delete' : 'add';
+    const btn = e.target;
+    if(interactionMode === 'delete') {
+        btn.textContent = '🗑️ Borrar';
+        btn.style.background = 'rgba(255, 50, 50, 0.3)';
+        btn.style.borderColor = 'rgba(255, 100, 100, 0.5)';
+        showHint('Modo Borrar: Toca átomo para eliminar');
+    } else {
+        btn.textContent = '➕ Agregar';
+        btn.style.background = 'rgba(0, 0, 0, 0.85)';
+        btn.style.borderColor = 'rgba(100, 200, 255, 0.3)';
+        showHint('Modo Agregar: Selecciona elemento y toca para agregar');
+    }
+});
+
+document.getElementById('toggleVisualization').addEventListener('click', (e) => {
+    visualizationMode = visualizationMode === 'clouds' ? 'shells' : 'clouds';
+    e.target.textContent = visualizationMode === 'clouds' ? '☁️ Nubes' : '⚛️ Anillos';
+    atoms.forEach(atom => atom.setVisualizationMode(visualizationMode));
+    showHint(visualizationMode === 'clouds' ? '☁️ Nubes Probabilísticas' : '⚛️ Órbitas Clásicas');
+});
+
+document.getElementById('toggleElectrons').addEventListener('click', (e) => {
+    electronMode = electronMode === 'all' ? 'valence' : 'all';
+    e.target.textContent = electronMode === 'all' ? '⚛️ Todos' : '⚡ Valencia';
+    atoms.forEach(atom => atom.updateElectronVisibility());
+    showHint(electronMode === 'all' ? '⚛️ Todos los Electrones' : '⚡ Solo Electrones de Valencia');
+});
+
+const collapseUI = document.getElementById('collapseUI');
+const collapseElements = document.getElementById('collapseElements');
+const collapseMolecules = document.getElementById('collapseMolecules');
+
+collapseUI.addEventListener('click', () => {
+    const ui = document.getElementById('ui');
+    const isHidden = ui.classList.contains('hidden');
+    ui.classList.toggle('hidden');
+    collapseUI.textContent = isHidden ? '◀' : '▶';
+});
+
+collapseElements.addEventListener('click', () => {
+    const selector = document.getElementById('elementSelector');
+    const isHidden = selector.classList.contains('hidden');
+    selector.classList.toggle('hidden');
+    collapseElements.textContent = isHidden ? '▼' : '▲';
+});
+
+collapseMolecules.addEventListener('click', () => {
+    const panel = document.querySelector('.molecule-panel');
+    const isHidden = panel.classList.contains('hidden');
+    panel.classList.toggle('hidden');
+    collapseMolecules.textContent = isHidden ? '▶' : '◀';
+});
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+function animate() {
+    requestAnimationFrame(animate);
+    
+    bgParticles.forEach(p => {
+        p.position.y += p.userData.speed;
+        if(p.position.y > 25) p.position.y = -25;
+    });
+    
+    atoms.forEach(atom => {
+        atom.update();
+        atom.updatePhysics();
+    });
+    
+    for(let i = bonds.length - 1; i >= 0; i--) {
+        const bond = bonds[i];
+        if(!bond.isValid()) {
+            bond.remove();
+            bonds.splice(i, 1);
+        } else {
+            bond.update();
+        }
+    }
+    
+    renderer.render(scene, camera);
+}
+
+loadData().then(() => {
+    animate();
+    updateStats();
+});
+
+</script>
+</body>
+</html>
