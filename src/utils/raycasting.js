@@ -24,11 +24,8 @@ export function getWorldPosition(clientX, clientY, camera, scene) {
     return localPosition;
 }
 
-export function findAtomAtPoint(clientX, clientY, camera, atoms) {
-    const mouse = new THREE.Vector2(
-        (clientX / window.innerWidth) * 2 - 1,
-        -(clientY / window.innerHeight) * 2 + 1
-    );
+export function findAtomAtPoint(mouseX, mouseY, camera, atoms) {
+    const mouse = new THREE.Vector2(mouseX, mouseY);
     
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);

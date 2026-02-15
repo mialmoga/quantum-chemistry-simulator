@@ -6,34 +6,12 @@
 import { Simulation } from './core/Simulation.js';
 import { getWorldPosition, findAtomAtPoint } from './utils/raycasting.js';
 import { showHint, playSound, loadJSON } from './utils/helpers.js';
+import { initInteractions } from './ui/interactions.js';
 
 // Global state
 let simulation;
 let camera, renderer, scene;
 let elementDatabase, molecules;
-let selectedElement = null;
-
-// Drag state
-let draggedObject = null;
-let dragStartWorld = null;
-
-// Touch state
-let touchState = {
-    touches: [],
-    initialDistance: 0,
-    initialCameraZ: 0,
-    mode: null,
-    hasMoved: false,
-    wasTwoFinger: false,
-    gestureType: null
-};
-
-// Mouse state
-let isPointerDown = false;
-let pointerStart = { x: 0, y: 0 };
-let pointerMoved = 0;
-let previousMouse = { x: 0, y: 0 };
-const DRAG_THRESHOLD = 15;
 
 // Background particles
 let bgParticles = [];
@@ -87,12 +65,38 @@ async function init() {
     // Init UI
     initUI();
     initControls();
-    initInteractions();
+    
+    // Init interactions with dependencies
+    initInteractions({
+        simulation,
+        camera,
+        scene,
+        renderer,
+        getWorldPosition,
+        findAtomAtPoint,
+        updateStats,
+        playSound,
+        showHint
+    });
     
     // Start animation loop
     animate();
     
     showHint('🧪 Selecciona un elemento y toca para agregar átomos');
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // Update simulation
+    simulation.update();
+    
+    // Background particles animation
+    bgParticles.forEach(p => {
+        p.rotation.y += 0.0001;
+    });
+    
+    renderer.render(scene, camera);
 }
 
 function createBackgroundParticles() {
@@ -134,7 +138,6 @@ function initUI() {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.element-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
-            selectedElement = symbol;
             document.getElementById('selectedElement').textContent = element.name;
         });
         grid.appendChild(btn);
@@ -240,50 +243,12 @@ function updateStats() {
     document.getElementById('moleculeCount').textContent = stats.moleculeCount;
 }
 
-// ESTE ARCHIVO CONTINÚA... (separado por límite de tokens)
-// Ver app-interactions.js para los handlers de touch/mouse
-
-function animate() {
-    requestAnimationFrame(animate);
-    
-    // Update simulation
-    simulation.update();
-    
-    // Background particles animation
-    bgParticles.forEach(p => {
-        p.rotation.y += 0.0001;
-    });
-    
-    renderer.render(scene, camera);
-}
-
 // Window resize
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
-// Export for interactions
-export { 
-    simulation, 
-    camera, 
-    scene, 
-    renderer,
-    selectedElement,
-    draggedObject,
-    dragStartWorld,
-    touchState,
-    isPointerDown,
-    pointerStart,
-    pointerMoved,
-    previousMouse,
-    DRAG_THRESHOLD,
-    getWorldPosition,
-    findAtomAtPoint,
-    updateStats,
-    playSound
-};
 
 // Start app
 init();
