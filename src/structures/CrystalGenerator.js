@@ -179,7 +179,7 @@ export class CrystalGenerator {
         
         // Make crystal bonds 100x stronger
         crystalBonds.forEach(bond => {
-            bond.springConstant = 2.0; // vs 0.02 normal
+            bond.springConstant = 5.0; // vs 0.02 normal
             bond.isCrystalBond = true;
         });
         
