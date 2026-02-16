@@ -88,7 +88,7 @@ export class Atom {
                 };
                 electron.visible = visualizationMode === 'shells';
                 
-                this.group.add(electron);
+                shell.add(electron); // Add to shell so they rotate together
                 shellElectronGroup.push(electron);
             }
             this.shellElectrons.push(shellElectronGroup);
@@ -209,14 +209,16 @@ export class Atom {
                 shell.rotation.z += shell.userData.rotSpeedZ;
             });
             
-            // Animate electrons in orbits
-            this.group.children.forEach(child => {
-                if(child.userData.angle !== undefined && child.visible && !child.userData.inBond) {
-                    child.userData.angle += child.userData.speed;
-                    const x = Math.cos(child.userData.angle) * child.userData.radius;
-                    const z = Math.sin(child.userData.angle) * child.userData.radius;
-                    child.position.set(x, 0, z);
-                }
+            // Animate electrons in orbits (they're children of shells now)
+            this.shellElectrons.forEach(electronGroup => {
+                electronGroup.forEach(electron => {
+                    if(electron.visible && !electron.userData.inBond) {
+                        electron.userData.angle += electron.userData.speed;
+                        const x = Math.cos(electron.userData.angle) * electron.userData.radius;
+                        const z = Math.sin(electron.userData.angle) * electron.userData.radius;
+                        electron.position.set(x, 0, z);
+                    }
+                });
             });
         } else {
             // Animate cloud particles
