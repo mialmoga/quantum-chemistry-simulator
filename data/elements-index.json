@@ -1,0 +1,98 @@
+{
+  "project": "Quantum Chemistry Simulator",
+  "version": "1.0.0",
+  "groups": {
+    "nonmetals": {
+      "name": "No Metales",
+      "name_en": "Nonmetals",
+      "color": "0x00d2ff",
+      "file": "groups/nonmetals.json",
+      "count": 7,
+      "enabled": true,
+      "description": "Elementos esenciales para la vida y compuestos orgánicos."
+    },
+    "alkali_metals": {
+      "name": "Metales Alcalinos",
+      "name_en": "Alkali Metals",
+      "color": "0xff6b6b",
+      "file": "groups/alkali-metals.json",
+      "count": 6,
+      "enabled": true,
+      "description": "Metales altamente reactivos, sólidos blandos."
+    },
+    "alkaline_earth": {
+      "name": "Alcalinotérreos",
+      "name_en": "Alkaline Earth Metals",
+      "color": "0xffd93d",
+      "file": "groups/alkaline-earth.json",
+      "count": 6,
+      "enabled": true
+    },
+    "transition_metals": {
+      "name": "Metales de Transición",
+      "name_en": "Transition Metals",
+      "color": "0x95e1d3",
+      "file": "groups/transition-metals.json",
+      "count": 38,
+      "enabled": true
+    },
+    "post_transition": {
+      "name": "Post-Transición",
+      "name_en": "Post-Transition Metals",
+      "color": "0xa8e6cf",
+      "file": "groups/post-transition.json",
+      "count": 8,
+      "enabled": true
+    },
+    "metalloids": {
+      "name": "Metaloides",
+      "name_en": "Metalloids",
+      "color": "0xdcedc1",
+      "file": "groups/metalloids.json",
+      "count": 7,
+      "enabled": true
+    },
+    "halogens": {
+      "name": "Halógenos",
+      "name_en": "Halogens",
+      "color": "0xf093fb",
+      "file": "groups/halogens.json",
+      "count": 6,
+      "enabled": true
+    },
+    "noble_gases": {
+      "name": "Gases Nobles",
+      "name_en": "Noble Gases",
+      "color": "0xc471f5",
+      "file": "groups/noble-gases.json",
+      "count": 7,
+      "enabled": true
+    },
+    "lanthanides": {
+      "name": "Lantánidos",
+      "name_en": "Lanthanides",
+      "color": "0xfa709a",
+      "file": "groups/lanthanides.json",
+      "count": 15,
+      "enabled": false
+    },
+    "actinides": {
+      "name": "Actínidos",
+      "name_en": "Actinides",
+      "color": "0xfee140",
+      "file": "groups/actinides.json",
+      "count": 15,
+      "enabled": false
+    }
+  },
+  "total_elements": 118,
+  "config": {
+    "default_temp_K": 293.15,
+    "units": {
+      "temperature": "Kelvin",
+      "mass": "amu",
+      "distance": "picometers",
+      "energy": "electronvolts"
+    }
+  }
+}
