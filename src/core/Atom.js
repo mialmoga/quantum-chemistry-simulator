@@ -45,14 +45,24 @@ export class Atom {
         const visualizationMode = this.config.visualizationMode || 'clouds';
         
         this.element.shells.forEach((electronCount, shellIndex) => {
-            // Shell ring
-            const shellGeo = new THREE.TorusGeometry(radius, 0.02, 8, 32);
-            const shellMat = new THREE.MeshBasicMaterial({
+            // Shell ring - use circle edge instead of torus
+            const points = [];
+            const segments = 64;
+            for(let i = 0; i <= segments; i++) {
+                const angle = (i / segments) * Math.PI * 2;
+                points.push(new THREE.Vector3(
+                    Math.cos(angle) * radius,
+                    0,
+                    Math.sin(angle) * radius
+                ));
+            }
+            const shellGeo = new THREE.BufferGeometry().setFromPoints(points);
+            const shellMat = new THREE.LineBasicMaterial({
                 color: 0x64c8ff,
                 transparent: true,
                 opacity: 0.3
             });
-            const shell = new THREE.Mesh(shellGeo, shellMat);
+            const shell = new THREE.Line(shellGeo, shellMat);
             // Give each shell a unique initial orientation based on index
             // This makes them start in different planes but consistently
             const goldenAngle = Math.PI * (3 - Math.sqrt(5)); // ~137.5 degrees
