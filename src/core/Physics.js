@@ -33,10 +33,11 @@ export class PhysicsEngine {
         if(!this.floorEnabled) return;
         
         const position = atom.group.position;
+        const effectiveRadius = atom.getEffectiveRadius(); // Use electron cloud boundary
         
-        if(position.y < this.floorY) {
-            // Place on floor
-            position.y = this.floorY;
+        if(position.y - effectiveRadius < this.floorY) {
+            // Place on floor with offset for radius
+            position.y = this.floorY + effectiveRadius;
             
             // Bounce
             atom.velocity.y *= -this.restitution;

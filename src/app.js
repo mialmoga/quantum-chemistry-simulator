@@ -343,16 +343,18 @@ function initControls() {
     // Collapse buttons
     document.getElementById('collapsePhysics').addEventListener('click', () => {
         const panel = document.getElementById('physicsPanel');
-        const isHidden = panel.classList.contains('hidden');
-        panel.classList.toggle('hidden');
-        document.getElementById('collapsePhysics').textContent = isHidden ? '▲ Física' : '▼ Física';
+        const btn = document.getElementById('collapsePhysics');
+        const isHidden = panel.style.display === 'none';
+        panel.style.display = isHidden ? 'block' : 'none';
+        btn.textContent = isHidden ? '▲ Física' : '▼ Física';
     });
     
     document.getElementById('collapseCrystal').addEventListener('click', () => {
         const panel = document.getElementById('crystalPanel');
-        const isHidden = panel.classList.contains('hidden');
-        panel.classList.toggle('hidden');
-        document.getElementById('collapseCrystal').textContent = isHidden ? '▶ Cristales' : '◀ Cristales';
+        const btn = document.getElementById('collapseCrystal');
+        const isHidden = panel.style.display === 'none';
+        panel.style.display = isHidden ? 'block' : 'none';
+        btn.textContent = isHidden ? '▲ Cristales' : '▼ Cristales';
     });
 }
 

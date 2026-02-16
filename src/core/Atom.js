@@ -55,6 +55,12 @@ export class Atom {
             const shell = new THREE.Mesh(shellGeo, shellMat);
             shell.rotation.x = Math.random() * Math.PI;
             shell.rotation.y = Math.random() * Math.PI;
+            shell.rotation.z = Math.random() * Math.PI; // Add Z rotation
+            shell.userData = {
+                rotSpeedX: (Math.random() - 0.5) * 0.01,
+                rotSpeedY: (Math.random() - 0.5) * 0.01,
+                rotSpeedZ: (Math.random() - 0.5) * 0.01
+            };
             shell.visible = visualizationMode === 'shells';
             this.group.add(shell);
             this.shells.push(shell);
@@ -168,6 +174,15 @@ export class Atom {
         this.force.add(force);
     }
     
+    getEffectiveRadius() {
+        // Return the outermost shell radius (electron cloud boundary)
+        if(this.shells.length > 0) {
+            // Each shell adds ~0.8 units, starting at 1
+            return 1 + (this.shells.length * 0.8);
+        }
+        return this.radius; // Fallback to nucleus radius
+    }
+    
     updatePhysics(damping = 0.95) {
         this.velocity.add(this.force);
         this.velocity.multiplyScalar(damping);
@@ -187,8 +202,12 @@ export class Atom {
         const visualizationMode = this.config.visualizationMode || 'clouds';
         
         if(visualizationMode === 'shells') {
-            // Rotate shells
-            this.shells.forEach(shell => shell.rotation.z += 0.005);
+            // Rotate shells (each with unique rotation speeds)
+            this.shells.forEach(shell => {
+                shell.rotation.x += shell.userData.rotSpeedX;
+                shell.rotation.y += shell.userData.rotSpeedY;
+                shell.rotation.z += shell.userData.rotSpeedZ;
+            });
             
             // Animate electrons in orbits
             this.group.children.forEach(child => {
