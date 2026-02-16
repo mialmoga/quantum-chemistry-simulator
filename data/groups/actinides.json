@@ -1,0 +1,20 @@
+{
+  "group": "actinides",
+  "elements": {
+    "Ac": { "name": "Actinio", "number": 89, "symbol": "Ac", "mass": 227, "color": "0x70abff", "category": "actinide", "valence": 3, "shells": [2, 8, 18, 32, 18, 9, 2], "electronegativity": 1.1, "melt_K": 1323, "boil_K": 3471, "density_g_cm3": 10.07 },
+    "Th": { "name": "Torio", "number": 90, "symbol": "Th", "mass": 232.04, "color": "0x00bfff", "category": "actinide", "valence": 4, "shells": [2, 8, 18, 32, 18, 10, 2], "electronegativity": 1.3, "melt_K": 2023, "boil_K": 5061, "density_g_cm3": 11.72 },
+    "Pa": { "name": "Protactinio", "number": 91, "symbol": "Pa", "mass": 231.04, "color": "0x00a1ff", "category": "actinide", "valence": 5, "shells": [2, 8, 18, 32, 20, 9, 2], "electronegativity": 1.5, "melt_K": 1841, "boil_K": 4300, "density_g_cm3": 15.37 },
+    "U": { "name": "Uranio", "number": 92, "symbol": "U", "mass": 238.03, "color": "0x008eff", "category": "actinide", "valence": 6, "shells": [2, 8, 18, 32, 21, 9, 2], "electronegativity": 1.38, "melt_K": 1405.3, "boil_K": 4404, "density_g_cm3": 18.95, "isotopes": [{ "mass": 235, "abundance": 0.0072, "stable": false, "half_life_s": 22210000000000000 }, { "mass": 238, "abundance": 0.9927, "stable": false, "half_life_s": 141000000000000000 }] },
+    "Np": { "name": "Neptunio", "number": 93, "symbol": "Np", "mass": 237, "color": "0x0080ff", "category": "actinide", "valence": 5, "shells": [2, 8, 18, 32, 22, 9, 2], "electronegativity": 1.36, "melt_K": 917, "boil_K": 4273, "density_g_cm3": 20.25 },
+    "Pu": { "name": "Plutonio", "number": 94, "symbol": "Pu", "mass": 244, "color": "0x006eff", "category": "actinide", "valence": 4, "shells": [2, 8, 18, 32, 24, 8, 2], "electronegativity": 1.28, "melt_K": 912.5, "boil_K": 3501, "density_g_cm3": 19.84, "isotopes": [{ "mass": 239, "stable": false, "half_life_s": 761000000000 }] },
+    "Am": { "name": "Americio", "number": 95, "symbol": "Am", "mass": 243, "color": "0x545cf2", "category": "actinide", "valence": 6, "shells": [2, 8, 18, 32, 25, 8, 2], "electronegativity": 1.13, "melt_K": 1449, "boil_K": 2880, "density_g_cm3": 13.67 },
+    "Cm": { "name": "Curio", "number": 96, "symbol": "Cm", "mass": 247, "color": "0x785ce3", "category": "actinide", "valence": 3, "shells": [2, 8, 18, 32, 25, 9, 2], "electronegativity": 1.28, "melt_K": 1613, "boil_K": 3383, "density_g_cm3": 13.51 },
+    "Bk": { "name": "Berkelio", "number": 97, "symbol": "Bk", "mass": 247, "color": "0x8a4fe3", "category": "actinide", "valence": 4, "shells": [2, 8, 18, 32, 27, 8, 2], "electronegativity": 1.3, "melt_K": 1259, "boil_K": 2900, "density_g_cm3": 14.78 },
+    "Cf": { "name": "Californio", "number": 98, "symbol": "Cf", "mass": 251, "color": "0xa136d4", "category": "actinide", "valence": 3, "shells": [2, 8, 18, 32, 28, 8, 2], "electronegativity": 1.3, "melt_K": 1173, "boil_K": 1743, "density_g_cm3": 15.1 },
+    "Es": { "name": "Einsteinio", "number": 99, "symbol": "Es", "mass": 252, "color": "0xb31fd4", "category": "actinide", "valence": 3, "shells": [2, 8, 18, 32, 29, 8, 2], "electronegativity": 1.3, "melt_K": 1133, "boil_K": 1269, "density_g_cm3": 8.84 },
+    "Fm": { "name": "Fermio", "number": 100, "symbol": "Fm", "mass": 257, "color": "0xb31fba", "category": "actinide", "valence": 3, "shells": [2, 8, 18, 32, 30, 8, 2], "electronegativity": 1.3, "melt_K": 1800, "boil_K": 0, "density_g_cm3": 0 },
+    "Md": { "name": "Mendelevio", "number": 101, "symbol": "Md", "mass": 258, "color": "0xb30da6", "category": "actinide", "valence": 3, "shells": [2, 8, 18, 32, 31, 8, 2], "electronegativity": 1.3, "melt_K": 1100, "boil_K": 0, "density_g_cm3": 0 },
+    "No": { "name": "Nobelio", "number": 102, "symbol": "No", "mass": 259, "color": "0xbd0d87", "category": "actinide", "valence": 2, "shells": [2, 8, 18, 32, 32, 8, 2], "electronegativity": 1.3, "melt_K": 1100, "boil_K": 0, "density_g_cm3": 0 },
+    "Lr": { "name": "Lawrencio", "number": 103, "symbol": "Lr", "mass": 266, "color": "0xc70066", "category": "actinide", "valence": 3, "shells": [2, 8, 18, 32, 32, 8, 3], "electronegativity": 1.3, "melt_K": 1900, "boil_K": 0, "density_g_cm3": 0 }
+  }
+}

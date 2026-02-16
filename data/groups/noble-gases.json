@@ -1,0 +1,130 @@
+{
+  "group": "noble_gases",
+  "elements": {
+    "He": {
+      "name": "Helio",
+      "number": 2,
+      "symbol": "He",
+      "mass": 4.0026,
+      "color": "0xc471f5",
+      "category": "noble_gas",
+      "valence": 2,
+      "shells": [2],
+      "electronegativity": 0,
+      "melt_K": 0.95,
+      "boil_K": 4.22,
+      "density_g_cm3": 0.0001785,
+      "radius_atomic_pm": 31,
+      "radius_covalent_pm": 28,
+      "ionization_energy_eV": 24.587,
+      "isotopes": [
+        { "mass": 4, "abundance": 0.9999, "stable": true },
+        { "mass": 3, "abundance": 0.0001, "stable": true }
+      ]
+    },
+    "Ne": {
+      "name": "Neón",
+      "number": 10,
+      "symbol": "Ne",
+      "mass": 20.180,
+      "color": "0xc471f5",
+      "category": "noble_gas",
+      "valence": 8,
+      "shells": [2, 8],
+      "electronegativity": 0,
+      "melt_K": 24.56,
+      "boil_K": 27.07,
+      "density_g_cm3": 0.0008999,
+      "radius_atomic_pm": 38,
+      "radius_covalent_pm": 58,
+      "ionization_energy_eV": 21.565,
+      "isotopes": [
+        { "mass": 20, "abundance": 0.904, "stable": true },
+        { "mass": 22, "abundance": 0.092, "stable": true }
+      ]
+    },
+    "Ar": {
+      "name": "Argón",
+      "number": 18,
+      "symbol": "Ar",
+      "mass": 39.948,
+      "color": "0xc471f5",
+      "category": "noble_gas",
+      "valence": 8,
+      "shells": [2, 8, 8],
+      "electronegativity": 0,
+      "melt_K": 83.8,
+      "boil_K": 87.3,
+      "density_g_cm3": 0.001784,
+      "radius_atomic_pm": 71,
+      "radius_covalent_pm": 106,
+      "ionization_energy_eV": 15.759,
+      "isotopes": [
+        { "mass": 40, "abundance": 0.996, "stable": true },
+        { "mass": 36, "abundance": 0.003, "stable": true }
+      ]
+    },
+    "Kr": {
+      "name": "Kriptón",
+      "number": 36,
+      "symbol": "Kr",
+      "mass": 83.798,
+      "color": "0xc471f5",
+      "category": "noble_gas",
+      "valence": 8,
+      "shells": [2, 8, 18, 8],
+      "electronegativity": 3.0,
+      "melt_K": 115.79,
+      "boil_K": 119.93,
+      "density_g_cm3": 0.003733,
+      "radius_atomic_pm": 88,
+      "radius_covalent_pm": 116,
+      "ionization_energy_eV": 13.999,
+      "isotopes": [
+        { "mass": 84, "abundance": 0.57, "stable": true },
+        { "mass": 86, "abundance": 0.173, "stable": true }
+      ]
+    },
+    "Xe": {
+      "name": "Xenón",
+      "number": 54,
+      "symbol": "Xe",
+      "mass": 131.29,
+      "color": "0xc471f5",
+      "category": "noble_gas",
+      "valence": 8,
+      "shells": [2, 8, 18, 18, 8],
+      "electronegativity": 2.6,
+      "melt_K": 161.4,
+      "boil_K": 165.03,
+      "density_g_cm3": 0.005887,
+      "radius_atomic_pm": 108,
+      "radius_covalent_pm": 140,
+      "ionization_energy_eV": 12.13,
+      "isotopes": [
+        { "mass": 132, "abundance": 0.269, "stable": true },
+        { "mass": 135, "abundance": 0, "stable": false, "half_life_s": 32760, "name": "Xenón-135" }
+      ]
+    },
+    "Rn": {
+      "name": "Radón",
+      "number": 86,
+      "symbol": "Rn",
+      "mass": 222,
+      "color": "0xc471f5",
+      "category": "noble_gas",
+      "valence": 8,
+      "shells": [2, 8, 18, 32, 18, 8],
+      "electronegativity": 2.2,
+      "melt_K": 202,
+      "boil_K": 211.3,
+      "density_g_cm3": 0.00973,
+      "radius_atomic_pm": 120,
+      "radius_covalent_pm": 150,
+      "ionization_energy_eV": 10.748,
+      "isotopes": [
+        { "mass": 222, "abundance": 0, "stable": false, "half_life_s": 330048, "name": "Radón-222" }
+      ]
+    }
+  }
+}
