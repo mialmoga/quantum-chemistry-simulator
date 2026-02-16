@@ -53,9 +53,10 @@ export class Atom {
                 opacity: 0.3
             });
             const shell = new THREE.Mesh(shellGeo, shellMat);
-            shell.rotation.x = Math.random() * Math.PI;
-            shell.rotation.y = Math.random() * Math.PI;
-            shell.rotation.z = Math.random() * Math.PI; // Add Z rotation
+            // Don't rotate initially - let them rotate naturally with speeds
+            // shell.rotation.x = Math.random() * Math.PI;
+            // shell.rotation.y = Math.random() * Math.PI;
+            // shell.rotation.z = Math.random() * Math.PI;
             shell.userData = {
                 rotSpeedX: (Math.random() - 0.5) * 0.01,
                 rotSpeedY: (Math.random() - 0.5) * 0.01,
@@ -214,9 +215,16 @@ export class Atom {
                 electronGroup.forEach(electron => {
                     if(electron.visible && !electron.userData.inBond) {
                         electron.userData.angle += electron.userData.speed;
-                        const x = Math.cos(electron.userData.angle) * electron.userData.radius;
-                        const z = Math.sin(electron.userData.angle) * electron.userData.radius;
-                        electron.position.set(x, 0, z);
+                        const angle = electron.userData.angle;
+                        const radius = electron.userData.radius;
+                        
+                        // Position on circular path in shell's local space
+                        // This ensures electrons follow the visible orbit ring
+                        const x = Math.cos(angle) * radius;
+                        const z = Math.sin(angle) * radius;
+                        const y = 0; // Stay on shell's plane
+                        
+                        electron.position.set(x, y, z);
                     }
                 });
             });
