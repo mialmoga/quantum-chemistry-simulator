@@ -49,6 +49,9 @@ export class PhysicsEngine {
     }
     
     updateAtom(atom) {
+        // Skip frozen atoms (crystal mode)
+        if(atom.frozen) return;
+        
         // Apply gravity
         this.applyGravity(atom);
         

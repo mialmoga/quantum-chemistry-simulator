@@ -8,6 +8,8 @@ export class Bond {
         this.atom1 = atom1;
         this.atom2 = atom2;
         this.scene = scene;
+        this.springConstant = 0.02; // Default, can be increased for crystals
+        this.isCrystalBond = false;
         
         // Bond cylinder
         const geometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 8);
@@ -63,7 +65,7 @@ export class Bond {
         
         // Spring physics (stronger to resist gravity)
         const targetDist = 3.5;
-        const force = (length - targetDist) * 0.02; // Increased from 0.005
+        const force = (length - targetDist) * this.springConstant; // Use configurable constant
         const springForce = direction.clone().normalize().multiplyScalar(force);
         this.atom1.applyForce(springForce.clone());
         this.atom2.applyForce(springForce.clone().negate());

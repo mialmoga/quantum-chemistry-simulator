@@ -7,11 +7,15 @@ import { Simulation } from './core/Simulation.js';
 import { getWorldPosition, findAtomAtPoint } from './utils/raycasting.js';
 import { showHint, playSound, loadJSON } from './utils/helpers.js';
 import { initInteractions } from './ui/interactions.js';
+import { CrystalGenerator } from './structures/CrystalGenerator.js';
 
 // Global state
 let simulation;
 let camera, renderer, scene;
 let elementDatabase, molecules;
+let floorMesh; // Reference to floor plane
+let crystalGenerator; // Crystal structure generator
+let lastCrystalAtoms = []; // Track last generated crystal
 
 // Background particles
 let bgParticles = [];
@@ -64,6 +68,9 @@ async function init() {
     
     // Init simulation
     simulation = new Simulation(scene, elementDatabase);
+    
+    // Init crystal generator
+    crystalGenerator = new CrystalGenerator(simulation);
     
     // Init UI
     initUI();
@@ -135,6 +142,8 @@ function createFloorPlane() {
     floor.rotation.x = Math.PI / 2;
     floor.position.y = -15; // Match physics floor
     scene.add(floor);
+    floorMesh = floor; // Save reference
+    return floor;
 }
 
 function initUI() {
@@ -247,6 +256,95 @@ function initControls() {
         const value = parseFloat(e.target.value);
         document.getElementById('bounceValue').textContent = value;
         simulation.physics.restitution = value;
+    });
+    
+    // Floor appearance controls
+    document.getElementById('floorOpacitySlider').addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        document.getElementById('floorOpacityValue').textContent = value.toFixed(2);
+        if(floorMesh) {
+            floorMesh.material.opacity = value;
+        }
+    });
+    
+    document.getElementById('floorBrightnessSlider').addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        document.getElementById('floorBrightnessValue').textContent = value.toFixed(1);
+        if(floorMesh) {
+            // Interpolate from dark gray (0x1a1a1a) to light gray (0xe0e0e0)
+            const darkGray = 0x1a;  // 26 in decimal
+            const lightGray = 0xe0;  // 224 in decimal
+            const color = Math.floor(darkGray + (lightGray - darkGray) * value);
+            floorMesh.material.color.setHex(color * 0x010101); // RGB same value
+        }
+    });
+    
+    // Crystal controls
+    const crystalSize = () => parseInt(document.getElementById('crystalSizeSlider').value);
+    
+    document.getElementById('crystalSizeSlider').addEventListener('input', (e) => {
+        const value = e.target.value;
+        document.getElementById('crystalSizeValue').textContent = value;
+        document.getElementById('crystalSizeValue2').textContent = value;
+        document.getElementById('crystalSizeValue3').textContent = value;
+    });
+    
+    document.getElementById('crystalNaCl').addEventListener('click', () => {
+        const atoms = crystalGenerator.generateNaCl(crystalSize());
+        crystalGenerator.strengthenCrystalBonds(atoms);
+        lastCrystalAtoms = atoms;
+        updateStats();
+        showHint('🧂 Cristal NaCl generado');
+        playSound('add');
+    });
+    
+    document.getElementById('crystalFe').addEventListener('click', () => {
+        const atoms = crystalGenerator.generateBCC(crystalSize(), 'Fe');
+        crystalGenerator.strengthenCrystalBonds(atoms);
+        lastCrystalAtoms = atoms;
+        updateStats();
+        showHint('🔩 Cristal de Hierro (BCC) generado');
+        playSound('add');
+    });
+    
+    document.getElementById('crystalDiamond').addEventListener('click', () => {
+        const atoms = crystalGenerator.generateFCC(crystalSize(), 'C');
+        crystalGenerator.strengthenCrystalBonds(atoms);
+        lastCrystalAtoms = atoms;
+        updateStats();
+        showHint('💎 Cristal de Diamante (FCC) generado');
+        playSound('add');
+    });
+    
+    document.getElementById('crystalIce').addEventListener('click', () => {
+        const atoms = crystalGenerator.generateHexagonal(crystalSize(), 'O');
+        crystalGenerator.strengthenCrystalBonds(atoms);
+        lastCrystalAtoms = atoms;
+        updateStats();
+        showHint('❄️ Cristal de Hielo (Hex) generado');
+        playSound('add');
+    });
+    
+    document.getElementById('freezeCrystalToggle').addEventListener('change', (e) => {
+        if(lastCrystalAtoms.length > 0) {
+            crystalGenerator.freezeCrystal(lastCrystalAtoms, e.target.checked);
+            showHint(e.target.checked ? '❄️ Cristal congelado' : '🔥 Cristal descongelado');
+        }
+    });
+    
+    // Collapse buttons
+    document.getElementById('collapsePhysics').addEventListener('click', () => {
+        const panel = document.getElementById('physicsPanel');
+        const isHidden = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden');
+        document.getElementById('collapsePhysics').textContent = isHidden ? '▲ Física' : '▼ Física';
+    });
+    
+    document.getElementById('collapseCrystal').addEventListener('click', () => {
+        const panel = document.getElementById('crystalPanel');
+        const isHidden = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden');
+        document.getElementById('collapseCrystal').textContent = isHidden ? '▶ Cristales' : '◀ Cristales';
     });
 }
 
