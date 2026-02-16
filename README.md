@@ -2,7 +2,7 @@
 
 **Simulador molecular 3D interactivo** para educación química
 
-Creado por [Brujo](https://github.com/tuusuario) con Claude (Ámbar)  
+Creado por [Brujo](https://github.com/mialmoga) con Claude (Ámbar)  
 Con contribuciones de Velvet y Éter (118 elementos CPK)
 
 ---
