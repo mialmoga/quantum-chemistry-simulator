@@ -26,6 +26,12 @@ python -m http.server 8000
 
 ## ✨ Features Completas
 
+![Screenshot_1](docs/images/clean-mode.png)
+
+![Screenshot_2](docs/images/clouds-mode.png)
+
+![Screenshot_3](docs/images/rings-mode.png)
+
 ### 🎮 **Interacción 3D Completa**
 - ✅ Agregar átomos individuales (118 elementos)
 - ✅ Crear moléculas preset (15 moléculas)
