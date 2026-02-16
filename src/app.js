@@ -17,6 +17,7 @@ let camera, renderer, scene;
 let elementDatabase, molecules;
 let elementLoader; // NEW: Group-based element loader
 let groupPanel; // NEW: UI panel for element groups
+let elementSortMode = 'number'; // NEW: 'number' or 'group'
 let floorMesh; // Reference to floor plane
 let crystalGenerator; // Crystal structure generator
 let lastCrystalAtoms = []; // Track last generated crystal
@@ -185,17 +186,23 @@ function initUI() {
     
     // Create group panel
     groupPanel = new GroupPanel(elementLoader, (groupKey, enabled) => {
-        // Callback when group is toggled
-        if(enabled) {
-            showHint(`✅ Grupo ${elementLoader.getGroup(groupKey).name} activado`);
-        } else {
-            showHint(`❌ Grupo ${elementLoader.getGroup(groupKey).name} desactivado`);
+        // Callback when group is toggled or sort changes
+        if(groupKey) {
+            // Group toggled
+            if(enabled) {
+                showHint(`✅ Grupo ${elementLoader.getGroup(groupKey).name} activado`);
+            } else {
+                showHint(`❌ Grupo ${elementLoader.getGroup(groupKey).name} desactivado`);
+            }
         }
         
         // Refresh element grid
         refreshElementGrid();
     });
     groupPanel.createPanel();
+    
+    // Expose sort mode to global scope for GroupPanel
+    window.elementSortMode = elementSortMode;
     
     updateStats();
 }
@@ -206,7 +213,29 @@ function refreshElementGrid() {
     
     // Rebuild with current elements
     elementDatabase = elementLoader.getElements();
-    Object.entries(elementDatabase).forEach(([symbol, element]) => {
+    
+    // Sort elements based on current mode
+    const sortMode = window.elementSortMode || 'number';
+    let sortedElements;
+    
+    if(sortMode === 'number') {
+        // Sort by atomic number (traditional periodic table)
+        sortedElements = Object.entries(elementDatabase).sort((a, b) => 
+            a[1].number - b[1].number
+        );
+    } else {
+        // Sort by group, then by number within group
+        sortedElements = Object.entries(elementDatabase).sort((a, b) => {
+            // First by group
+            if(a[1].group !== b[1].group) {
+                return a[1].group.localeCompare(b[1].group);
+            }
+            // Then by number within group
+            return a[1].number - b[1].number;
+        });
+    }
+    
+    sortedElements.forEach(([symbol, element]) => {
         const btn = document.createElement('button');
         btn.className = 'element-btn';
         btn.innerHTML = `
@@ -218,6 +247,7 @@ function refreshElementGrid() {
         // Apply group color as border
         if(element.groupColor) {
             btn.style.borderColor = `#${element.groupColor.replace('0x', '')}`;
+            btn.style.borderWidth = '2px';
         }
         
         btn.addEventListener('click', () => {

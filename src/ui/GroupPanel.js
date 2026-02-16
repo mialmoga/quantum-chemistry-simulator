@@ -48,9 +48,54 @@ export class GroupPanel {
             padding-bottom: 8px;
             border-bottom: 1px solid rgba(100, 200, 255, 0.2);
             color: #64c8ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         `;
-        header.innerHTML = '🧪 GRUPOS DE ELEMENTOS';
+        header.innerHTML = `
+            <span>🧪 GRUPOS</span>
+            <button id="sortToggleBtn" style="
+                background: rgba(100, 200, 255, 0.1);
+                border: 1px solid rgba(100, 200, 255, 0.3);
+                border-radius: 4px;
+                color: rgba(255, 255, 255, 0.8);
+                padding: 4px 8px;
+                font-size: 10px;
+                cursor: pointer;
+                transition: all 0.2s;
+            " title="Cambiar ordenamiento del selector">
+                #️⃣ Núm
+            </button>
+        `;
         this.panel.appendChild(header);
+        
+        // Add sort toggle functionality
+        const sortBtn = header.querySelector('#sortToggleBtn');
+        sortBtn.addEventListener('click', () => {
+            // Toggle sort mode (accessed via global scope)
+            if(window.elementSortMode === 'number') {
+                window.elementSortMode = 'group';
+                sortBtn.innerHTML = '🏷️ Grupo';
+                sortBtn.title = 'Ordenado por grupo - Click para ordenar por número';
+            } else {
+                window.elementSortMode = 'number';
+                sortBtn.innerHTML = '#️⃣ Núm';
+                sortBtn.title = 'Ordenado por número - Click para ordenar por grupo';
+            }
+            
+            // Trigger refresh of element grid
+            if(this.onGroupToggle) {
+                this.onGroupToggle(null, true); // Null groupKey means just refresh
+            }
+        });
+        sortBtn.addEventListener('mouseenter', () => {
+            sortBtn.style.background = 'rgba(100, 200, 255, 0.2)';
+            sortBtn.style.borderColor = 'rgba(100, 200, 255, 0.5)';
+        });
+        sortBtn.addEventListener('mouseleave', () => {
+            sortBtn.style.background = 'rgba(100, 200, 255, 0.1)';
+            sortBtn.style.borderColor = 'rgba(100, 200, 255, 0.3)';
+        });
         
         // Groups container
         const groupsContainer = document.createElement('div');
