@@ -72,9 +72,11 @@ function handlePointerDown(e) {
             // Drag mode
             if(atom.bonds.length === 0) {
                 draggedObject = atom;
+                atom.isDragging = true; // Mark as dragging
             } else {
                 draggedObject = simulation.findMoleculeContaining(atom);
                 draggedObject.highlight(0.5);
+                draggedObject.atoms.forEach(a => a.isDragging = true); // Mark all atoms
             }
             dragStartWorld = getWorldPosition(e.clientX, e.clientY, camera, scene);
         } else {
@@ -121,6 +123,9 @@ function handlePointerUp(e) {
         // Release dragged object
         if(draggedObject.atoms) { // Molecule
             draggedObject.highlight(0);
+            draggedObject.atoms.forEach(a => a.isDragging = false);
+        } else { // Atom
+            draggedObject.isDragging = false;
         }
         draggedObject = null;
         dragStartWorld = null;
@@ -165,9 +170,11 @@ function handleTouchStart(e) {
             touchState.mode = 'drag';
             if(atom.bonds.length === 0) {
                 draggedObject = atom;
+                atom.isDragging = true;
             } else {
                 draggedObject = simulation.findMoleculeContaining(atom);
                 draggedObject.highlight(0.5);
+                draggedObject.atoms.forEach(a => a.isDragging = true);
             }
             dragStartWorld = getWorldPosition(touch.clientX, touch.clientY, camera, scene);
         } else {
@@ -277,6 +284,9 @@ function handleTouchEnd(e) {
         if(draggedObject) {
             if(draggedObject.atoms) {
                 draggedObject.highlight(0);
+                draggedObject.atoms.forEach(a => a.isDragging = false);
+            } else {
+                draggedObject.isDragging = false;
             }
             draggedObject = null;
             dragStartWorld = null;

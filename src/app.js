@@ -59,6 +59,9 @@ async function init() {
     // Background particles
     createBackgroundParticles();
     
+    // Floor plane (visible)
+    createFloorPlane();
+    
     // Init simulation
     simulation = new Simulation(scene, elementDatabase);
     
@@ -118,6 +121,20 @@ function createBackgroundParticles() {
         scene.add(particle);
         bgParticles.push(particle);
     }
+}
+
+function createFloorPlane() {
+    const floorGeo = new THREE.PlaneGeometry(100, 100);
+    const floorMat = new THREE.MeshBasicMaterial({
+        color: 0x1a1a1a,
+        transparent: true,
+        opacity: 0.15,
+        side: THREE.DoubleSide
+    });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = Math.PI / 2;
+    floor.position.y = -15; // Match physics floor
+    scene.add(floor);
 }
 
 function initUI() {

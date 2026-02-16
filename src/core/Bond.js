@@ -61,9 +61,9 @@ export class Bond {
         const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction.normalize());
         this.mesh.quaternion.copy(quaternion);
         
-        // Spring physics
+        // Spring physics (stronger to resist gravity)
         const targetDist = 3.5;
-        const force = (length - targetDist) * 0.005;
+        const force = (length - targetDist) * 0.02; // Increased from 0.005
         const springForce = direction.clone().normalize().multiplyScalar(force);
         this.atom1.applyForce(springForce.clone());
         this.atom2.applyForce(springForce.clone().negate());

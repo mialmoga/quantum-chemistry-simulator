@@ -21,6 +21,7 @@ export class PhysicsEngine {
     
     applyGravity(atom) {
         if(!this.gravityEnabled) return;
+        if(atom.isDragging) return; // Skip if being dragged
         
         // F = mg (mass * gravity)
         const mass = atom.element.mass;
