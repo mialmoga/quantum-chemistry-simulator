@@ -1,0 +1,61 @@
+/* GroupPanel.css - Optional enhancements */
+
+/* Scrollbar styling for group panel */
+#groupPanel::-webkit-scrollbar {
+    width: 6px;
+}
+
+#groupPanel::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+#groupPanel::-webkit-scrollbar-thumb {
+    background: rgba(100, 200, 255, 0.3);
+    border-radius: 3px;
+}
+
+#groupPanel::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 200, 255, 0.5);
+}
+
+/* Smooth transitions for checkboxes */
+#groupPanel input[type="checkbox"] {
+    accent-color: #64c8ff;
+    transition: all 0.2s ease;
+}
+
+#groupPanel input[type="checkbox"]:hover {
+    transform: scale(1.1);
+}
+
+#groupPanel input[type="checkbox"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Button hover effects */
+#collapseGroups:hover {
+    background: rgba(30, 30, 40, 0.98);
+    border-color: rgba(100, 200, 255, 0.5);
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #groupPanel {
+        right: 10px;
+        min-width: 200px;
+        font-size: 12px;
+        max-height: 60vh;
+    }
+}
+
+/* Group color boxes glow effect */
+#groupPanel [style*="border-radius: 3px"] {
+    transition: box-shadow 0.2s;
+}
+
+#groupPanel [style*="border-radius: 3px"]:hover {
+    box-shadow: 0 0 8px currentColor;
+}
