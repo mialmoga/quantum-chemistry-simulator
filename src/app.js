@@ -8,11 +8,15 @@ import { getWorldPosition, findAtomAtPoint } from './utils/raycasting.js';
 import { showHint, playSound, loadJSON } from './utils/helpers.js';
 import { initInteractions } from './ui/interactions.js';
 import { CrystalGenerator } from './structures/CrystalGenerator.js';
+import { ElementLoader } from './data/ElementLoader.js';
+import { GroupPanel } from './ui/GroupPanel.js';
 
 // Global state
 let simulation;
 let camera, renderer, scene;
 let elementDatabase, molecules;
+let elementLoader; // NEW: Group-based element loader
+let groupPanel; // NEW: UI panel for element groups
 let floorMesh; // Reference to floor plane
 let crystalGenerator; // Crystal structure generator
 let lastCrystalAtoms = []; // Track last generated crystal
@@ -23,10 +27,13 @@ let bgParticles = [];
 async function init() {
     // Load data
     try {
-        [elementDatabase, molecules] = await Promise.all([
-            loadJSON('data/elementos.json'),
-            loadJSON('data/moleculas.json')
-        ]);
+        // Load element groups with new loader
+        elementLoader = new ElementLoader();
+        await elementLoader.loadIndex();
+        elementDatabase = elementLoader.getElements();
+        
+        // Load molecules (still using old format)
+        molecules = await loadJSON('data/moleculas.json');
         
         // Convert color strings to numbers
         Object.values(elementDatabase).forEach(el => {
@@ -34,6 +41,8 @@ async function init() {
                 el.color = parseInt(el.color, 16);
             }
         });
+        
+        console.log(`✅ Loaded ${Object.keys(elementDatabase).length} elements from ${elementLoader.getActiveGroups().length} groups`);
     } catch(error) {
         console.error('Error loading data:', error);
         showHint('❌ Error cargando datos');
@@ -172,6 +181,51 @@ function initUI() {
         btn.title = mol.name;
         btn.addEventListener('click', () => createMolecule(idx));
         moleculeContainer.appendChild(btn);
+    });
+    
+    // Create group panel
+    groupPanel = new GroupPanel(elementLoader, (groupKey, enabled) => {
+        // Callback when group is toggled
+        if(enabled) {
+            showHint(`✅ Grupo ${elementLoader.getGroup(groupKey).name} activado`);
+        } else {
+            showHint(`❌ Grupo ${elementLoader.getGroup(groupKey).name} desactivado`);
+        }
+        
+        // Refresh element grid
+        refreshElementGrid();
+    });
+    groupPanel.createPanel();
+    
+    updateStats();
+}
+
+function refreshElementGrid() {
+    const grid = document.getElementById('elementGrid');
+    grid.innerHTML = ''; // Clear existing
+    
+    // Rebuild with current elements
+    elementDatabase = elementLoader.getElements();
+    Object.entries(elementDatabase).forEach(([symbol, element]) => {
+        const btn = document.createElement('button');
+        btn.className = 'element-btn';
+        btn.innerHTML = `
+            <div class="element-number">${element.number}</div>
+            <div class="element-symbol">${symbol}</div>
+            <div class="element-name">${element.name}</div>
+        `;
+        
+        // Apply group color as border
+        if(element.groupColor) {
+            btn.style.borderColor = `#${element.groupColor.replace('0x', '')}`;
+        }
+        
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.element-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            document.getElementById('selectedElement').textContent = element.name;
+        });
+        grid.appendChild(btn);
     });
     
     updateStats();
