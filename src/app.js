@@ -208,6 +208,29 @@ function initControls() {
         panel.classList.toggle('hidden');
         document.getElementById('collapseMolecules').textContent = isHidden ? '▶' : '◀';
     });
+    
+    // Physics controls
+    document.getElementById('gravityToggle').addEventListener('change', (e) => {
+        simulation.physics.setGravity(e.target.checked);
+        showHint(e.target.checked ? '🌍 Gravedad activada' : '🌍 Gravedad desactivada');
+    });
+    
+    document.getElementById('gravitySlider').addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        document.getElementById('gravityValue').textContent = value;
+        simulation.physics.gravityStrength = value;
+    });
+    
+    document.getElementById('floorToggle').addEventListener('change', (e) => {
+        simulation.physics.setFloor(e.target.checked);
+        showHint(e.target.checked ? '⬇️ Piso activado' : '⬆️ Piso desactivado');
+    });
+    
+    document.getElementById('bounceSlider').addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        document.getElementById('bounceValue').textContent = value;
+        simulation.physics.restitution = value;
+    });
 }
 
 function createMolecule(index) {

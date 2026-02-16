@@ -6,11 +6,15 @@
 import { Atom } from './Atom.js';
 import { Bond } from './Bond.js';
 import { Molecule } from './Molecule.js';
+import { PhysicsEngine } from './Physics.js';
 
 export class Simulation {
     constructor(scene, elementDatabase) {
         this.scene = scene;
         this.elementDatabase = elementDatabase;
+        
+        // Physics engine
+        this.physics = new PhysicsEngine();
         
         // State
         this.atoms = [];
@@ -91,9 +95,9 @@ export class Simulation {
     }
     
     update() {
-        // Update atoms
+        // Update atoms with physics
         this.atoms.forEach(atom => {
-            atom.updatePhysics();
+            this.physics.updateAtom(atom);
             atom.update();
         });
         
