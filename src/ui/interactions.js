@@ -25,6 +25,7 @@ let isPointerDown = false;
 let pointerStart = { x: 0, y: 0 };
 let pointerMoved = 0;
 let previousMouse = { x: 0, y: 0 };
+let mouseButton = 0; // 0=left, 1=middle, 2=right
 const DRAG_THRESHOLD = 15;
 
 export function initInteractions(deps) {
@@ -43,6 +44,7 @@ export function initInteractions(deps) {
     renderer.domElement.addEventListener('mousedown', handlePointerDown);
     renderer.domElement.addEventListener('mousemove', handlePointerMove);
     renderer.domElement.addEventListener('mouseup', handlePointerUp);
+    renderer.domElement.addEventListener('contextmenu', (e) => e.preventDefault()); // Prevent right-click menu
     
     renderer.domElement.addEventListener('touchstart', handleTouchStart, { passive: false });
     renderer.domElement.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -61,6 +63,18 @@ function findAtomAtPointMouse(e) {
 
 function handlePointerDown(e) {
     if(e.target === renderer.domElement) {
+        mouseButton = e.button; // 0=left, 1=middle, 2=right
+        
+        // Right-click or middle-click = Pan
+        if(mouseButton === 2 || mouseButton === 1) {
+            e.preventDefault();
+            isPointerDown = true;
+            pointerStart = { x: e.clientX, y: e.clientY };
+            previousMouse = { x: e.clientX, y: e.clientY };
+            return;
+        }
+        
+        // Left-click = Atom interaction
         const atom = findAtomAtPointMouse(e);
         
         if(atom && simulation.config.interactionMode === 'delete') {
@@ -105,14 +119,20 @@ function handlePointerMove(e) {
             dragStartWorld = currentWorld;
         }
     } else if(isPointerDown) {
-        // Rotating scene
         const deltaX = e.clientX - previousMouse.x;
         const deltaY = e.clientY - previousMouse.y;
         
         pointerMoved += Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         
-        scene.rotation.y += deltaX * 0.01;
-        scene.rotation.x += deltaY * 0.01;
+        // Right/Middle button = Pan camera
+        if(mouseButton === 2 || mouseButton === 1) {
+            camera.position.x -= deltaX * 0.02;
+            camera.position.y += deltaY * 0.02;
+        } else {
+            // Left button = Rotate scene
+            scene.rotation.y += deltaX * 0.01;
+            scene.rotation.x += deltaY * 0.01;
+        }
         
         previousMouse = { x: e.clientX, y: e.clientY };
     }
