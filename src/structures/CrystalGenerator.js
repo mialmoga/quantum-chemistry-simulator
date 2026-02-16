@@ -1,8 +1,9 @@
-
 /**
  * CrystalGenerator.js
  * Generates crystal lattice structures
  */
+
+import { Bond } from '../core/Bond.js';
 
 export class CrystalGenerator {
     constructor(simulation) {
@@ -169,6 +170,9 @@ export class CrystalGenerator {
      * Strengthen crystal bonds (prevent collapse)
      */
     strengthenCrystalBonds(atoms) {
+        // First, ensure all nearby atoms are bonded
+        this.forceConnectCrystal(atoms);
+        
         const crystalBonds = [];
         
         this.simulation.bonds.forEach(bond => {
@@ -177,13 +181,41 @@ export class CrystalGenerator {
             }
         });
         
-        // Make crystal bonds 100x stronger
+        // Make crystal bonds more stable (LOWER = more stable, less oscillation)
         crystalBonds.forEach(bond => {
-            bond.springConstant = 0.02; // vs 0.02 normal
+            bond.springConstant = 0.01; // vs 0.02 normal (even MORE stable)
             bond.isCrystalBond = true;
         });
         
         return crystalBonds;
+    }
+    
+    /**
+     * Force connect all nearby atoms in crystal
+     */
+    forceConnectCrystal(atoms) {
+        const maxBondDist = 5.5; // Slightly larger than spacing
+        
+        for(let i = 0; i < atoms.length; i++) {
+            for(let j = i + 1; j < atoms.length; j++) {
+                const a1 = atoms[i];
+                const a2 = atoms[j];
+                const dist = a1.group.position.distanceTo(a2.group.position);
+                
+                if(dist < maxBondDist && dist > 0.1) {
+                    // Check if bond already exists
+                    const bondExists = a1.bonds.some(b => 
+                        (b.atom1 === a1 && b.atom2 === a2) || 
+                        (b.atom1 === a2 && b.atom2 === a1)
+                    );
+                    
+                    if(!bondExists) {
+                        const bond = new Bond(a1, a2, this.simulation.scene);
+                        this.simulation.bonds.push(bond);
+                    }
+                }
+            }
+        }
     }
     
     /**

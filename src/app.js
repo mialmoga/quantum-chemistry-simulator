@@ -292,36 +292,44 @@ function initControls() {
     document.getElementById('crystalNaCl').addEventListener('click', () => {
         const atoms = crystalGenerator.generateNaCl(crystalSize());
         crystalGenerator.strengthenCrystalBonds(atoms);
+        crystalGenerator.freezeCrystal(atoms, true); // Default frozen
         lastCrystalAtoms = atoms;
+        document.getElementById('freezeCrystalToggle').checked = true; // Update UI
         updateStats();
-        showHint('🧂 Cristal NaCl generado');
+        showHint('🧂 Cristal NaCl generado (congelado)');
         playSound('add');
     });
     
     document.getElementById('crystalFe').addEventListener('click', () => {
         const atoms = crystalGenerator.generateBCC(crystalSize(), 'Fe');
         crystalGenerator.strengthenCrystalBonds(atoms);
+        crystalGenerator.freezeCrystal(atoms, true); // Default frozen
         lastCrystalAtoms = atoms;
+        document.getElementById('freezeCrystalToggle').checked = true;
         updateStats();
-        showHint('🔩 Cristal de Hierro (BCC) generado');
+        showHint('🔩 Cristal de Hierro (BCC) generado (congelado)');
         playSound('add');
     });
     
     document.getElementById('crystalDiamond').addEventListener('click', () => {
         const atoms = crystalGenerator.generateFCC(crystalSize(), 'C');
         crystalGenerator.strengthenCrystalBonds(atoms);
+        crystalGenerator.freezeCrystal(atoms, true); // Default frozen
         lastCrystalAtoms = atoms;
+        document.getElementById('freezeCrystalToggle').checked = true;
         updateStats();
-        showHint('💎 Cristal de Diamante (FCC) generado');
+        showHint('💎 Cristal de Diamante (FCC) generado (congelado)');
         playSound('add');
     });
     
     document.getElementById('crystalIce').addEventListener('click', () => {
         const atoms = crystalGenerator.generateHexagonal(crystalSize(), 'O');
         crystalGenerator.strengthenCrystalBonds(atoms);
+        crystalGenerator.freezeCrystal(atoms, true); // Default frozen
         lastCrystalAtoms = atoms;
+        document.getElementById('freezeCrystalToggle').checked = true;
         updateStats();
-        showHint('❄️ Cristal de Hielo (Hex) generado');
+        showHint('❄️ Cristal de Hielo (Hex) generado (congelado)');
         playSound('add');
     });
     
