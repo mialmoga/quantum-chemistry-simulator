@@ -88,41 +88,36 @@ async function init() {
 function animate() {
     requestAnimationFrame(animate);
     
+    // Animate background particles
+    bgParticles.forEach(p => {
+        p.position.y += p.userData.speed;
+        if(p.position.y > 25) p.position.y = -25;
+    });
+    
     // Update simulation
     simulation.update();
-    
-    // Background particles animation
-    bgParticles.forEach(p => {
-        p.rotation.y += 0.0001;
-    });
     
     renderer.render(scene, camera);
 }
 
 function createBackgroundParticles() {
-    const particleGeo = new THREE.BufferGeometry();
-    const particleCount = 200;
-    const positions = [];
-    
-    for(let i = 0; i < particleCount; i++) {
-        const x = (Math.random() - 0.5) * 100;
-        const y = (Math.random() - 0.5) * 100;
-        const z = (Math.random() - 0.5) * 100;
-        positions.push(x, y, z);
+    for(let i = 0; i < 100; i++) {
+        const geo = new THREE.SphereGeometry(0.05, 8, 8);
+        const mat = new THREE.MeshBasicMaterial({
+            color: 0x64c8ff,
+            transparent: true,
+            opacity: 0.1
+        });
+        const particle = new THREE.Mesh(geo, mat);
+        particle.position.set(
+            (Math.random() - 0.5) * 50,
+            (Math.random() - 0.5) * 50,
+            (Math.random() - 0.5) * 50
+        );
+        particle.userData = { speed: Math.random() * 0.02 + 0.01 };
+        scene.add(particle);
+        bgParticles.push(particle);
     }
-    
-    particleGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    
-    const particleMat = new THREE.PointsMaterial({
-        color: 0x64c8ff,
-        size: 0.3,
-        transparent: true,
-        opacity: 0.6
-    });
-    
-    const particles = new THREE.Points(particleGeo, particleMat);
-    scene.add(particles);
-    bgParticles.push(particles);
 }
 
 function initUI() {
