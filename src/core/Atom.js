@@ -53,10 +53,12 @@ export class Atom {
                 opacity: 0.3
             });
             const shell = new THREE.Mesh(shellGeo, shellMat);
-            // Don't rotate initially - let them rotate naturally with speeds
-            // shell.rotation.x = Math.random() * Math.PI;
-            // shell.rotation.y = Math.random() * Math.PI;
-            // shell.rotation.z = Math.random() * Math.PI;
+            // Give each shell a unique initial orientation based on index
+            // This makes them start in different planes but consistently
+            const goldenAngle = Math.PI * (3 - Math.sqrt(5)); // ~137.5 degrees
+            shell.rotation.x = shellIndex * goldenAngle * 0.5;
+            shell.rotation.y = shellIndex * goldenAngle * 0.7;
+            shell.rotation.z = shellIndex * goldenAngle * 0.3;
             shell.userData = {
                 rotSpeedX: (Math.random() - 0.5) * 0.01,
                 rotSpeedY: (Math.random() - 0.5) * 0.01,
