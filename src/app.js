@@ -59,14 +59,14 @@ async function init() {
     
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 1);
+    renderer.setClearColor(0x000000, 0); // Alpha 0 = canvas transparente, deja ver CSS gradient
     document.body.appendChild(renderer.domElement);
     
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+    // Lighting (same as WORKING version for warm ambiance)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
     
-    const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+    const pointLight = new THREE.PointLight(0x64c8ff, 1, 100);
     pointLight.position.set(10, 10, 10);
     scene.add(pointLight);
     
@@ -102,7 +102,51 @@ async function init() {
     // Start animation loop
     animate();
     
+    // Auto-collapse panels on mobile
+    initMobileLayout();
+    
     showHint('🧪 Selecciona un elemento y toca para agregar átomos');
+}
+
+function initMobileLayout() {
+    const isMobile = window.innerWidth <= 768 || 
+                     /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+    if(!isMobile) return;
+    
+    // Collapse: Physics panel
+    const physicsPanel = document.getElementById('physicsPanel');
+    const collapsePhysics = document.getElementById('collapsePhysics');
+    if(physicsPanel && collapsePhysics) {
+        physicsPanel.style.display = 'none';
+        collapsePhysics.textContent = '▲ Física';   // ▲ = oculto, toca para mostrar
+    }
+    
+    // Collapse: Crystal panel
+    const crystalPanel = document.getElementById('crystalPanel');
+    const collapseCrystal = document.getElementById('collapseCrystal');
+    if(crystalPanel && collapseCrystal) {
+        crystalPanel.style.display = 'none';
+        collapseCrystal.textContent = '▲ Cristales'; // ▲ = oculto, toca para mostrar
+    }
+    
+    // Collapse: Group panel (created by GroupPanel.js)
+    const groupPanelEl = document.getElementById('groupPanel');
+    const collapseGroupsBtn = document.getElementById('collapseGroups');
+    if(groupPanelEl && collapseGroupsBtn) {
+        groupPanelEl.style.display = 'none';
+        collapseGroupsBtn.style.display = 'block';
+    }
+    
+    // Collapse: Molecule panel
+    const moleculePanel = document.querySelector('.molecule-panel');
+    if(moleculePanel) {
+        moleculePanel.classList.add('hidden');
+        const collapseMolecules = document.getElementById('collapseMolecules');
+        if(collapseMolecules) collapseMolecules.textContent = '◀'; // ◀ = oculto, toca para mostrar
+    }
+    
+    console.log('📱 Mobile: paneles colapsados automáticamente');
 }
 
 function animate() {
@@ -157,22 +201,11 @@ function createFloorPlane() {
 }
 
 function initUI() {
-    const grid = document.getElementById('elementGrid');
-    Object.entries(elementDatabase).forEach(([symbol, element]) => {
-        const btn = document.createElement('button');
-        btn.className = 'element-btn';
-        btn.innerHTML = `
-            <div class="element-number">${element.number}</div>
-            <div class="element-symbol">${symbol}</div>
-            <div class="element-name">${element.name}</div>
-        `;
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.element-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            document.getElementById('selectedElement').textContent = element.name;
-        });
-        grid.appendChild(btn);
-    });
+    // Initialize sort mode before building grid
+    window.elementSortMode = elementSortMode;
+    
+    // Build element grid with colors from the start
+    refreshElementGrid();
     
     const moleculeContainer = document.getElementById('moleculeButtons');
     molecules.forEach((mol, idx) => {
@@ -201,11 +234,129 @@ function initUI() {
     });
     groupPanel.createPanel();
     
-    // Expose sort mode to global scope for GroupPanel
-    window.elementSortMode = elementSortMode;
-    
+    // Add fullscreen button
+    addFullscreenButton();
+
     updateStats();
 }
+
+// Add fullscreen button to UI panel
+function addFullscreenButton() {
+    const uiPanel = document.getElementById('ui');
+    if(!uiPanel) {
+        console.error('Panel #ui no encontrado');
+        return;
+    }
+    
+    // Make sure panel has position relative
+    if(window.getComputedStyle(uiPanel).position === 'static') {
+        uiPanel.style.position = 'relative';
+    }
+    
+    const fullscreenBtn = document.createElement('button');
+    fullscreenBtn.id = 'fullscreenBtn';
+    fullscreenBtn.innerHTML = '⛶';
+    fullscreenBtn.title = 'Pantalla completa';
+    fullscreenBtn.className = 'fullscreen-btn'; // Add class for styling
+    fullscreenBtn.style.cssText = `
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(100, 200, 255, 0.15);
+        border: 1px solid rgba(100, 200, 255, 0.4);
+        border-radius: 6px;
+        color: #64c8ff;
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    `;
+    
+    fullscreenBtn.addEventListener('mouseenter', () => {
+        fullscreenBtn.style.background = 'rgba(100, 200, 255, 0.3)';
+        fullscreenBtn.style.borderColor = 'rgba(100, 200, 255, 0.6)';
+        fullscreenBtn.style.transform = 'scale(1.05)';
+    });
+    
+    fullscreenBtn.addEventListener('mouseleave', () => {
+        fullscreenBtn.style.background = 'rgba(100, 200, 255, 0.15)';
+        fullscreenBtn.style.borderColor = 'rgba(100, 200, 255, 0.4)';
+        fullscreenBtn.style.transform = 'scale(1)';
+    });
+    
+    fullscreenBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent any parent handlers
+        toggleFullscreen();
+    });
+    
+    // Insert as first child (top-right corner)
+    uiPanel.insertBefore(fullscreenBtn, uiPanel.firstChild);
+    
+    // Listen for fullscreen changes to update icon
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+    document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
+    document.addEventListener('MSFullscreenChange', updateFullscreenIcon);
+    
+    console.log('✅ Fullscreen button added');
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement && 
+        !document.webkitFullscreenElement && 
+        !document.mozFullScreenElement && 
+        !document.msFullscreenElement) {
+        // Enter fullscreen
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+        console.log('Entering fullscreen');
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+        console.log('Exiting fullscreen');
+    }
+}
+
+function updateFullscreenIcon() {
+    const btn = document.getElementById('fullscreenBtn');
+    if(!btn) return;
+    
+    const isFullscreen = document.fullscreenElement || 
+                        document.webkitFullscreenElement || 
+                        document.mozFullScreenElement || 
+                        document.msFullscreenElement;
+    
+    if(isFullscreen) {
+        btn.innerHTML = '⛶'; // Same icon (context changes meaning)
+        btn.title = 'Salir de pantalla completa (ESC)';
+    } else {
+        btn.innerHTML = '⛶';
+        btn.title = 'Pantalla completa';
+    }
+}
+
 
 function refreshElementGrid() {
     const grid = document.getElementById('elementGrid');
@@ -244,9 +395,13 @@ function refreshElementGrid() {
             <div class="element-name">${element.name}</div>
         `;
         
-        // Apply group color as border
-        if(element.groupColor) {
-            btn.style.borderColor = `#${element.groupColor.replace('0x', '')}`;
+        // Apply group color as border (groupColor may be string or number)
+        if(element.groupColor !== undefined) {
+            const colorNum = typeof element.groupColor === 'string'
+                ? parseInt(element.groupColor.replace('0x', ''), 16)
+                : element.groupColor;
+            const hexColor = '#' + colorNum.toString(16).padStart(6, '0');
+            btn.style.borderColor = hexColor;
             btn.style.borderWidth = '2px';
         }
         
@@ -314,9 +469,11 @@ function initControls() {
     
     document.getElementById('collapseMolecules').addEventListener('click', () => {
         const panel = document.querySelector('.molecule-panel');
+        const btn = document.getElementById('collapseMolecules');
         const isHidden = panel.classList.contains('hidden');
         panel.classList.toggle('hidden');
-        document.getElementById('collapseMolecules').textContent = isHidden ? '▶' : '◀';
+        // oculto→visible: ▶  |  visible→oculto: ◀
+        btn.textContent = isHidden ? '▶' : '◀';
     });
     
     // Physics controls
@@ -430,7 +587,7 @@ function initControls() {
         const btn = document.getElementById('collapsePhysics');
         const isHidden = panel.style.display === 'none';
         panel.style.display = isHidden ? 'block' : 'none';
-        btn.textContent = isHidden ? '▲ Física' : '▼ Física';
+        btn.textContent = isHidden ? '▼ Física' : '▲ Física';
     });
     
     document.getElementById('collapseCrystal').addEventListener('click', () => {
@@ -438,7 +595,7 @@ function initControls() {
         const btn = document.getElementById('collapseCrystal');
         const isHidden = panel.style.display === 'none';
         panel.style.display = isHidden ? 'block' : 'none';
-        btn.textContent = isHidden ? '▲ Cristales' : '▼ Cristales';
+        btn.textContent = isHidden ? '▼ Cristales' : '▲ Cristales';
     });
 }
 
