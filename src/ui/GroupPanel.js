@@ -54,25 +54,38 @@ export class GroupPanel {
         `;
         header.innerHTML = `
             <span>🧪 GRUPOS</span>
-            <button id="sortToggleBtn" style="
-                background: rgba(100, 200, 255, 0.1);
-                border: 1px solid rgba(100, 200, 255, 0.3);
-                border-radius: 4px;
-                color: rgba(255, 255, 255, 0.8);
-                padding: 4px 8px;
-                font-size: 10px;
-                cursor: pointer;
-                transition: all 0.2s;
-            " title="Cambiar ordenamiento del selector">
-                #️⃣ Núm
-            </button>
+            <div style="display: flex; gap: 6px; align-items: center;">
+                <button id="sortToggleBtn" style="
+                    background: rgba(100, 200, 255, 0.1);
+                    border: 1px solid rgba(100, 200, 255, 0.3);
+                    border-radius: 4px;
+                    color: rgba(255, 255, 255, 0.8);
+                    padding: 4px 8px;
+                    font-size: 10px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " title="Cambiar ordenamiento del selector">
+                    #️⃣ Núm
+                </button>
+                <button id="panelCollapseBtn" style="
+                    background: rgba(100, 200, 255, 0.1);
+                    border: 1px solid rgba(100, 200, 255, 0.3);
+                    border-radius: 4px;
+                    color: rgba(255, 255, 255, 0.8);
+                    padding: 4px 8px;
+                    font-size: 10px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " title="Colapsar panel">
+                    ▶
+                </button>
+            </div>
         `;
         this.panel.appendChild(header);
         
         // Add sort toggle functionality
         const sortBtn = header.querySelector('#sortToggleBtn');
         sortBtn.addEventListener('click', () => {
-            // Toggle sort mode (accessed via global scope)
             if(window.elementSortMode === 'number') {
                 window.elementSortMode = 'group';
                 sortBtn.innerHTML = '🏷️ Grupo';
@@ -82,10 +95,8 @@ export class GroupPanel {
                 sortBtn.innerHTML = '#️⃣ Núm';
                 sortBtn.title = 'Ordenado por número - Click para ordenar por grupo';
             }
-            
-            // Trigger refresh of element grid
             if(this.onGroupToggle) {
-                this.onGroupToggle(null, true); // Null groupKey means just refresh
+                this.onGroupToggle(null, true);
             }
         });
         sortBtn.addEventListener('mouseenter', () => {
@@ -95,6 +106,21 @@ export class GroupPanel {
         sortBtn.addEventListener('mouseleave', () => {
             sortBtn.style.background = 'rgba(100, 200, 255, 0.1)';
             sortBtn.style.borderColor = 'rgba(100, 200, 255, 0.3)';
+        });
+
+        // Collapse button (in header)
+        const panelCollapseBtn = header.querySelector('#panelCollapseBtn');
+        panelCollapseBtn.addEventListener('click', () => {
+            this.panel.style.display = 'none';
+            collapseBtn.style.display = 'block';
+        });
+        panelCollapseBtn.addEventListener('mouseenter', () => {
+            panelCollapseBtn.style.background = 'rgba(100, 200, 255, 0.2)';
+            panelCollapseBtn.style.borderColor = 'rgba(100, 200, 255, 0.5)';
+        });
+        panelCollapseBtn.addEventListener('mouseleave', () => {
+            panelCollapseBtn.style.background = 'rgba(100, 200, 255, 0.1)';
+            panelCollapseBtn.style.borderColor = 'rgba(100, 200, 255, 0.3)';
         });
         
         // Groups container
@@ -143,26 +169,6 @@ export class GroupPanel {
             this.panel.style.display = 'block';
             collapseBtn.style.display = 'none';
         });
-        
-        // Add collapse functionality to panel
-        const panelCollapseBtn = document.createElement('button');
-        panelCollapseBtn.textContent = '▶';
-        panelCollapseBtn.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 16px;
-            cursor: pointer;
-            padding: 4px 8px;
-        `;
-        panelCollapseBtn.addEventListener('click', () => {
-            this.panel.style.display = 'none';
-            collapseBtn.style.display = 'block';
-        });
-        this.panel.appendChild(panelCollapseBtn);
         
         // Inject into DOM
         document.body.appendChild(this.panel);
