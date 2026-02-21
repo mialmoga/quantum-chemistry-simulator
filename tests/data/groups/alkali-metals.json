@@ -1,0 +1,214 @@
+{
+  "group": "alkali_metals",
+  "elements": {
+    "Li": {
+      "name": "Litio",
+      "number": 3,
+      "symbol": "Li",
+      "mass": 6.94,
+      "color": "0xff6b6b",
+      "cpk_color": "0xcc80ff",
+      "category": "alkali_metal",
+      "valence": 1,
+      "shells": [
+        2,
+        1
+      ],
+      "electronegativity": 0.98,
+      "melt_K": 453.65,
+      "boil_K": 1603.0,
+      "density_g_cm3": 0.534,
+      "radius_atomic_pm": 152,
+      "radius_covalent_pm": 128,
+      "ionization_energy_eV": 5.39,
+      "isotopes": [
+        {
+          "mass": 7,
+          "abundance": 0.924,
+          "stable": true,
+          "name": "Litio-7"
+        },
+        {
+          "mass": 6,
+          "abundance": 0.075,
+          "stable": true,
+          "name": "Litio-6"
+        }
+      ]
+    },
+    "Na": {
+      "name": "Sodio",
+      "number": 11,
+      "symbol": "Na",
+      "mass": 22.99,
+      "color": "0xff6b6b",
+      "cpk_color": "0xab5cf2",
+      "category": "alkali_metal",
+      "valence": 1,
+      "shells": [
+        2,
+        8,
+        1
+      ],
+      "electronegativity": 0.93,
+      "melt_K": 370.87,
+      "boil_K": 1156.0,
+      "density_g_cm3": 0.968,
+      "radius_atomic_pm": 186,
+      "radius_covalent_pm": 166,
+      "ionization_energy_eV": 5.14,
+      "isotopes": [
+        {
+          "mass": 23,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Sodio-23"
+        }
+      ]
+    },
+    "K": {
+      "name": "Potasio",
+      "number": 19,
+      "symbol": "K",
+      "mass": 39.1,
+      "color": "0xff6b6b",
+      "cpk_color": "0x8f40d4",
+      "category": "alkali_metal",
+      "valence": 1,
+      "shells": [
+        2,
+        8,
+        8,
+        1
+      ],
+      "electronegativity": 0.82,
+      "melt_K": 336.53,
+      "boil_K": 1032.0,
+      "density_g_cm3": 0.89,
+      "radius_atomic_pm": 227,
+      "radius_covalent_pm": 203,
+      "ionization_energy_eV": 4.34,
+      "isotopes": [
+        {
+          "mass": 39,
+          "abundance": 0.9326,
+          "stable": true,
+          "name": "Potasio-39"
+        },
+        {
+          "mass": 41,
+          "abundance": 0.0673,
+          "stable": true,
+          "name": "Potasio-41"
+        }
+      ]
+    },
+    "Rb": {
+      "name": "Rubidio",
+      "number": 37,
+      "symbol": "Rb",
+      "mass": 85.47,
+      "color": "0xff6b6b",
+      "cpk_color": "0x702eb0",
+      "category": "alkali_metal",
+      "valence": 1,
+      "shells": [
+        2,
+        8,
+        18,
+        8,
+        1
+      ],
+      "electronegativity": 0.82,
+      "melt_K": 312.46,
+      "boil_K": 961.0,
+      "density_g_cm3": 1.532,
+      "radius_atomic_pm": 248,
+      "radius_covalent_pm": 220,
+      "ionization_energy_eV": 4.18,
+      "isotopes": [
+        {
+          "mass": 85,
+          "abundance": 0.722,
+          "stable": true,
+          "name": "Rubidio-85"
+        },
+        {
+          "mass": 87,
+          "abundance": 0.278,
+          "stable": false,
+          "half_life_s": 1550000000000000000,
+          "name": "Rubidio-87"
+        }
+      ]
+    },
+    "Cs": {
+      "name": "Cesio",
+      "number": 55,
+      "symbol": "Cs",
+      "mass": 132.91,
+      "color": "0xff6b6b",
+      "cpk_color": "0x57178f",
+      "category": "alkali_metal",
+      "valence": 1,
+      "shells": [
+        2,
+        8,
+        18,
+        18,
+        8,
+        1
+      ],
+      "electronegativity": 0.79,
+      "melt_K": 301.6,
+      "boil_K": 944.0,
+      "density_g_cm3": 1.93,
+      "radius_atomic_pm": 265,
+      "radius_covalent_pm": 244,
+      "ionization_energy_eV": 3.89,
+      "isotopes": [
+        {
+          "mass": 133,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Cesio-133"
+        }
+      ]
+    },
+    "Fr": {
+      "name": "Francio",
+      "number": 87,
+      "symbol": "Fr",
+      "mass": 223.0,
+      "color": "0xff6b6b",
+      "cpk_color": "0x420066",
+      "category": "alkali_metal",
+      "valence": 1,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        8,
+        1
+      ],
+      "electronegativity": 0.7,
+      "melt_K": 300.0,
+      "boil_K": 950.0,
+      "density_g_cm3": 1.87,
+      "radius_atomic_pm": 260,
+      "radius_covalent_pm": 0,
+      "ionization_energy_eV": 4.07,
+      "isotopes": [
+        {
+          "mass": 223,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 1320,
+          "name": "Francio-223"
+        }
+      ]
+    }
+  }
+}

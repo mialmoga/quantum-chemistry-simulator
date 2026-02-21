@@ -1,0 +1,530 @@
+{
+  "group": "actinides",
+  "elements": {
+    "Ac": {
+      "number": 89,
+      "name": "Actinio",
+      "symbol": "Ac",
+      "mass": 227.0,
+      "color": "0x70abff",
+      "cpk_color": "0x70abfa",
+      "category": "actinide",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        9,
+        2
+      ],
+      "electronegativity": 1.1,
+      "melt_K": 1323.0,
+      "boil_K": 3471.0,
+      "density_g_cm3": 10.07,
+      "radius_atomic_pm": 188,
+      "radius_covalent_pm": 215,
+      "ionization_energy_eV": 5.17,
+      "isotopes": [
+        {
+          "mass": 227,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 686500000,
+          "name": "Actinio-227"
+        }
+      ]
+    },
+    "Th": {
+      "number": 90,
+      "name": "Torio",
+      "symbol": "Th",
+      "mass": 232.04,
+      "color": "0x00bfff",
+      "cpk_color": "0x00ba8f",
+      "category": "actinide",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        10,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 2023.0,
+      "boil_K": 5061.0,
+      "density_g_cm3": 11.72,
+      "radius_atomic_pm": 179,
+      "radius_covalent_pm": 206,
+      "ionization_energy_eV": 6.31,
+      "isotopes": [
+        {
+          "mass": 232,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 441500000000000000,
+          "name": "Torio-232"
+        }
+      ]
+    },
+    "Pa": {
+      "number": 91,
+      "name": "Protactinio",
+      "symbol": "Pa",
+      "mass": 231.04,
+      "color": "0x00a1ff",
+      "cpk_color": "0x00a1ff",
+      "category": "actinide",
+      "valence": 5,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        20,
+        9,
+        2
+      ],
+      "electronegativity": 1.5,
+      "melt_K": 1841.0,
+      "boil_K": 4300.0,
+      "density_g_cm3": 15.37,
+      "radius_atomic_pm": 163,
+      "radius_covalent_pm": 200,
+      "ionization_energy_eV": 5.89,
+      "isotopes": [
+        {
+          "mass": 231,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 1034000000000,
+          "name": "Protactinio-231"
+        }
+      ]
+    },
+    "U": {
+      "number": 92,
+      "name": "Uranio",
+      "symbol": "U",
+      "mass": 238.03,
+      "color": "0x008fff",
+      "cpk_color": "0x008fff",
+      "category": "actinide",
+      "valence": 6,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        21,
+        9,
+        2
+      ],
+      "electronegativity": 1.38,
+      "melt_K": 1405.0,
+      "boil_K": 4404.0,
+      "density_g_cm3": 18.95,
+      "radius_atomic_pm": 156,
+      "radius_covalent_pm": 196,
+      "ionization_energy_eV": 6.19,
+      "isotopes": [
+        {
+          "mass": 238,
+          "abundance": 0.9927,
+          "stable": false,
+          "half_life_s": 141000000000000000,
+          "name": "Uranio-238"
+        }
+      ]
+    },
+    "Np": {
+      "number": 93,
+      "name": "Neptunio",
+      "symbol": "Np",
+      "mass": 237.0,
+      "color": "0x0080ff",
+      "cpk_color": "0x0080ff",
+      "category": "actinide",
+      "valence": 5,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        22,
+        9,
+        2
+      ],
+      "electronegativity": 1.36,
+      "melt_K": 917.0,
+      "boil_K": 4273.0,
+      "density_g_cm3": 20.45,
+      "radius_atomic_pm": 155,
+      "radius_covalent_pm": 190,
+      "ionization_energy_eV": 6.27,
+      "isotopes": [
+        {
+          "mass": 237,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 67500000000000,
+          "name": "Neptunio-237"
+        }
+      ]
+    },
+    "Pu": {
+      "number": 94,
+      "name": "Plutonio",
+      "symbol": "Pu",
+      "mass": 244.0,
+      "color": "0x006bff",
+      "cpk_color": "0x006bff",
+      "category": "actinide",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        24,
+        8,
+        2
+      ],
+      "electronegativity": 1.28,
+      "melt_K": 912.5,
+      "boil_K": 3501.0,
+      "density_g_cm3": 19.84,
+      "radius_atomic_pm": 159,
+      "radius_covalent_pm": 187,
+      "ionization_energy_eV": 6.02,
+      "isotopes": [
+        {
+          "mass": 244,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 2500000000000000,
+          "name": "Plutonio-244"
+        }
+      ]
+    },
+    "Am": {
+      "number": 95,
+      "name": "Americio",
+      "symbol": "Am",
+      "mass": 243.0,
+      "color": "0x545cf2",
+      "cpk_color": "0x545cf2",
+      "category": "actinide",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        25,
+        8,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 1449.0,
+      "boil_K": 2880.0,
+      "density_g_cm3": 13.67,
+      "radius_atomic_pm": 173,
+      "radius_covalent_pm": 180,
+      "ionization_energy_eV": 5.97,
+      "isotopes": [
+        {
+          "mass": 243,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 230000000000,
+          "name": "Americio-243"
+        }
+      ]
+    },
+    "Cm": {
+      "number": 96,
+      "name": "Curio",
+      "symbol": "Cm",
+      "mass": 247.0,
+      "color": "0x785ce3",
+      "cpk_color": "0x785ce3",
+      "category": "actinide",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        25,
+        9,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 1613.0,
+      "boil_K": 3383.0,
+      "density_g_cm3": 13.51,
+      "radius_atomic_pm": 174,
+      "radius_covalent_pm": 169,
+      "ionization_energy_eV": 5.99,
+      "isotopes": [
+        {
+          "mass": 247,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 4900000000000,
+          "name": "Curio-247"
+        }
+      ]
+    },
+    "Bk": {
+      "number": 97,
+      "name": "Berkelio",
+      "symbol": "Bk",
+      "mass": 247.0,
+      "color": "0x8a4fe3",
+      "cpk_color": "0x8a4fe3",
+      "category": "actinide",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        27,
+        8,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 1259.0,
+      "boil_K": 2900.0,
+      "density_g_cm3": 14.78,
+      "radius_atomic_pm": 170,
+      "radius_covalent_pm": 0,
+      "ionization_energy_eV": 6.23,
+      "isotopes": [
+        {
+          "mass": 247,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 43500000000,
+          "name": "Berkelio-247"
+        }
+      ]
+    },
+    "Cf": {
+      "number": 98,
+      "name": "Californio",
+      "symbol": "Cf",
+      "mass": 251.0,
+      "color": "0xa136d4",
+      "cpk_color": "0xa136d4",
+      "category": "actinide",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        28,
+        8,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 1173.0,
+      "boil_K": 1743.0,
+      "density_g_cm3": 15.1,
+      "radius_atomic_pm": 186,
+      "radius_covalent_pm": 0,
+      "ionization_energy_eV": 6.3,
+      "isotopes": [
+        {
+          "mass": 251,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 28000000000,
+          "name": "Californio-251"
+        }
+      ]
+    },
+    "Es": {
+      "number": 99,
+      "name": "Einsteinio",
+      "symbol": "Es",
+      "mass": 252.0,
+      "color": "0xb31fd4",
+      "cpk_color": "0xb31fd4",
+      "category": "actinide",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        29,
+        8,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 1133.0,
+      "boil_K": 1269.0,
+      "density_g_cm3": 8.84,
+      "radius_atomic_pm": 186,
+      "radius_covalent_pm": 0,
+      "ionization_energy_eV": 6.42,
+      "isotopes": [
+        {
+          "mass": 252,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 40780000,
+          "name": "Einsteinio-252"
+        }
+      ]
+    },
+    "Fm": {
+      "number": 100,
+      "name": "Fermio",
+      "symbol": "Fm",
+      "mass": 257.0,
+      "color": "0xb31fba",
+      "cpk_color": "0xb31fba",
+      "category": "actinide",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        30,
+        8,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 1800.0,
+      "boil_K": 0.0,
+      "density_g_cm3": 0.0,
+      "radius_atomic_pm": 198,
+      "radius_covalent_pm": 0,
+      "ionization_energy_eV": 6.5,
+      "isotopes": [
+        {
+          "mass": 257,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 8670000,
+          "name": "Fermio-257"
+        }
+      ]
+    },
+    "Md": {
+      "number": 101,
+      "name": "Mendelevio",
+      "symbol": "Md",
+      "mass": 258.0,
+      "color": "0xb30da6",
+      "cpk_color": "0xb30da6",
+      "category": "actinide",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        31,
+        8,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 1100.0,
+      "boil_K": 0.0,
+      "density_g_cm3": 0.0,
+      "radius_atomic_pm": 194,
+      "radius_covalent_pm": 0,
+      "ionization_energy_eV": 6.58,
+      "isotopes": [
+        {
+          "mass": 258,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 4400000,
+          "name": "Mendelevio-258"
+        }
+      ]
+    },
+    "No": {
+      "number": 102,
+      "name": "Nobelio",
+      "symbol": "No",
+      "mass": 259.0,
+      "color": "0xbd0d87",
+      "cpk_color": "0xd100ff",
+      "category": "actinide",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        8,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 1100.0,
+      "boil_K": 0.0,
+      "density_g_cm3": 9.9,
+      "radius_atomic_pm": 197,
+      "radius_covalent_pm": 176,
+      "ionization_energy_eV": 6.62,
+      "isotopes": [
+        {
+          "mass": 259,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 3500,
+          "name": "Nobelio-259"
+        }
+      ]
+    },
+    "Lr": {
+      "number": 103,
+      "name": "Lawrencio",
+      "symbol": "Lr",
+      "mass": 266.0,
+      "color": "0xc70066",
+      "cpk_color": "0xc70066",
+      "category": "actinide",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        8,
+        3
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 1900.0,
+      "boil_K": 0.0,
+      "density_g_cm3": 14.4,
+      "radius_atomic_pm": 171,
+      "radius_covalent_pm": 0,
+      "ionization_energy_eV": 4.9,
+      "isotopes": [
+        {
+          "mass": 266,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 36000,
+          "name": "Lawrencio-266"
+        }
+      ]
+    }
+  }
+}

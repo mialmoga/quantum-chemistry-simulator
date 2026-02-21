@@ -1,1 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Quantum Chemistry Simulator</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="src/styles/main.css">
+    <link rel="stylesheet" href="src/styles/panels.css">
+    <link rel="stylesheet" href="src/styles/themes.css">
+    <link rel="stylesheet" href="src/styles/GroupPanel.css">
+</head>
+<body>
 
+<!-- Collapse Buttons -->
+<button class="collapse-btn" id="collapseUI">◀</button>
+<button class="collapse-btn" id="collapseElements">▼</button>
+<button class="collapse-btn" id="collapseMolecules">▶</button>
+
+<!-- Main UI Panel -->
+<div id="ui">
+    <h3>⚛️ Quantum Chemistry Simulator</h3>
+    <div class="info-text">
+        Tap para agregar • Arrastra para rotar • Pinch para zoom
+    </div>
+    <div class="stat-row">
+        <span>Átomos:</span>
+        <span class="stat-value" id="atomCount">0</span>
+    </div>
+    <div class="stat-row">
+        <span>Moléculas:</span>
+        <span class="stat-value" id="moleculeCount">0</span>
+    </div>
+    <div class="stat-row">
+        <span>Enlaces:</span>
+        <span class="stat-value" id="bondCount">0</span>
+    </div>
+    <div class="stat-row">
+        <span>Seleccionado:</span>
+        <span class="stat-value" id="selectedElement">-</span>
+    </div>
+    <div class="toggle-group">
+        <button class="control-btn" id="toggleVisualization">☁️ Nubes</button>
+        <button class="control-btn" id="toggleElectrons">⚛️ Todos</button>
+        <button class="control-btn" id="modeBtn">➕ Agregar</button>
+        <button class="control-btn" id="clearBtn">🗑️ Limpiar</button>
+    </div>
+</div>
+
+<!-- Physics Panel -->
+<div id="physicsPanel" style="
+    position: fixed;
+    bottom: 10%;
+    left: 15px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(15px);
+    padding: 18px 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    font-size: 13px;
+    max-width: 280px;
+    z-index: 100;
+    color: #64c8ff;
+">
+    <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #ffffff;">🌍 Física</h3>
+    
+    <div style="margin-bottom: 12px;">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="gravityToggle" style="margin-right: 8px;">
+            <span>Gravedad</span>
+        </label>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
+            Intensidad: <span id="gravityValue">5</span>
+        </label>
+        <input type="range" id="gravitySlider" min="0" max="10" value="5" step="0.5"
+               style="width: 100%; accent-color: #64c8ff;">
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="floorToggle" checked style="margin-right: 8px;">
+            <span>Piso</span>
+        </label>
+    </div>
+    
+    <div style="margin-bottom: 8px;">
+        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
+            Visibilidad: <span id="floorOpacityValue">0.15</span>
+        </label>
+        <input type="range" id="floorOpacitySlider" min="0" max="1" value="0.15" step="0.05"
+               style="width: 100%; accent-color: #64c8ff;">
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
+            Brillo: <span id="floorBrightnessValue">0.1</span>
+        </label>
+        <input type="range" id="floorBrightnessSlider" min="0" max="1" value="0.1" step="0.1"
+               style="width: 100%; accent-color: #64c8ff;">
+    </div>
+    
+    <div>
+        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
+            Rebote: <span id="bounceValue">0.6</span>
+        </label>
+        <input type="range" id="bounceSlider" min="0" max="1" value="0.6" step="0.1"
+               style="width: 100%; accent-color: #64c8ff;">
+    </div>
+    
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(100, 200, 255, 0.2);">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="repulsionToggle" checked style="margin-right: 8px;">
+            <span>⚛️ Repulsión Atómica</span>
+        </label>
+        <div style="font-size: 10px; opacity: 0.6; margin-top: 4px; margin-left: 24px;">
+            Evita colapso de estructuras
+        </div>
+    </div>
+    
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(100, 200, 255, 0.2);">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="cpkColorToggle" style="margin-right: 8px;">
+            <span>🎨 Colores CPK</span>
+        </label>
+        <div style="font-size: 10px; opacity: 0.6; margin-top: 4px; margin-left: 24px;">
+            Estándar internacional de colores
+        </div>
+    </div>
+    
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(100, 200, 255, 0.2);">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="bondsToggle" checked style="margin-right: 8px;">
+            <span>🔗 Mostrar Enlaces</span>
+        </label>
+        <div style="font-size: 10px; opacity: 0.6; margin-top: 4px; margin-left: 24px;">
+            Oculta cilindros y electrones de enlace
+        </div>
+    </div>
+    
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(100, 200, 255, 0.2);">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="bondAnglesToggle" checked style="margin-right: 8px;">
+            <span>📐 Ángulos de Enlace</span>
+        </label>
+        <div style="font-size: 10px; opacity: 0.6; margin-top: 4px; margin-left: 24px;">
+            Geometría molecular realista (H₂O bent, CH₄ tetrahedral)
+        </div>
+    </div>
+    
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(100, 200, 255, 0.2);">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="lennardJonesToggle" style="margin-right: 8px;">
+            <span>🌊 Fuerzas Van der Waals</span>
+        </label>
+        <div style="font-size: 10px; opacity: 0.6; margin-top: 4px; margin-left: 24px;">
+            Lennard-Jones potential (gases nobles, atracción molecular)
+        </div>
+    </div>
+    
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 200, 100, 0.3);">
+        <div style="font-weight: bold; margin-bottom: 8px; color: #ffd700;">⚛️ Modo de Física</div>
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="physicsModeToggle" style="margin-right: 8px;">
+            <span>🔬 Modo Realista</span>
+        </label>
+        <div style="font-size: 10px; opacity: 0.7; margin-top: 4px; margin-left: 24px; line-height: 1.4;">
+            <div><strong>OFF:</strong> Pedagógico (enlaces discretos, ángulos forzados)</div>
+            <div><strong>ON:</strong> Realista (campos continuos, geometría natural)</div>
+        </div>
+    </div>
+</div>
+
+<!-- Molecule Panel -->
+<div class="molecule-panel">
+    <div class="molecule-panel-title">Moléculas Preestablecidas</div>
+    <div id="moleculeButtons"></div>
+</div>
+
+<!-- Element Selector -->
+<div class="element-selector" id="elementSelector">
+    <div class="element-grid" id="elementGrid"></div>
+</div>
+
+<!-- Hint -->
+<div id="hint"></div>
+
+<!-- Crystal Panel -->
+<div id="crystalPanel" style="
+    position: fixed;
+    bottom: 10%;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(15px);
+    padding: 18px 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    font-size: 13px;
+    max-width: 280px;
+    z-index: 100;
+    color: #64c8ff;
+">
+    <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #ffffff;">💎 Cristales</h3>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+        <button class="control-btn" id="crystalNaCl" style="font-size: 11px; padding: 8px;">
+            🧂 NaCl
+        </button>
+        <button class="control-btn" id="crystalFe" style="font-size: 11px; padding: 8px;">
+            🔩 Hierro
+        </button>
+        <button class="control-btn" id="crystalDiamond" style="font-size: 11px; padding: 8px;">
+            💎 Diamante
+        </button>
+        <button class="control-btn" id="crystalIce" style="font-size: 11px; padding: 8px;">
+            ❄️ Hielo
+        </button>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
+            Tamaño: <span id="crystalSizeValue">3</span>×<span id="crystalSizeValue2">3</span>×<span id="crystalSizeValue3">3</span>
+        </label>
+        <input type="range" id="crystalSizeSlider" min="2" max="6" value="3" step="1"
+               style="width: 100%; accent-color: #64c8ff;">
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="freezeCrystalToggle" style="margin-right: 8px;">
+            <span>Congelar estructura</span>
+        </label>
+    </div>
+</div>
+
+<!-- Collapse Buttons -->
+<button id="collapsePhysics" style="
+    position: fixed;
+    bottom: 9%;
+    left: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    color: #64c8ff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    z-index: 101;
+">▲ Física</button>
+
+<button id="collapseCrystal" style="
+    position: fixed;
+    bottom: 9%;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    color: #64c8ff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    z-index: 101;
+">▲ Cristales</button>
+
+ <!-- Three.js with CDN fallback to local -->
+<script>
+    // Try to load from CDN first
+    (function() {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        script.async = false;
+        
+        script.onerror = function() {
+            console.warn('⚠️ CDN fallido, cargando Three.js local...');
+            // Fallback to local copy
+            const localScript = document.createElement('script');
+            localScript.src = 'lib/three.min.js';
+            localScript.async = false;
+            
+            localScript.onerror = function() {
+                console.error('❌ Error: Three.js no disponible (CDN y local fallaron)');
+                document.body.innerHTML = `
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100vh;
+                        background: #1a1a2e;
+                        color: #fff;
+                        font-family: system-ui;
+                        text-align: center;
+                        padding: 20px;
+                    ">
+                        <div>
+                            <h1>❌ Error de Dependencias</h1>
+                            <p>No se pudo cargar Three.js</p>
+                            <p style="font-size: 14px; opacity: 0.7;">
+                                Descarga <code>three.min.js</code> y colócalo en la carpeta <code>lib/</code>
+                            </p>
+                            <a href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" 
+                               download="three.min.js"
+                               style="
+                                   display: inline-block;
+                                   margin-top: 20px;
+                                   padding: 10px 20px;
+                                   background: #64c8ff;
+                                   color: #000;
+                                   text-decoration: none;
+                                   border-radius: 5px;
+                               ">
+                                Descargar Three.js
+                            </a>
+                        </div>
+                    </div>
+                `;
+            };
+            
+            localScript.onload = function() {
+                console.log('✅ Three.js cargado desde archivo local');
+            };
+            
+            document.head.appendChild(localScript);
+        };
+        
+        script.onload = function() {
+            console.log('✅ Three.js cargado desde CDN');
+        };
+        
+        document.head.appendChild(script);
+    })();
+</script>
+
+<!-- Error handler visual - muestra errores en pantalla -->
+<script>
+(function() {
+    const div = document.createElement('div');
+    div.id = 'error-overlay';
+    div.style.cssText = `
+        display:none; position:fixed; top:0; left:0; right:0;
+        background:rgba(200,0,0,0.92); color:#fff;
+        font:13px monospace; padding:12px; z-index:99999;
+        max-height:50vh; overflow-y:auto; white-space:pre-wrap;
+    `;
+    document.body.appendChild(div);
+
+    function show(msg) {
+        div.style.display = 'block';
+        div.textContent += msg + '\n---\n';
+    }
+
+    window.addEventListener('error', e => {
+        show('ERROR: ' + e.message + '\nArchivo: ' + e.filename + '\nLínea: ' + e.lineno);
+    });
+
+    window.addEventListener('unhandledrejection', e => {
+        show('PROMISE ERROR: ' + (e.reason?.message || e.reason || 'unknown'));
+    });
+})();
+</script>
+
+<!-- Main App (ES6 Module) -->
+<script type="module" src="src/app.js"></script>
+
+</body>
+</html>

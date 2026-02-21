@@ -1,0 +1,248 @@
+[
+  {
+    "name": "Agua",
+    "formula": "H₂O",
+    "icon": "💧",
+    "atoms": [
+      { "element": "O", "position": [0, 0, 0] },
+      { "element": "H", "position": [0.03, 0, 0] },
+      { "element": "H", "position": [-0.015, 0.026, 0] }
+    ]
+  },
+  {
+    "name": "Dióxido de Carbono",
+    "formula": "CO₂",
+    "icon": "🌫️",
+    "atoms": [
+      { "element": "C", "position": [0, 0, 0] },
+      { "element": "O", "position": [0.04, 0, 0] },
+      { "element": "O", "position": [-0.04, 0, 0] }
+    ]
+  },
+  {
+    "name": "Metano",
+    "formula": "CH₄",
+    "icon": "🔥",
+    "atoms": [
+      { "element": "C", "position": [0, 0, 0] },
+      { "element": "H", "position": [0.03, 0, 0] },
+      { "element": "H", "position": [-0.03, 0, 0] },
+      { "element": "H", "position": [0, 0.03, 0] },
+      { "element": "H", "position": [0, -0.03, 0] }
+    ]
+  },
+  {
+    "name": "Amoníaco",
+    "formula": "NH₃",
+    "icon": "💨",
+    "atoms": [
+      { "element": "N", "position": [0, 0, 0] },
+      { "element": "H", "position": [0.03, 0, 0] },
+      { "element": "H", "position": [-0.015, 0.026, 0] },
+      { "element": "H", "position": [-0.015, -0.026, 0] }
+    ]
+  },
+  {
+    "name": "Oxígeno Molecular",
+    "formula": "O₂",
+    "icon": "🌬️",
+    "atoms": [
+      { "element": "O", "position": [0.02, 0, 0] },
+      { "element": "O", "position": [-0.02, 0, 0] }
+    ]
+  },
+  {
+    "name": "Hidrógeno Molecular",
+    "formula": "H₂",
+    "icon": "⚡",
+    "atoms": [
+      { "element": "H", "position": [0.015, 0, 0] },
+      { "element": "H", "position": [-0.015, 0, 0] }
+    ]
+  },
+  {
+    "name": "Etanol",
+    "formula": "C₂H₆O",
+    "icon": "🍺",
+    "atoms": [
+      { "element": "C", "position": [0, 0, 0] },
+      { "element": "C", "position": [0.04, 0, 0] },
+      { "element": "O", "position": [0.08, 0, 0] },
+      { "element": "H", "position": [0.1, 0.02, 0] },
+      { "element": "H", "position": [0, 0.03, 0] },
+      { "element": "H", "position": [0, -0.03, 0] },
+      { "element": "H", "position": [-0.03, 0, 0] },
+      { "element": "H", "position": [0.04, 0.03, 0] },
+      { "element": "H", "position": [0.04, -0.03, 0] }
+    ]
+  },
+  {
+    "name": "Ácido Acético",
+    "formula": "CH₃COOH",
+    "icon": "🍋",
+    "atoms": [
+      { "element": "C", "position": [0, 0, 0] },
+      { "element": "H", "position": [0, 0.03, 0] },
+      { "element": "H", "position": [-0.026, -0.015, 0] },
+      { "element": "H", "position": [0.026, -0.015, 0] },
+      { "element": "C", "position": [0, -0.06, 0] },
+      { "element": "O", "position": [0.035, -0.08, 0] },
+      { "element": "O", "position": [-0.035, -0.08, 0] },
+      { "element": "H", "position": [-0.06, -0.1, 0] }
+    ]
+  },
+  {
+    "name": "Glucosa (Simplificada)",
+    "formula": "C₆H₁₂O₆",
+    "icon": "🍬",
+    "atoms": [
+      { "element": "C", "position": [0, 0, 0] },
+      { "element": "C", "position": [0.04, 0, 0] },
+      { "element": "C", "position": [0.06, 0.035, 0] },
+      { "element": "C", "position": [0.04, 0.07, 0] },
+      { "element": "C", "position": [0, 0.07, 0] },
+      { "element": "O", "position": [-0.02, 0.035, 0] },
+      { "element": "O", "position": [0, -0.03, 0] },
+      { "element": "O", "position": [0.04, -0.03, 0] },
+      { "element": "O", "position": [0.08, 0.035, 0] },
+      { "element": "O", "position": [0.04, 0.1, 0] },
+      { "element": "O", "position": [0, 0.1, 0] },
+      { "element": "H", "position": [0.1, 0.035, 0] },
+      { "element": "H", "position": [0.06, 0.12, 0] },
+      { "element": "H", "position": [-0.03, 0.12, 0] },
+      { "element": "H", "position": [0.03, -0.045, 0] },
+      { "element": "H", "position": [-0.03, -0.045, 0] },
+      { "element": "H", "position": [0.12, 0, 0] },
+      { "element": "H", "position": [0.08, 0.07, 0] },
+      { "element": "H", "position": [-0.03, 0.07, 0] },
+      { "element": "H", "position": [0.06, -0.015, 0] },
+      { "element": "H", "position": [-0.02, 0, 0] },
+      { "element": "H", "position": [0.06, 0.055, 0] }
+    ]
+  },
+  {
+    "name": "Benceno",
+    "formula": "C₆H₆",
+    "icon": "⬡",
+    "atoms": [
+      { "element": "C", "position": [0.03, 0, 0] },
+      { "element": "C", "position": [0.015, 0.026, 0] },
+      { "element": "C", "position": [-0.015, 0.026, 0] },
+      { "element": "C", "position": [-0.03, 0, 0] },
+      { "element": "C", "position": [-0.015, -0.026, 0] },
+      { "element": "C", "position": [0.015, -0.026, 0] },
+      { "element": "H", "position": [0.055, 0, 0] },
+      { "element": "H", "position": [0.0275, 0.048, 0] },
+      { "element": "H", "position": [-0.0275, 0.048, 0] },
+      { "element": "H", "position": [-0.055, 0, 0] },
+      { "element": "H", "position": [-0.0275, -0.048, 0] },
+      { "element": "H", "position": [0.0275, -0.048, 0] }
+    ]
+  },
+  {
+    "name": "Cafeína (Simplificada)",
+    "formula": "C₈H₁₀N₄O₂",
+    "icon": "☕",
+    "atoms": [
+      { "element": "C", "position": [0, 0, 0] },
+      { "element": "N", "position": [0.04, 0, 0] },
+      { "element": "C", "position": [0.06, 0.03, 0] },
+      { "element": "N", "position": [0.04, 0.06, 0] },
+      { "element": "C", "position": [0, 0.06, 0] },
+      { "element": "C", "position": [-0.02, 0.03, 0] },
+      { "element": "N", "position": [-0.05, 0.05, 0] },
+      { "element": "C", "position": [-0.08, 0.03, 0] },
+      { "element": "O", "position": [0.1, 0.03, 0] },
+      { "element": "O", "position": [-0.04, 0, 0] },
+      { "element": "N", "position": [-0.02, -0.03, 0] },
+      { "element": "C", "position": [0.04, -0.03, 0] },
+      { "element": "H", "position": [0.06, -0.05, 0] },
+      { "element": "H", "position": [-0.04, -0.055, 0] },
+      { "element": "H", "position": [-0.1, 0.05, 0] },
+      { "element": "H", "position": [-0.08, 0, 0] },
+      { "element": "H", "position": [-0.1, 0.03, 0] },
+      { "element": "H", "position": [0.04, 0.09, 0] },
+      { "element": "H", "position": [0, 0.09, 0] },
+      { "element": "H", "position": [0.08, 0, 0] }
+    ]
+  },
+  {
+    "name": "Sal de Mesa",
+    "formula": "NaCl",
+    "icon": "🧂",
+    "atoms": [
+      { "element": "Na", "position": [0, 0, 0] },
+      { "element": "Cl", "position": [0.06, 0, 0] }
+    ]
+  },
+  {
+    "name": "Ácido Sulfúrico",
+    "formula": "H₂SO₄",
+    "icon": "⚗️",
+    "atoms": [
+      { "element": "S", "position": [0, 0, 0] },
+      { "element": "O", "position": [0.04, 0, 0] },
+      { "element": "O", "position": [-0.04, 0, 0] },
+      { "element": "O", "position": [0, 0.04, 0] },
+      { "element": "O", "position": [0, -0.04, 0] },
+      { "element": "H", "position": [0.07, 0, 0] },
+      { "element": "H", "position": [0, -0.07, 0] }
+    ]
+  },
+  {
+    "name": "Aspirina (Simplificada)",
+    "formula": "C₉H₈O₄",
+    "icon": "💊",
+    "atoms": [
+      { "element": "C", "position": [0, 0, 0] },
+      { "element": "C", "position": [0.035, 0.025, 0] },
+      { "element": "C", "position": [0.07, 0, 0] },
+      { "element": "C", "position": [0.07, -0.035, 0] },
+      { "element": "C", "position": [0.035, -0.06, 0] },
+      { "element": "C", "position": [0, -0.035, 0] },
+      { "element": "C", "position": [-0.04, 0, 0] },
+      { "element": "O", "position": [-0.065, -0.025, 0] },
+      { "element": "O", "position": [-0.04, 0.04, 0] },
+      { "element": "C", "position": [0.11, 0.025, 0] },
+      { "element": "O", "position": [0.11, 0.06, 0] },
+      { "element": "O", "position": [0.145, 0, 0] },
+      { "element": "C", "position": [0.18, 0.025, 0] },
+      { "element": "H", "position": [-0.09, -0.025, 0] },
+      { "element": "H", "position": [0.035, 0.055, 0] },
+      { "element": "H", "position": [0.1, -0.05, 0] },
+      { "element": "H", "position": [0.035, -0.09, 0] },
+      { "element": "H", "position": [-0.03, -0.05, 0] },
+      { "element": "H", "position": [0.2, 0.055, 0] },
+      { "element": "H", "position": [0.21, 0, 0] },
+      { "element": "H", "position": [0.18, -0.005, 0] }
+    ]
+  },
+  {
+    "name": "Dopamina",
+    "formula": "C₈H₁₁NO₂",
+    "icon": "🧠",
+    "atoms": [
+      { "element": "C", "position": [0, 0, 0] },
+      { "element": "C", "position": [0.04, 0, 0] },
+      { "element": "C", "position": [0.06, 0.035, 0] },
+      { "element": "C", "position": [0.04, 0.07, 0] },
+      { "element": "C", "position": [0, 0.07, 0] },
+      { "element": "C", "position": [-0.02, 0.035, 0] },
+      { "element": "O", "position": [0.06, -0.03, 0] },
+      { "element": "O", "position": [0.04, 0.1, 0] },
+      { "element": "C", "position": [-0.06, 0.035, 0] },
+      { "element": "C", "position": [-0.1, 0.035, 0] },
+      { "element": "N", "position": [-0.14, 0.035, 0] },
+      { "element": "H", "position": [0.09, -0.03, 0] },
+      { "element": "H", "position": [0.07, 0.1, 0] },
+      { "element": "H", "position": [0.1, 0.035, 0] },
+      { "element": "H", "position": [-0.03, 0.1, 0] },
+      { "element": "H", "position": [-0.06, 0.065, 0] },
+      { "element": "H", "position": [-0.06, 0.005, 0] },
+      { "element": "H", "position": [-0.1, 0.065, 0] },
+      { "element": "H", "position": [-0.1, 0.005, 0] },
+      { "element": "H", "position": [-0.165, 0.05, 0] },
+      { "element": "H", "position": [-0.165, 0.02, 0] }
+    ]
+  }
+]

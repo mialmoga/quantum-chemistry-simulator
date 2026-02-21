@@ -1,0 +1,238 @@
+{
+  "group": "post_transition",
+  "elements": {
+    "Al": {
+      "name": "Aluminio",
+      "number": 13,
+      "symbol": "Al",
+      "mass": 26.981,
+      "color": "0xbfa6a6",
+      "cpk_color": "0xbfa6a6",
+      "category": "post_transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        3
+      ],
+      "electronegativity": 1.61,
+      "melt_K": 933.47,
+      "boil_K": 2792,
+      "density_g_cm3": 2.70,
+      "radius_atomic_pm": 143,
+      "radius_covalent_pm": 121,
+      "ionization_energy_eV": 5.986,
+      "isotopes": [
+        {
+          "mass": 27,
+          "abundance": 1.0,
+          "stable": true
+        }
+      ]
+    },
+    "Ga": {
+      "name": "Galio",
+      "number": 31,
+      "symbol": "Ga",
+      "mass": 69.723,
+      "color": "0xc28f8f",
+      "cpk_color": "0xc28f8f",
+      "category": "post_transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        3
+      ],
+      "electronegativity": 1.81,
+      "melt_K": 302.91,
+      "boil_K": 2673,
+      "density_g_cm3": 5.91,
+      "radius_atomic_pm": 135,
+      "radius_covalent_pm": 122,
+      "ionization_energy_eV": 5.999,
+      "isotopes": [
+        {
+          "mass": 69,
+          "abundance": 0.601,
+          "stable": true
+        },
+        {
+          "mass": 71,
+          "abundance": 0.398,
+          "stable": true
+        }
+      ]
+    },
+    "In": {
+      "name": "Indio",
+      "number": 49,
+      "symbol": "In",
+      "mass": 114.81,
+      "color": "0xa67573",
+      "cpk_color": "0xa67573",
+      "category": "post_transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        18,
+        3
+      ],
+      "electronegativity": 1.78,
+      "melt_K": 429.75,
+      "boil_K": 2345,
+      "density_g_cm3": 7.31,
+      "radius_atomic_pm": 167,
+      "radius_covalent_pm": 142,
+      "ionization_energy_eV": 5.786,
+      "isotopes": [
+        {
+          "mass": 115,
+          "abundance": 0.957,
+          "stable": false,
+          "half_life_s": 13900000000000000,
+          "name": "Indio-115"
+        }
+      ]
+    },
+    "Sn": {
+      "name": "Estaño",
+      "number": 50,
+      "symbol": "Sn",
+      "mass": 118.71,
+      "color": "0x666666",
+      "cpk_color": "0x668080",
+      "category": "post_transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        18,
+        4
+      ],
+      "electronegativity": 1.96,
+      "melt_K": 505.08,
+      "boil_K": 2875,
+      "density_g_cm3": 7.287,
+      "radius_atomic_pm": 140,
+      "radius_covalent_pm": 139,
+      "ionization_energy_eV": 7.344,
+      "isotopes": [
+        {
+          "mass": 120,
+          "abundance": 0.325,
+          "stable": true
+        }
+      ]
+    },
+    "Tl": {
+      "name": "Talio",
+      "number": 81,
+      "symbol": "Tl",
+      "mass": 204.38,
+      "color": "0xa6544d",
+      "cpk_color": "0xa6544d",
+      "category": "post_transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        3
+      ],
+      "electronegativity": 1.62,
+      "melt_K": 577,
+      "boil_K": 1746,
+      "density_g_cm3": 11.85,
+      "radius_atomic_pm": 170,
+      "radius_covalent_pm": 145,
+      "ionization_energy_eV": 6.108,
+      "isotopes": [
+        {
+          "mass": 205,
+          "abundance": 0.704,
+          "stable": true
+        }
+      ]
+    },
+    "Pb": {
+      "name": "Plomo",
+      "number": 82,
+      "symbol": "Pb",
+      "mass": 207.2,
+      "color": "0x575961",
+      "cpk_color": "0x575961",
+      "category": "post_transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        4
+      ],
+      "electronegativity": 2.33,
+      "melt_K": 600.61,
+      "boil_K": 2022,
+      "density_g_cm3": 11.34,
+      "radius_atomic_pm": 175,
+      "radius_covalent_pm": 146,
+      "ionization_energy_eV": 7.416,
+      "isotopes": [
+        {
+          "mass": 208,
+          "abundance": 0.524,
+          "stable": true
+        },
+        {
+          "mass": 210,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 700000000,
+          "name": "Plomo-210"
+        }
+      ]
+    },
+    "Bi": {
+      "name": "Bismuto",
+      "number": 83,
+      "symbol": "Bi",
+      "mass": 208.98,
+      "color": "0x9e9e9e",
+      "cpk_color": "0x9e4fb5",
+      "category": "post_transition_metal",
+      "valence": 5,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        5
+      ],
+      "electronegativity": 2.02,
+      "melt_K": 544.7,
+      "boil_K": 1837,
+      "density_g_cm3": 9.78,
+      "radius_atomic_pm": 155,
+      "radius_covalent_pm": 148,
+      "ionization_energy_eV": 7.289,
+      "isotopes": [
+        {
+          "mass": 209,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 6000000000000000000,
+          "name": "Bismuto-209"
+        }
+      ]
+    }
+  }
+}

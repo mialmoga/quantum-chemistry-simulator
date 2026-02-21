@@ -1,0 +1,530 @@
+{
+  "group": "superheavy_elements",
+  "elements": {
+    "Rf": {
+      "name": "Rutherfordio",
+      "number": 104,
+      "symbol": "Rf",
+      "mass": 267,
+      "color": "0xcc0052",
+      "cpk_color": "0xcc0052",
+      "category": "transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        10,
+        2
+      ],
+      "electronegativity": 0,
+      "melt_K": 2400,
+      "boil_K": 5800,
+      "density_g_cm3": 23.2,
+      "radius_atomic_pm": 150,
+      "radius_covalent_pm": 131,
+      "ionization_energy_eV": 6.0,
+      "isotopes": [
+        {
+          "mass": 267,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 4800,
+          "name": "Rf-267"
+        }
+      ]
+    },
+    "Db": {
+      "name": "Dubnio",
+      "number": 105,
+      "symbol": "Db",
+      "mass": 268,
+      "color": "0xd1004f",
+      "cpk_color": "0xd1004f",
+      "category": "transition_metal",
+      "valence": 5,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        11,
+        2
+      ],
+      "electronegativity": 0,
+      "melt_K": 0,
+      "boil_K": 0,
+      "density_g_cm3": 29.3,
+      "radius_atomic_pm": 139,
+      "radius_covalent_pm": 126,
+      "ionization_energy_eV": 6.3,
+      "isotopes": [
+        {
+          "mass": 268,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 100800,
+          "name": "Db-268"
+        }
+      ]
+    },
+    "Sg": {
+      "name": "Seaborgio",
+      "number": 106,
+      "symbol": "Sg",
+      "mass": 269,
+      "color": "0xd90045",
+      "cpk_color": "0xd90045",
+      "category": "transition_metal",
+      "valence": 6,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        12,
+        2
+      ],
+      "electronegativity": 0,
+      "melt_K": 0,
+      "boil_K": 0,
+      "density_g_cm3": 35.0,
+      "radius_atomic_pm": 132,
+      "radius_covalent_pm": 122,
+      "ionization_energy_eV": 6.6,
+      "isotopes": [
+        {
+          "mass": 269,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 180,
+          "name": "Sg-269"
+        }
+      ]
+    },
+    "Bh": {
+      "name": "Bohrio",
+      "number": 107,
+      "symbol": "Bh",
+      "mass": 270,
+      "color": "0xe00038",
+      "cpk_color": "0xe00038",
+      "category": "transition_metal",
+      "valence": 7,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        13,
+        2
+      ],
+      "electronegativity": 0,
+      "melt_K": 0,
+      "boil_K": 0,
+      "density_g_cm3": 37.1,
+      "radius_atomic_pm": 128,
+      "radius_covalent_pm": 119,
+      "ionization_energy_eV": 6.74,
+      "isotopes": [
+        {
+          "mass": 270,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 60,
+          "name": "Bh-270"
+        }
+      ]
+    },
+    "Hs": {
+      "name": "Hassio",
+      "number": 108,
+      "symbol": "Hs",
+      "mass": 269,
+      "color": "0xe6002e",
+      "cpk_color": "0xe6002e",
+      "category": "transition_metal",
+      "valence": 8,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        14,
+        2
+      ],
+      "electronegativity": 0,
+      "melt_K": 0,
+      "boil_K": 0,
+      "density_g_cm3": 40.7,
+      "radius_atomic_pm": 126,
+      "radius_covalent_pm": 116,
+      "ionization_energy_eV": 7.1,
+      "isotopes": [
+        {
+          "mass": 277,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 2,
+          "name": "Hs-277"
+        }
+      ]
+    },
+    "Mt": {
+      "name": "Meitnerio",
+      "number": 109,
+      "symbol": "Mt",
+      "mass": 278,
+      "color": "0xeb0024",
+      "cpk_color": "0xeb0024",
+      "category": "transition_metal",
+      "valence": 9,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        15,
+        2
+      ],
+      "electronegativity": 0,
+      "melt_K": 0,
+      "boil_K": 0,
+      "density_g_cm3": 37.4,
+      "radius_atomic_pm": 121,
+      "radius_covalent_pm": 113,
+      "ionization_energy_eV": 7.4,
+      "isotopes": [
+        {
+          "mass": 278,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 8,
+          "name": "Mt-278"
+        }
+      ]
+    },
+    "Ds": {
+      "name": "Darmstadtio",
+      "number": 110,
+      "symbol": "Ds",
+      "mass": 281,
+      "color": "0x000000",
+      "cpk_color": "0xffffff",
+      "category": "transition_metal",
+      "valence": 10,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        17,
+        1
+      ],
+      "electronegativity": 0,
+      "melt_K": 0,
+      "boil_K": 0,
+      "density_g_cm3": 34.8,
+      "radius_atomic_pm": 118,
+      "radius_covalent_pm": 110,
+      "ionization_energy_eV": 7.5,
+      "isotopes": [
+        {
+          "mass": 281,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 12.7,
+          "name": "Ds-281"
+        }
+      ]
+    },
+    "Rg": {
+      "name": "Roentgenio",
+      "number": 111,
+      "symbol": "Rg",
+      "mass": 282,
+      "color": "0x000000",
+      "cpk_color": "0xffffff",
+      "category": "transition_metal",
+      "valence": 11,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        18,
+        1
+      ],
+      "electronegativity": 0,
+      "melt_K": 0,
+      "boil_K": 0,
+      "density_g_cm3": 28.7,
+      "radius_atomic_pm": 113,
+      "radius_covalent_pm": 108,
+      "ionization_energy_eV": 7.6,
+      "isotopes": [
+        {
+          "mass": 282,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 0.5,
+          "name": "Rg-282"
+        }
+      ]
+    },
+    "Cn": {
+      "name": "Copernicio",
+      "number": 112,
+      "symbol": "Cn",
+      "mass": 285,
+      "color": "0xffd700",
+      "cpk_color": "0xffd700",
+      "category": "transition_metal",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        18,
+        2
+      ],
+      "electronegativity": 0,
+      "melt_K": 283,
+      "boil_K": 340,
+      "density_g_cm3": 23.7,
+      "radius_atomic_pm": 147,
+      "radius_covalent_pm": 122,
+      "ionization_energy_eV": 11.97,
+      "isotopes": [
+        {
+          "mass": 285,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 29,
+          "name": "Cn-285"
+        }
+      ]
+    },
+    "Nh": {
+      "name": "Nihonio",
+      "number": 113,
+      "symbol": "Nh",
+      "mass": 286,
+      "color": "0x000000",
+      "cpk_color": "0xffffff",
+      "category": "post_transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        18,
+        3
+      ],
+      "electronegativity": 0,
+      "melt_K": 700,
+      "boil_K": 1400,
+      "density_g_cm3": 16.0,
+      "radius_atomic_pm": 170,
+      "radius_covalent_pm": 136,
+      "ionization_energy_eV": 7.3,
+      "isotopes": [
+        {
+          "mass": 286,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 20,
+          "name": "Nh-286"
+        }
+      ]
+    },
+    "Fl": {
+      "name": "Flerovio",
+      "number": 114,
+      "symbol": "Fl",
+      "mass": 289,
+      "color": "0x000000",
+      "cpk_color": "0xffffff",
+      "category": "post_transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        18,
+        4
+      ],
+      "electronegativity": 0,
+      "melt_K": 340,
+      "boil_K": 420,
+      "density_g_cm3": 14.0,
+      "radius_atomic_pm": 180,
+      "radius_covalent_pm": 143,
+      "ionization_energy_eV": 8.5,
+      "isotopes": [
+        {
+          "mass": 289,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 2.6,
+          "name": "Fl-289"
+        }
+      ]
+    },
+    "Mc": {
+      "name": "Moscovio",
+      "number": 115,
+      "symbol": "Mc",
+      "mass": 290,
+      "color": "0x000000",
+      "cpk_color": "0xffffff",
+      "category": "post_transition_metal",
+      "valence": 5,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        18,
+        5
+      ],
+      "electronegativity": 0,
+      "melt_K": 670,
+      "boil_K": 1330,
+      "density_g_cm3": 13.5,
+      "radius_atomic_pm": 187,
+      "radius_covalent_pm": 162,
+      "ionization_energy_eV": 5.58,
+      "isotopes": [
+        {
+          "mass": 290,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 0.8,
+          "name": "Mc-290"
+        }
+      ]
+    },
+    "Lv": {
+      "name": "Livermorio",
+      "number": 116,
+      "symbol": "Lv",
+      "mass": 293,
+      "color": "0xda70d6",
+      "cpk_color": "0x5c00c7",
+      "category": "post_transition_metal",
+      "valence": 6,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        18,
+        6
+      ],
+      "electronegativity": 0,
+      "melt_K": 700,
+      "boil_K": 1035,
+      "density_g_cm3": 12.9,
+      "radius_atomic_pm": 183,
+      "radius_covalent_pm": 175,
+      "ionization_energy_eV": 6.18,
+      "isotopes": [
+        {
+          "mass": 293,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 0.06,
+          "name": "Lv-293"
+        }
+      ]
+    },
+    "Ts": {
+      "name": "Teneso",
+      "number": 117,
+      "symbol": "Ts",
+      "mass": 294,
+      "color": "0x4b0082",
+      "cpk_color": "0x4500d4",
+      "category": "halogen",
+      "valence": 7,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        18,
+        7
+      ],
+      "electronegativity": 0,
+      "melt_K": 723,
+      "boil_K": 883,
+      "density_g_cm3": 7.2,
+      "radius_atomic_pm": 156,
+      "radius_covalent_pm": 165,
+      "ionization_energy_eV": 7.7,
+      "isotopes": [
+        {
+          "mass": 294,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 0.08,
+          "name": "Ts-294"
+        }
+      ]
+    },
+    "Og": {
+      "name": "Oganesón",
+      "number": 118,
+      "symbol": "Og",
+      "mass": 294,
+      "color": "0xff4500",
+      "cpk_color": "0xff4500",
+      "category": "noble_gas",
+      "valence": 8,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        32,
+        18,
+        8
+      ],
+      "electronegativity": 0,
+      "melt_K": 325,
+      "boil_K": 350,
+      "density_g_cm3": 5.0,
+      "radius_atomic_pm": 152,
+      "radius_covalent_pm": 157,
+      "ionization_energy_eV": 8.9,
+      "isotopes": [
+        {
+          "mass": 294,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 0.0007,
+          "name": "Og-294"
+        }
+      ]
+    }
+  }
+}

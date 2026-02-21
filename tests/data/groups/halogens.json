@@ -1,0 +1,187 @@
+{
+  "group": "halogens",
+  "elements": {
+    "F": {
+      "name": "Flúor",
+      "number": 9,
+      "symbol": "F",
+      "mass": 18.998,
+      "color": "0x90e050",
+      "cpk_color": "0x90e050",
+      "category": "halogen",
+      "valence": 7,
+      "shells": [
+        2,
+        7
+      ],
+      "electronegativity": 3.98,
+      "melt_K": 53.48,
+      "boil_K": 85.03,
+      "density_g_cm3": 0.001696,
+      "radius_atomic_pm": 42,
+      "radius_covalent_pm": 64,
+      "ionization_energy_eV": 17.422,
+      "isotopes": [
+        {
+          "mass": 19,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Flúor-19"
+        }
+      ]
+    },
+    "Cl": {
+      "name": "Cloro",
+      "number": 17,
+      "symbol": "Cl",
+      "mass": 35.45,
+      "color": "0x1ff01f",
+      "cpk_color": "0x1ff01f",
+      "category": "halogen",
+      "valence": 7,
+      "shells": [
+        2,
+        8,
+        7
+      ],
+      "electronegativity": 3.16,
+      "melt_K": 171.6,
+      "boil_K": 239.11,
+      "density_g_cm3": 0.003214,
+      "radius_atomic_pm": 79,
+      "radius_covalent_pm": 102,
+      "ionization_energy_eV": 12.967,
+      "isotopes": [
+        {
+          "mass": 35,
+          "abundance": 0.7577,
+          "stable": true,
+          "name": "Cloro-35"
+        },
+        {
+          "mass": 37,
+          "abundance": 0.2423,
+          "stable": true,
+          "name": "Cloro-37"
+        }
+      ]
+    },
+    "Br": {
+      "name": "Bromo",
+      "number": 35,
+      "symbol": "Br",
+      "mass": 79.904,
+      "color": "0xa62929",
+      "cpk_color": "0xa62929",
+      "category": "halogen",
+      "valence": 7,
+      "shells": [
+        2,
+        8,
+        18,
+        7
+      ],
+      "electronegativity": 2.96,
+      "melt_K": 265.8,
+      "boil_K": 332.0,
+      "density_g_cm3": 3.102,
+      "radius_atomic_pm": 94,
+      "radius_covalent_pm": 120,
+      "ionization_energy_eV": 11.814,
+      "isotopes": [
+        {
+          "mass": 79,
+          "abundance": 0.5069,
+          "stable": true,
+          "name": "Bromo-79"
+        },
+        {
+          "mass": 81,
+          "abundance": 0.4931,
+          "stable": true,
+          "name": "Bromo-81"
+        }
+      ]
+    },
+    "I": {
+      "name": "Yodo",
+      "number": 53,
+      "symbol": "I",
+      "mass": 126.9,
+      "color": "0x9400d3",
+      "cpk_color": "0x940094",
+      "category": "halogen",
+      "valence": 7,
+      "shells": [
+        2,
+        8,
+        18,
+        18,
+        7
+      ],
+      "electronegativity": 2.66,
+      "melt_K": 386.85,
+      "boil_K": 457.4,
+      "density_g_cm3": 4.933,
+      "radius_atomic_pm": 115,
+      "radius_covalent_pm": 139,
+      "ionization_energy_eV": 10.451,
+      "isotopes": [
+        {
+          "mass": 127,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Yodo-127"
+        },
+        {
+          "mass": 131,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 691200,
+          "name": "Yodo-131"
+        }
+      ]
+    },
+    "At": {
+      "name": "Astato",
+      "number": 85,
+      "symbol": "At",
+      "mass": 210.0,
+      "color": "0x252525",
+      "cpk_color": "0x252525",
+      "category": "halogen",
+      "valence": 7,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        7
+      ],
+      "electronegativity": 2.2,
+      "melt_K": 575.0,
+      "boil_K": 610.0,
+      "density_g_cm3": 6.2,
+      "radius_atomic_pm": 127,
+      "radius_covalent_pm": 150,
+      "ionization_energy_eV": 9.3,
+      "isotopes": [
+        {
+          "mass": 210,
+          "abundance": 1.0,
+          "stable": false,
+          "half_life_s": 29160,
+          "name": "Astato-210"
+        },
+        {
+          "mass": 211,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 25920,
+          "name": "Astato-211"
+        }
+      ]
+    }
+  }
+}

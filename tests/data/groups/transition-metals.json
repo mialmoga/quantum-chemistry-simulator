@@ -1,0 +1,960 @@
+{
+  "group": "transition_metals",
+  "elements": {
+    "Sc": {
+      "name": "Escandio",
+      "number": 21,
+      "symbol": "Sc",
+      "mass": 44.956,
+      "color": "0xe3e3e3",
+      "cpk_color": "0xe6e6e6",
+      "category": "transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        9,
+        2
+      ],
+      "electronegativity": 1.36,
+      "melt_K": 1814,
+      "boil_K": 3109,
+      "density_g_cm3": 2.985,
+      "radius_atomic_pm": 162,
+      "radius_covalent_pm": 144,
+      "ionization_energy_eV": 6.561,
+      "discovery_year": 1879,
+      "isotopes": [
+        {
+          "mass": 45,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Escandio-45"
+        }
+      ]
+    },
+    "Ti": {
+      "name": "Titanio",
+      "number": 22,
+      "symbol": "Ti",
+      "mass": 47.867,
+      "color": "0xbfc2c7",
+      "cpk_color": "0xbfc2c7",
+      "category": "transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        10,
+        2
+      ],
+      "electronegativity": 1.54,
+      "melt_K": 1941,
+      "boil_K": 3560,
+      "density_g_cm3": 4.506,
+      "radius_atomic_pm": 147,
+      "radius_covalent_pm": 136,
+      "ionization_energy_eV": 6.828,
+      "discovery_year": 1791,
+      "isotopes": [
+        {
+          "mass": 48,
+          "abundance": 0.737,
+          "stable": true,
+          "name": "Titanio-48"
+        }
+      ]
+    },
+    "V": {
+      "name": "Vanadio",
+      "number": 23,
+      "symbol": "V",
+      "mass": 50.942,
+      "color": "0xa6a6ab",
+      "cpk_color": "0xa6a6ab",
+      "category": "transition_metal",
+      "valence": 5,
+      "shells": [
+        2,
+        8,
+        11,
+        2
+      ],
+      "electronegativity": 1.63,
+      "melt_K": 2183,
+      "boil_K": 3680,
+      "density_g_cm3": 6.11,
+      "radius_atomic_pm": 134,
+      "radius_covalent_pm": 125,
+      "ionization_energy_eV": 6.746,
+      "discovery_year": 1801,
+      "isotopes": [
+        {
+          "mass": 51,
+          "abundance": 0.997,
+          "stable": true,
+          "name": "Vanadio-51"
+        }
+      ]
+    },
+    "Cr": {
+      "name": "Cromo",
+      "number": 24,
+      "symbol": "Cr",
+      "mass": 51.996,
+      "color": "0x8a99c7",
+      "cpk_color": "0x8a99c7",
+      "category": "transition_metal",
+      "valence": 6,
+      "shells": [
+        2,
+        8,
+        13,
+        1
+      ],
+      "electronegativity": 1.66,
+      "melt_K": 2180,
+      "boil_K": 2944,
+      "density_g_cm3": 7.15,
+      "radius_atomic_pm": 128,
+      "radius_covalent_pm": 127,
+      "ionization_energy_eV": 6.766,
+      "discovery_year": 1797,
+      "isotopes": [
+        {
+          "mass": 52,
+          "abundance": 0.837,
+          "stable": true,
+          "name": "Cromo-52"
+        }
+      ]
+    },
+    "Mn": {
+      "name": "Manganeso",
+      "number": 25,
+      "symbol": "Mn",
+      "mass": 54.938,
+      "color": "0x9c7ac7",
+      "cpk_color": "0x9c7ac7",
+      "category": "transition_metal",
+      "valence": 7,
+      "shells": [
+        2,
+        8,
+        13,
+        2
+      ],
+      "electronegativity": 1.55,
+      "melt_K": 1519,
+      "boil_K": 2334,
+      "density_g_cm3": 7.44,
+      "radius_atomic_pm": 127,
+      "radius_covalent_pm": 139,
+      "ionization_energy_eV": 7.434,
+      "discovery_year": 1774,
+      "isotopes": [
+        {
+          "mass": 55,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Manganeso-55"
+        }
+      ]
+    },
+    "Fe": {
+      "name": "Hierro",
+      "number": 26,
+      "symbol": "Fe",
+      "mass": 55.845,
+      "color": "0xe06633",
+      "cpk_color": "0xe06633",
+      "category": "transition_metal",
+      "valence": 6,
+      "shells": [
+        2,
+        8,
+        14,
+        2
+      ],
+      "electronegativity": 1.83,
+      "melt_K": 1811,
+      "boil_K": 3134,
+      "density_g_cm3": 7.874,
+      "radius_atomic_pm": 126,
+      "radius_covalent_pm": 125,
+      "ionization_energy_eV": 7.902,
+      "discovery_year": -5000,
+      "isotopes": [
+        {
+          "mass": 56,
+          "abundance": 0.917,
+          "stable": true,
+          "name": "Hierro-56"
+        }
+      ]
+    },
+    "Co": {
+      "name": "Cobalto",
+      "number": 27,
+      "symbol": "Co",
+      "mass": 58.933,
+      "color": "0xf090a0",
+      "cpk_color": "0xf090a0",
+      "category": "transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        15,
+        2
+      ],
+      "electronegativity": 1.88,
+      "melt_K": 1768,
+      "boil_K": 3200,
+      "density_g_cm3": 8.86,
+      "radius_atomic_pm": 125,
+      "radius_covalent_pm": 121,
+      "ionization_energy_eV": 7.881,
+      "discovery_year": 1735,
+      "isotopes": [
+        {
+          "mass": 59,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Cobalto-59"
+        }
+      ]
+    },
+    "Ni": {
+      "name": "Níquel",
+      "number": 28,
+      "symbol": "Ni",
+      "mass": 58.693,
+      "color": "0x50d050",
+      "cpk_color": "0x50d050",
+      "category": "transition_metal",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        16,
+        2
+      ],
+      "electronegativity": 1.91,
+      "melt_K": 1728,
+      "boil_K": 3186,
+      "density_g_cm3": 8.908,
+      "radius_atomic_pm": 124,
+      "radius_covalent_pm": 121,
+      "ionization_energy_eV": 7.639,
+      "discovery_year": 1751,
+      "isotopes": [
+        {
+          "mass": 58,
+          "abundance": 0.68,
+          "stable": true,
+          "name": "Níquel-58"
+        }
+      ]
+    },
+    "Cu": {
+      "name": "Cobre",
+      "number": 29,
+      "symbol": "Cu",
+      "mass": 63.546,
+      "color": "0xc88033",
+      "cpk_color": "0xc88033",
+      "category": "transition_metal",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        1
+      ],
+      "electronegativity": 1.9,
+      "melt_K": 1357.77,
+      "boil_K": 2835,
+      "density_g_cm3": 8.96,
+      "radius_atomic_pm": 128,
+      "radius_covalent_pm": 138,
+      "ionization_energy_eV": 7.726,
+      "discovery_year": -9000,
+      "isotopes": [
+        {
+          "mass": 63,
+          "abundance": 0.691,
+          "stable": true,
+          "name": "Cobre-63"
+        }
+      ]
+    },
+    "Zn": {
+      "name": "Zinc",
+      "number": 30,
+      "symbol": "Zn",
+      "mass": 65.38,
+      "color": "0x7d80b0",
+      "cpk_color": "0x7d80b0",
+      "category": "transition_metal",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        2
+      ],
+      "electronegativity": 1.65,
+      "melt_K": 692.68,
+      "boil_K": 1180,
+      "density_g_cm3": 7.14,
+      "radius_atomic_pm": 134,
+      "radius_covalent_pm": 131,
+      "ionization_energy_eV": 9.394,
+      "discovery_year": 1746,
+      "isotopes": [
+        {
+          "mass": 64,
+          "abundance": 0.482,
+          "stable": true,
+          "name": "Zinc-64"
+        }
+      ]
+    },
+    "Y": {
+      "name": "Itrio",
+      "number": 39,
+      "symbol": "Y",
+      "mass": 88.905,
+      "color": "0x94ffff",
+      "cpk_color": "0x94ffff",
+      "category": "transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        9,
+        2
+      ],
+      "electronegativity": 1.22,
+      "melt_K": 1799,
+      "boil_K": 3609,
+      "density_g_cm3": 4.472,
+      "radius_atomic_pm": 180,
+      "radius_covalent_pm": 162,
+      "ionization_energy_eV": 6.217,
+      "discovery_year": 1794,
+      "isotopes": [
+        {
+          "mass": 89,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Itrio-89"
+        }
+      ]
+    },
+    "Zr": {
+      "name": "Zirconio",
+      "number": 40,
+      "symbol": "Zr",
+      "mass": 91.224,
+      "color": "0x94e0e0",
+      "cpk_color": "0x94e0e0",
+      "category": "transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        10,
+        2
+      ],
+      "electronegativity": 1.33,
+      "melt_K": 2128,
+      "boil_K": 4682,
+      "density_g_cm3": 6.52,
+      "radius_atomic_pm": 160,
+      "radius_covalent_pm": 148,
+      "ionization_energy_eV": 6.633,
+      "discovery_year": 1789,
+      "isotopes": [
+        {
+          "mass": 90,
+          "abundance": 0.514,
+          "stable": true,
+          "name": "Zirconio-90"
+        }
+      ]
+    },
+    "Nb": {
+      "name": "Niobio",
+      "number": 41,
+      "symbol": "Nb",
+      "mass": 92.906,
+      "color": "0x73c2c2",
+      "cpk_color": "0x73c2c2",
+      "category": "transition_metal",
+      "valence": 5,
+      "shells": [
+        2,
+        8,
+        18,
+        12,
+        1
+      ],
+      "electronegativity": 1.6,
+      "melt_K": 2750,
+      "boil_K": 5017,
+      "density_g_cm3": 8.57,
+      "radius_atomic_pm": 146,
+      "radius_covalent_pm": 137,
+      "ionization_energy_eV": 6.758,
+      "discovery_year": 1801,
+      "isotopes": [
+        {
+          "mass": 93,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Niobio-93"
+        }
+      ]
+    },
+    "Mo": {
+      "name": "Molibdeno",
+      "number": 42,
+      "symbol": "Mo",
+      "mass": 95.95,
+      "color": "0x54b5b5",
+      "cpk_color": "0x54b5b5",
+      "category": "transition_metal",
+      "valence": 6,
+      "shells": [
+        2,
+        8,
+        18,
+        13,
+        1
+      ],
+      "electronegativity": 2.16,
+      "melt_K": 2896,
+      "boil_K": 4912,
+      "density_g_cm3": 10.28,
+      "radius_atomic_pm": 139,
+      "radius_covalent_pm": 145,
+      "ionization_energy_eV": 7.092,
+      "discovery_year": 1778,
+      "isotopes": [
+        {
+          "mass": 98,
+          "abundance": 0.241,
+          "stable": true,
+          "name": "Molibdeno-98"
+        }
+      ]
+    },
+    "Tc": {
+      "name": "Tecnecio",
+      "number": 43,
+      "symbol": "Tc",
+      "mass": 98,
+      "color": "0x3b9e9e",
+      "cpk_color": "0x3b9e9e",
+      "category": "transition_metal",
+      "valence": 7,
+      "shells": [
+        2,
+        8,
+        18,
+        13,
+        2
+      ],
+      "electronegativity": 1.9,
+      "melt_K": 2430,
+      "boil_K": 4538,
+      "density_g_cm3": 11,
+      "radius_atomic_pm": 136,
+      "radius_covalent_pm": 156,
+      "ionization_energy_eV": 7.28,
+      "discovery_year": 1937,
+      "isotopes": [
+        {
+          "mass": 98,
+          "abundance": 0,
+          "stable": false,
+          "name": "Tecnecio-98"
+        }
+      ]
+    },
+    "Ru": {
+      "name": "Rutenio",
+      "number": 44,
+      "symbol": "Ru",
+      "mass": 101.07,
+      "color": "0x248f8f",
+      "cpk_color": "0x248f8f",
+      "category": "transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        15,
+        1
+      ],
+      "electronegativity": 2.2,
+      "melt_K": 2606,
+      "boil_K": 4423,
+      "density_g_cm3": 12.45,
+      "radius_atomic_pm": 134,
+      "radius_covalent_pm": 126,
+      "ionization_energy_eV": 7.36,
+      "discovery_year": 1844,
+      "isotopes": [
+        {
+          "mass": 102,
+          "abundance": 0.315,
+          "stable": true,
+          "name": "Rutenio-102"
+        }
+      ]
+    },
+    "Rh": {
+      "name": "Rodio",
+      "number": 45,
+      "symbol": "Rh",
+      "mass": 102.91,
+      "color": "0x0a7d8c",
+      "cpk_color": "0x0a7d8c",
+      "category": "transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        16,
+        1
+      ],
+      "electronegativity": 2.28,
+      "melt_K": 2237,
+      "boil_K": 3968,
+      "density_g_cm3": 12.41,
+      "radius_atomic_pm": 134,
+      "radius_covalent_pm": 135,
+      "ionization_energy_eV": 7.458,
+      "discovery_year": 1803,
+      "isotopes": [
+        {
+          "mass": 103,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Rodio-103"
+        }
+      ]
+    },
+    "Pd": {
+      "name": "Paladio",
+      "number": 46,
+      "symbol": "Pd",
+      "mass": 106.42,
+      "color": "0x006985",
+      "cpk_color": "0x006985",
+      "category": "transition_metal",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        18
+      ],
+      "electronegativity": 2.2,
+      "melt_K": 1828.05,
+      "boil_K": 3236,
+      "density_g_cm3": 12.023,
+      "radius_atomic_pm": 137,
+      "radius_covalent_pm": 131,
+      "ionization_energy_eV": 8.336,
+      "discovery_year": 1803,
+      "isotopes": [
+        {
+          "mass": 106,
+          "abundance": 0.273,
+          "stable": true,
+          "name": "Paladio-106"
+        }
+      ]
+    },
+    "Ag": {
+      "name": "Plata",
+      "number": 47,
+      "symbol": "Ag",
+      "mass": 107.87,
+      "color": "0xc0c0c0",
+      "cpk_color": "0xc0c0c0",
+      "category": "transition_metal",
+      "valence": 1,
+      "shells": [
+        2,
+        8,
+        18,
+        18,
+        1
+      ],
+      "electronegativity": 1.93,
+      "melt_K": 1234.93,
+      "boil_K": 2435,
+      "density_g_cm3": 10.49,
+      "radius_atomic_pm": 144,
+      "radius_covalent_pm": 153,
+      "ionization_energy_eV": 7.576,
+      "discovery_year": -3000,
+      "isotopes": [
+        {
+          "mass": 107,
+          "abundance": 0.518,
+          "stable": true,
+          "name": "Plata-107"
+        }
+      ]
+    },
+    "Cd": {
+      "name": "Cadmio",
+      "number": 48,
+      "symbol": "Cd",
+      "mass": 112.41,
+      "color": "0xffd98f",
+      "cpk_color": "0xffd98f",
+      "category": "transition_metal",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        18,
+        2
+      ],
+      "electronegativity": 1.69,
+      "melt_K": 594.22,
+      "boil_K": 1040,
+      "density_g_cm3": 8.65,
+      "radius_atomic_pm": 151,
+      "radius_covalent_pm": 148,
+      "ionization_energy_eV": 8.993,
+      "discovery_year": 1817,
+      "isotopes": [
+        {
+          "mass": 114,
+          "abundance": 0.287,
+          "stable": true,
+          "name": "Cadmio-114"
+        }
+      ]
+    },
+    "Hf": {
+      "name": "Hafnio",
+      "number": 72,
+      "symbol": "Hf",
+      "mass": 178.49,
+      "color": "0x4d90fe",
+      "cpk_color": "0x4d90fe",
+      "category": "transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        10,
+        2
+      ],
+      "electronegativity": 1.3,
+      "melt_K": 2506,
+      "boil_K": 4876,
+      "density_g_cm3": 13.31,
+      "radius_atomic_pm": 159,
+      "radius_covalent_pm": 150,
+      "ionization_energy_eV": 6.825,
+      "discovery_year": 1923,
+      "isotopes": [
+        {
+          "mass": 180,
+          "abundance": 0.35,
+          "stable": true,
+          "name": "Hafnio-180"
+        }
+      ]
+    },
+    "Ta": {
+      "name": "Tantalio",
+      "number": 73,
+      "symbol": "Ta",
+      "mass": 180.95,
+      "color": "0x4da6ff",
+      "cpk_color": "0x4da6ff",
+      "category": "transition_metal",
+      "valence": 5,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        11,
+        2
+      ],
+      "electronegativity": 1.5,
+      "melt_K": 3290,
+      "boil_K": 5731,
+      "density_g_cm3": 16.69,
+      "radius_atomic_pm": 146,
+      "radius_covalent_pm": 138,
+      "ionization_energy_eV": 7.549,
+      "discovery_year": 1802,
+      "isotopes": [
+        {
+          "mass": 181,
+          "abundance": 0.999,
+          "stable": true,
+          "name": "Tantalio-181"
+        }
+      ]
+    },
+    "W": {
+      "name": "Wolframio",
+      "number": 74,
+      "symbol": "W",
+      "mass": 183.84,
+      "color": "0x2194ff",
+      "cpk_color": "0x2194ff",
+      "category": "transition_metal",
+      "valence": 6,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        12,
+        2
+      ],
+      "electronegativity": 2.36,
+      "melt_K": 3695,
+      "boil_K": 6203,
+      "density_g_cm3": 19.25,
+      "radius_atomic_pm": 139,
+      "radius_covalent_pm": 146,
+      "ionization_energy_eV": 7.864,
+      "discovery_year": 1783,
+      "isotopes": [
+        {
+          "mass": 184,
+          "abundance": 0.306,
+          "stable": true,
+          "name": "Wolframio-184"
+        }
+      ]
+    },
+    "Re": {
+      "name": "Renio",
+      "number": 75,
+      "symbol": "Re",
+      "mass": 186.21,
+      "color": "0x267daa",
+      "cpk_color": "0x267daa",
+      "category": "transition_metal",
+      "valence": 7,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        13,
+        2
+      ],
+      "electronegativity": 1.9,
+      "melt_K": 3459,
+      "boil_K": 5869,
+      "density_g_cm3": 21.02,
+      "radius_atomic_pm": 137,
+      "radius_covalent_pm": 159,
+      "ionization_energy_eV": 7.833,
+      "discovery_year": 1925,
+      "isotopes": [
+        {
+          "mass": 187,
+          "abundance": 0.626,
+          "stable": false,
+          "name": "Renio-187"
+        }
+      ]
+    },
+    "Os": {
+      "name": "Osmio",
+      "number": 76,
+      "symbol": "Os",
+      "mass": 190.23,
+      "color": "0x266696",
+      "cpk_color": "0x266696",
+      "category": "transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        14,
+        2
+      ],
+      "electronegativity": 2.2,
+      "melt_K": 3306,
+      "boil_K": 5285,
+      "density_g_cm3": 22.59,
+      "radius_atomic_pm": 135,
+      "radius_covalent_pm": 128,
+      "ionization_energy_eV": 8.438,
+      "discovery_year": 1803,
+      "isotopes": [
+        {
+          "mass": 192,
+          "abundance": 0.407,
+          "stable": true,
+          "name": "Osmio-192"
+        }
+      ]
+    },
+    "Ir": {
+      "name": "Iridio",
+      "number": 77,
+      "symbol": "Ir",
+      "mass": 192.22,
+      "color": "0x175487",
+      "cpk_color": "0x175487",
+      "category": "transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        15,
+        2
+      ],
+      "electronegativity": 2.2,
+      "melt_K": 2719,
+      "boil_K": 4701,
+      "density_g_cm3": 22.56,
+      "radius_atomic_pm": 136,
+      "radius_covalent_pm": 137,
+      "ionization_energy_eV": 8.967,
+      "discovery_year": 1803,
+      "isotopes": [
+        {
+          "mass": 193,
+          "abundance": 0.627,
+          "stable": true,
+          "name": "Iridio-193"
+        }
+      ]
+    },
+    "Pt": {
+      "name": "Platino",
+      "number": 78,
+      "symbol": "Pt",
+      "mass": 195.08,
+      "color": "0xd0d0d0",
+      "cpk_color": "0xd0d0d0",
+      "category": "transition_metal",
+      "valence": 4,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        17,
+        1
+      ],
+      "electronegativity": 2.28,
+      "melt_K": 2041.4,
+      "boil_K": 4098,
+      "density_g_cm3": 21.45,
+      "radius_atomic_pm": 139,
+      "radius_covalent_pm": 128,
+      "ionization_energy_eV": 8.958,
+      "discovery_year": 1735,
+      "isotopes": [
+        {
+          "mass": 195,
+          "abundance": 0.338,
+          "stable": true,
+          "name": "Platino-195"
+        }
+      ]
+    },
+    "Au": {
+      "name": "Oro",
+      "number": 79,
+      "symbol": "Au",
+      "mass": 196.97,
+      "color": "0xffd700",
+      "cpk_color": "0xffd123",
+      "category": "transition_metal",
+      "valence": 3,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        1
+      ],
+      "electronegativity": 2.54,
+      "melt_K": 1337.33,
+      "boil_K": 3129,
+      "density_g_cm3": 19.3,
+      "radius_atomic_pm": 144,
+      "radius_covalent_pm": 144,
+      "ionization_energy_eV": 9.225,
+      "discovery_year": -6000,
+      "isotopes": [
+        {
+          "mass": 197,
+          "abundance": 1.0,
+          "stable": true,
+          "name": "Oro-197"
+        }
+      ]
+    },
+    "Hg": {
+      "name": "Mercurio",
+      "number": 80,
+      "symbol": "Hg",
+      "mass": 200.59,
+      "color": "0xb8b8b8",
+      "cpk_color": "0xb8b8b8",
+      "category": "transition_metal",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        2
+      ],
+      "electronegativity": 2.0,
+      "melt_K": 234.32,
+      "boil_K": 629.88,
+      "density_g_cm3": 13.534,
+      "radius_atomic_pm": 151,
+      "radius_covalent_pm": 149,
+      "ionization_energy_eV": 10.437,
+      "discovery_year": -1500,
+      "isotopes": [
+        {
+          "mass": 202,
+          "abundance": 0.298,
+          "stable": true,
+          "name": "Mercurio-202"
+        }
+      ]
+    }
+  }
+}

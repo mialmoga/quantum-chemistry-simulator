@@ -1,0 +1,219 @@
+{
+  "group": "alkaline_earth",
+  "elements": {
+    "Be": {
+      "name": "Berilio",
+      "number": 4,
+      "symbol": "Be",
+      "mass": 9.0122,
+      "color": "0xc2ff00",
+      "cpk_color": "0xc2ff00",
+      "category": "alkaline_earth",
+      "valence": 2,
+      "shells": [
+        2,
+        2
+      ],
+      "electronegativity": 1.57,
+      "melt_K": 1560,
+      "boil_K": 2742,
+      "density_g_cm3": 1.85,
+      "radius_atomic_pm": 112,
+      "radius_covalent_pm": 90,
+      "ionization_energy_eV": 9.323,
+      "isotopes": [
+        {
+          "mass": 9,
+          "abundance": 1.0,
+          "stable": true
+        },
+        {
+          "mass": 10,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 44452800000000,
+          "name": "Berilio-10"
+        }
+      ]
+    },
+    "Mg": {
+      "name": "Magnesio",
+      "number": 12,
+      "symbol": "Mg",
+      "mass": 24.305,
+      "color": "0xb3ff00",
+      "cpk_color": "0x8aff00",
+      "category": "alkaline_earth",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        2
+      ],
+      "electronegativity": 1.31,
+      "melt_K": 923,
+      "boil_K": 1363,
+      "density_g_cm3": 1.738,
+      "radius_atomic_pm": 160,
+      "radius_covalent_pm": 130,
+      "ionization_energy_eV": 7.646,
+      "isotopes": [
+        {
+          "mass": 24,
+          "abundance": 0.789,
+          "stable": true
+        },
+        {
+          "mass": 25,
+          "abundance": 0.1,
+          "stable": true
+        },
+        {
+          "mass": 26,
+          "abundance": 0.11,
+          "stable": true
+        }
+      ]
+    },
+    "Ca": {
+      "name": "Calcio",
+      "number": 20,
+      "symbol": "Ca",
+      "mass": 40.078,
+      "color": "0x3ffbe5",
+      "cpk_color": "0x3dff00",
+      "category": "alkaline_earth",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        8,
+        2
+      ],
+      "electronegativity": 1.0,
+      "melt_K": 1115,
+      "boil_K": 1757,
+      "density_g_cm3": 1.54,
+      "radius_atomic_pm": 197,
+      "radius_covalent_pm": 174,
+      "ionization_energy_eV": 6.113,
+      "isotopes": [
+        {
+          "mass": 40,
+          "abundance": 0.969,
+          "stable": true
+        },
+        {
+          "mass": 44,
+          "abundance": 0.02,
+          "stable": true
+        }
+      ]
+    },
+    "Sr": {
+      "name": "Estroncio",
+      "number": 38,
+      "symbol": "Sr",
+      "mass": 87.62,
+      "color": "0x00ffbf",
+      "cpk_color": "0x00ff00",
+      "category": "alkaline_earth",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        8,
+        2
+      ],
+      "electronegativity": 0.95,
+      "melt_K": 1050,
+      "boil_K": 1655,
+      "density_g_cm3": 2.64,
+      "radius_atomic_pm": 215,
+      "radius_covalent_pm": 192,
+      "ionization_energy_eV": 5.695,
+      "isotopes": [
+        {
+          "mass": 88,
+          "abundance": 0.825,
+          "stable": true
+        },
+        {
+          "mass": 90,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 912000000,
+          "name": "Estroncio-90"
+        }
+      ]
+    },
+    "Ba": {
+      "name": "Bario",
+      "number": 56,
+      "symbol": "Ba",
+      "mass": 137.33,
+      "color": "0x00ff8a",
+      "cpk_color": "0x00c900",
+      "category": "alkaline_earth",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        18,
+        8,
+        2
+      ],
+      "electronegativity": 0.89,
+      "melt_K": 1000,
+      "boil_K": 2170,
+      "density_g_cm3": 3.62,
+      "radius_atomic_pm": 222,
+      "radius_covalent_pm": 198,
+      "ionization_energy_eV": 5.212,
+      "isotopes": [
+        {
+          "mass": 138,
+          "abundance": 0.717,
+          "stable": true
+        }
+      ]
+    },
+    "Ra": {
+      "name": "Radio",
+      "number": 88,
+      "symbol": "Ra",
+      "mass": 226,
+      "color": "0x00ff66",
+      "cpk_color": "0x007d00",
+      "category": "alkaline_earth",
+      "valence": 2,
+      "shells": [
+        2,
+        8,
+        18,
+        32,
+        18,
+        8,
+        2
+      ],
+      "electronegativity": 0.9,
+      "melt_K": 973,
+      "boil_K": 2010,
+      "density_g_cm3": 5.5,
+      "radius_atomic_pm": 235,
+      "radius_covalent_pm": 215,
+      "ionization_energy_eV": 5.279,
+      "isotopes": [
+        {
+          "mass": 226,
+          "abundance": 0,
+          "stable": false,
+          "half_life_s": 50500000000,
+          "name": "Radio-226"
+        }
+      ]
+    }
+  }
+}

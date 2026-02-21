@@ -1,0 +1,227 @@
+{
+  "Rf": {
+    "number": 104,
+    "discovery_year": 1964,
+    "electron_configuration_string": "[Rn] 5f14 6d2 7s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 2,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 4,
+    "lattice_structure": "hexagonal_close_packed"
+  },
+  "Db": {
+    "number": 105,
+    "discovery_year": 1968,
+    "electron_configuration_string": "[Rn] 5f14 6d3 7s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 3,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 5,
+    "lattice_structure": "body_centered_cubic"
+  },
+  "Sg": {
+    "number": 106,
+    "discovery_year": 1974,
+    "electron_configuration_string": "[Rn] 5f14 6d4 7s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 4,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 6,
+    "lattice_structure": "body_centered_cubic"
+  },
+  "Bh": {
+    "number": 107,
+    "discovery_year": 1981,
+    "electron_configuration_string": "[Rn] 5f14 6d5 7s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 5,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 7,
+    "lattice_structure": "hexagonal_close_packed"
+  },
+  "Hs": {
+    "number": 108,
+    "discovery_year": 1984,
+    "electron_configuration_string": "[Rn] 5f14 6d6 7s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 6,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 8,
+    "lattice_structure": "hexagonal_close_packed"
+  },
+  "Mt": {
+    "number": 109,
+    "discovery_year": 1982,
+    "electron_configuration_string": "[Rn] 5f14 6d7 7s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 7,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 9,
+    "lattice_structure": "face_centered_cubic"
+  },
+  "Ds": {
+    "number": 110,
+    "discovery_year": 1994,
+    "electron_configuration_string": "[Rn] 5f14 6d9 7s1",
+    "quantum_numbers": {
+      "s": 1,
+      "p": 0,
+      "d": 9,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 10,
+    "lattice_structure": "body_centered_cubic"
+  },
+  "Rg": {
+    "number": 111,
+    "discovery_year": 1994,
+    "electron_configuration_string": "[Rn] 5f14 6d10 7s1",
+    "quantum_numbers": {
+      "s": 1,
+      "p": 0,
+      "d": 10,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 11,
+    "lattice_structure": "body_centered_cubic"
+  },
+  "Cn": {
+    "number": 112,
+    "discovery_year": 1996,
+    "electron_configuration_string": "[Rn] 5f14 6d10 7s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 10,
+      "f": 14
+    },
+    "standard_state": "liquid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 2,
+    "lattice_structure": "hexagonal_close_packed"
+  },
+  "Nh": {
+    "number": 113,
+    "discovery_year": 2003,
+    "electron_configuration_string": "[Rn] 5f14 6d10 7s2 7p1",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 1,
+      "d": 10,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 3,
+    "lattice_structure": "face_centered_cubic"
+  },
+  "Fl": {
+    "number": 114,
+    "discovery_year": 1998,
+    "electron_configuration_string": "[Rn] 5f14 6d10 7s2 7p2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 2,
+      "d": 10,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 4,
+    "lattice_structure": "face_centered_cubic"
+  },
+  "Mc": {
+    "number": 115,
+    "discovery_year": 2003,
+    "electron_configuration_string": "[Rn] 5f14 6d10 7s2 7p3",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 3,
+      "d": 10,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 5,
+    "lattice_structure": "face_centered_cubic"
+  },
+  "Lv": {
+    "number": 116,
+    "discovery_year": 2000,
+    "electron_configuration_string": "[Rn] 5f14 6d10 7s2 7p4",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 4,
+      "d": 10,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 6,
+    "lattice_structure": "face_centered_cubic"
+  },
+  "Ts": {
+    "number": 117,
+    "discovery_year": 2010,
+    "electron_configuration_string": "[Rn] 5f14 6d10 7s2 7p5",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 5,
+      "d": 10,
+      "f": 14
+    },
+    "standard_state": "solid",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 7,
+    "lattice_structure": "face_centered_cubic"
+  },
+  "Og": {
+    "number": 118,
+    "discovery_year": 2002,
+    "electron_configuration_string": "[Rn] 5f14 6d10 7s2 7p6",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 6,
+      "d": 10,
+      "f": 14
+    },
+    "standard_state": "gas",
+    "abundance_crust_mg_kg": 0,
+    "max_bonds": 0,
+    "lattice_structure": "face_centered_cubic"
+  }
+}
