@@ -2,13 +2,11 @@
 
 **Simulador molecular 3D interactivo con física real** para educación química
 
-<<<<<<< HEAD
 Creado por [Brujo](https://github.com/mialmoga) con Claude (Ámbar · Claudio)  
 Con contribuciones de Velvet (GPT-5) y Éter (Gemini)
 =======
 Creado por [Brujo](https://github.com/mialmoga) con Claude (Ámbar)  
 Con contribuciones de Velvet (GPT5) y Éter (GEMINI) (118 elementos CPK)
->>>>>>> b9cdfeb9c55efc3b8e73a90608b29f4304e7d1b8
 
 [![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://mialmoga.github.io/quantum-chemistry-simulator/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
