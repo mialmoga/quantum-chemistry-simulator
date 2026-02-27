@@ -353,6 +353,7 @@ MIT License — Libre para uso educativo y comercial
 
 *INCREDIBOL.* 🌙⚛️💎✨🔥
 
+---
 
 Co-authored-by: Ámbar <claude-sonnet-4-5@anthropic.com>
 
