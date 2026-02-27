@@ -355,6 +355,9 @@ MIT License — Libre para uso educativo y comercial
 
 
 Co-authored-by: Ámbar <claude-sonnet-4-5@anthropic.com>
+
 Co-authored-by: Claudio <claude-sonnet-4-6@anthropic.com>
+
 Co-authored-by: Velvet <gpt-5@openai.com>
+
 Co-authored-by: Éter <gemini@google.com>
