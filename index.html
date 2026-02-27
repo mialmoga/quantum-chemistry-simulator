@@ -16,9 +16,98 @@
 <!-- Collapse Buttons -->
 <button class="collapse-btn" id="collapseUI">◀</button>
 <button class="collapse-btn" id="collapseElements">▼</button>
-<button class="collapse-btn" id="collapseMolecules">▶</button>
 
-<!-- Main UI Panel -->
+<!-- Physics Lab Panel (floating, top-right) -->
+<div class="physics-panel hidden">
+    <div class="physics-panel__header">
+        <div class="physics-panel__title">🧪 Laboratorio de Física</div>
+        <button id="closePhysicsLab" class="btn-close">✕</button>
+    </div>
+
+    <div class="physics-panel__warning">
+        ⚠️ Valores por defecto = física real<br>
+        Experimenta bajo tu propio riesgo
+    </div>
+
+    <!-- Gravity -->
+    <div class="slider-group">
+        <label>
+            <span>🌍 Gravedad</span>
+            <span id="gravityLabValue" class="slider-value">0.00001</span>
+        </label>
+        <input type="range" id="gravityLabSlider" min="0" max="0.001" step="0.00001" value="0.00001">
+    </div>
+
+    <!-- Pauli Repulsion -->
+    <div class="slider-group">
+        <label>
+            <span>⚛️ Pauli Strength</span>
+            <span id="pauliStrengthValue" class="slider-value">0.5</span>
+        </label>
+        <input type="range" id="pauliStrengthSlider" min="0" max="2" step="0.05" value="0.5">
+    </div>
+
+    <div class="slider-group">
+        <label>
+            <span>⚛️ Pauli Factor</span>
+            <span id="pauliFactorValue" class="slider-value">1.6</span>
+        </label>
+        <input type="range" id="pauliFactorSlider" min="1.0" max="3.0" step="0.1" value="1.6">
+    </div>
+
+    <!-- Friction -->
+    <div class="slider-group">
+        <label>
+            <span>💨 Fricción</span>
+            <span id="frictionValue" class="slider-value">0.98</span>
+        </label>
+        <input type="range" id="frictionSlider" min="0.80" max="1.0" step="0.01" value="0.98">
+    </div>
+
+    <!-- Terminal Velocity -->
+    <div class="slider-group">
+        <label>
+            <span>🚀 Velocidad Terminal</span>
+            <span id="terminalVelValue" class="slider-value">2.0</span>
+        </label>
+        <input type="range" id="terminalVelSlider" min="0.5" max="10" step="0.5" value="2.0">
+    </div>
+
+    <!-- Bond Spring -->
+    <div class="slider-group">
+        <label>
+            <span>🔗 Spring de Enlaces</span>
+            <span id="bondSpringValue" class="slider-value">1.0</span>
+        </label>
+        <input type="range" id="bondSpringSlider" min="0.1" max="3.0" step="0.1" value="1.0">
+    </div>
+
+    <!-- Bond Angles -->
+    <div class="slider-group">
+        <label>
+            <span>📐 Fuerza Ángulos</span>
+            <span id="bondAnglesValue" class="slider-value">0.5</span>
+        </label>
+        <input type="range" id="bondAnglesSlider" min="0" max="1.0" step="0.05" value="0.5">
+    </div>
+
+    <!-- Lennard-Jones -->
+    <div class="slider-group">
+        <label>
+            <span>🌊 Lennard-Jones</span>
+            <span id="lennardJonesValue" class="slider-value">0.1</span>
+        </label>
+        <input type="range" id="lennardJonesSlider" min="0" max="1.0" step="0.05" value="0.1">
+    </div>
+
+    <!-- Actions -->
+    <div class="physics-panel__actions">
+        <button id="resetPhysicsDefaults" class="btn-reset">🔄 Reset</button>
+        <button id="randomizePhysics" class="btn-random">🎲 Random</button>
+    </div>
+</div>
+
+<!-- Main UI Panel (top-left) -->
 <div id="ui">
     <h3>⚛️ Quantum Chemistry Simulator</h3>
     <div class="info-text">
@@ -48,231 +137,437 @@
     </div>
 </div>
 
-<!-- Physics Panel -->
-<div id="physicsPanel" style="
-    position: fixed;
-    bottom: 10%;
-    left: 15px;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(15px);
-    padding: 18px 20px;
-    border-radius: 16px;
-    border: 1px solid rgba(100, 200, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
-    font-size: 13px;
-    max-width: 280px;
-    z-index: 100;
-    color: #64c8ff;
-">
-    <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #ffffff;">🌍 Física</h3>
-    
-    <div style="margin-bottom: 12px;">
-        <label style="display: flex; align-items: center; cursor: pointer;">
-            <input type="checkbox" id="gravityToggle" style="margin-right: 8px;">
-            <span>Gravedad</span>
-        </label>
+<!-- Physics Panel (bottom-left) -->
+<div id="physicsPanel">
+    <h3>🌍 Física</h3>
+
+    <!-- Tab buttons -->
+    <div class="physics-tabs">
+        <button class="physics-tab physics-tab--active" id="tabPhysics">⚛️ Física</button>
+        <button class="physics-tab" id="tabGeometry">📐 Geometría</button>
     </div>
-    
-    <div style="margin-bottom: 12px;">
-        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
-            Intensidad: <span id="gravityValue">5</span>
-        </label>
-        <input type="range" id="gravitySlider" min="0" max="10" value="5" step="0.5"
-               style="width: 100%; accent-color: #64c8ff;">
+
+    <!-- ══ TAB: FÍSICA ══════════════════════════════════════════════════════ -->
+    <div id="physicsTabContent">
+
+        <div class="slider-group">
+            <label class="panel-check-row">
+                <input type="checkbox" id="gravityToggle">
+                <span>Gravedad</span>
+            </label>
+        </div>
+
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Intensidad: <span id="gravityValue">x5</span></span>
+            </label>
+            <input type="range" id="gravitySlider" min="0" max="10" value="5" step="0.5">
+        </div>
+
+        <div class="panel-section">
+            <label class="panel-check-row">
+                <input type="checkbox" id="repulsionToggle" checked>
+                <span>⚛️ Repulsión Atómica</span>
+            </label>
+            <div class="panel-section__hint">Evita colapso de estructuras</div>
+        </div>
+
+        <div class="panel-section">
+            <label class="panel-check-row">
+                <input type="checkbox" id="cpkColorToggle">
+                <span>🎨 Colores CPK</span>
+            </label>
+            <div class="panel-section__hint">Estándar internacional de colores</div>
+        </div>
+
+        <div class="panel-section">
+            <label class="panel-check-row">
+                <input type="checkbox" id="bondsToggle" checked>
+                <span>🔗 Mostrar Enlaces</span>
+            </label>
+            <div class="panel-section__hint">Oculta cilindros y electrones de enlace</div>
+        </div>
+
+        <div class="panel-section">
+            <label class="panel-check-row">
+                <input type="checkbox" id="bondAnglesToggle" checked>
+                <span>📐 Ángulos de Enlace</span>
+            </label>
+            <div class="panel-section__hint">Geometría molecular realista (H₂O bent, CH₄ tetrahedral)</div>
+        </div>
+
+        <div class="panel-section">
+            <label class="panel-check-row">
+                <input type="checkbox" id="lennardJonesToggle">
+                <span>🌊 Fuerzas Van der Waals</span>
+            </label>
+            <div class="panel-section__hint">Lennard-Jones potential (gases nobles, atracción molecular)</div>
+        </div>
+
+        <div class="panel-section panel-section--gold">
+            <div class="panel-section__title">⚛️ Modo de Física</div>
+            <label class="panel-check-row">
+                <input type="checkbox" id="physicsModeToggle">
+                <span>🔬 Modo Realista</span>
+            </label>
+            <div class="panel-section__hint">
+                <div><strong>OFF:</strong> Pedagógico (enlaces discretos, ángulos forzados)</div>
+                <div><strong>ON:</strong> Realista (campos continuos, geometría natural)</div>
+                <div class="panel-section__action-btns">
+                    <button id="togglePhysicsLab" class="btn-open-lab">🧪 Laboratorio</button>
+                    <button id="openTempPanel"    class="btn-open-temp">🌡️ Temperatura</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /physicsTabContent -->
+
+    <!-- ══ TAB: GEOMETRÍA ══════════════════════════════════════════════════ -->
+    <div id="geometryTabContent" class="tab-hidden">
+
+        <!-- TECHO -->
+        <div class="geom-section-title">🏠 Techo</div>
+
+        <div class="floor-row">
+            <label>
+                <input type="checkbox" id="ceilingToggle">
+                <span>Techo (física)</span>
+            </label>
+            <button id="ceilingVisibilityBtn" class="btn-floor-visibility">👁️ Visible</button>
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Opacidad: <span id="ceilingOpacityValue">0.15</span></span>
+            </label>
+            <input type="range" id="ceilingOpacitySlider" min="0" max="0.6" value="0.15" step="0.05">
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Brillo: <span id="ceilingBrightnessValue">0.1</span></span>
+            </label>
+            <input type="range" id="ceilingBrightnessSlider" min="0" max="1" value="0.1" step="0.1">
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Rebote: <span id="ceilingBounceValue">0.6</span></span>
+            </label>
+            <input type="range" id="ceilingBounceSlider" min="0" max="1" value="0.6" step="0.1">
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Altura: <span id="ceilingYValue">15</span></span>
+            </label>
+            <input type="range" id="ceilingYSlider" min="5" max="40" step="1" value="15">
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Curvatura: <span id="ceilingCurvatureValue">0.00</span></span>
+            </label>
+            <input type="range" id="ceilingCurvatureSlider" min="-0.5" max="0.5" step="0.01" value="0">
+            <div class="panel-section__hint">← cóncavo (cuenco) | plano | convexo (cúpula) →</div>
+        </div>
+        <div class="geom-section-title">🌍 Piso</div>
+
+        <div class="floor-row">
+            <label>
+                <input type="checkbox" id="floorToggle" checked>
+                <span>Piso (física)</span>
+            </label>
+            <button id="floorVisibilityBtn" class="btn-floor-visibility">👁️ Visible</button>
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Opacidad: <span id="floorOpacityValue">0.15</span></span>
+            </label>
+            <input type="range" id="floorOpacitySlider" min="0" max="1" value="0.15" step="0.05">
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Brillo: <span id="floorBrightnessValue">0.1</span></span>
+            </label>
+            <input type="range" id="floorBrightnessSlider" min="0" max="1" value="0.1" step="0.1">
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Rebote: <span id="bounceValue">0.6</span></span>
+            </label>
+            <input type="range" id="bounceSlider" min="0" max="1" value="0.6" step="0.1">
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Curvatura: <span id="floorCurvatureValue">0.0</span></span>
+            </label>
+            <input type="range" id="floorCurvatureSlider" min="-0.5" max="0.5" step="0.01" value="0">
+            <div class="panel-section__hint">← cóncavo (bowl) | plano | convexo (dome) →</div>
+        </div>
+        <div class="geom-section-title">🔮 Esfera</div>
+
+        <div class="floor-row">
+            <label>
+                <input type="checkbox" id="sphereToggle">
+                <span>Esfera (recipiente)</span>
+            </label>
+            <button id="sphereVisibilityBtn" class="btn-floor-visibility">👁️ Visible</button>
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Opacidad: <span id="sphereOpacityValue">0.08</span></span>
+            </label>
+            <input type="range" id="sphereOpacitySlider" min="0" max="0.5" value="0.08" step="0.02">
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Rebote: <span id="sphereBounceValue">0.6</span></span>
+            </label>
+            <input type="range" id="sphereBounceSlider" min="0" max="1" value="0.6" step="0.1">
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Altura centro: <span id="sphereCenterYValue">0</span></span>
+            </label>
+            <!-- min=-15 = al nivel del piso, max=15 = nivel del techo -->
+            <input type="range" id="sphereCenterYSlider" min="-15" max="15" value="0" step="1">
+            <div class="panel-section__hint">Sube/baja la esfera para envolver el piso</div>
+        </div>
+        <div class="slider-group">
+            <label>
+                <span style="font-size: 11px; opacity: 0.8;">Radio: <span id="sphereRadiusValue">20</span></span>
+            </label>
+            <input type="range" id="sphereRadiusSlider" min="5" max="50" step="1" value="20">
+        </div>
+
+    </div><!-- /geometryTabContent -->
+
+</div>
+
+<!-- Unified Add Panel (Molecules + Crystals) -->
+<div class="add-panel" id="addPanel">
+    <h3>➕ Agregar</h3>
+
+    <!-- Toggle bar -->
+    <div class="add-panel__toggle-bar">
+        <button id="showMolecules" class="add-panel__tab add-panel__tab--active">⚗️ Moléculas</button>
+        <button id="showCrystals" class="add-panel__tab add-panel__tab--inactive">💎 Cristales</button>
     </div>
-    
-    <div style="margin-bottom: 12px;">
-        <label style="display: flex; align-items: center; cursor: pointer;">
-            <input type="checkbox" id="floorToggle" checked style="margin-right: 8px;">
-            <span>Piso</span>
-        </label>
+
+    <!-- Molecules Section -->
+    <div id="moleculesSection">
+        <div id="moleculeButtons"></div>
     </div>
-    
-    <div style="margin-bottom: 8px;">
-        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
-            Visibilidad: <span id="floorOpacityValue">0.15</span>
-        </label>
-        <input type="range" id="floorOpacitySlider" min="0" max="1" value="0.15" step="0.05"
-               style="width: 100%; accent-color: #64c8ff;">
-    </div>
-    
-    <div style="margin-bottom: 12px;">
-        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
-            Brillo: <span id="floorBrightnessValue">0.1</span>
-        </label>
-        <input type="range" id="floorBrightnessSlider" min="0" max="1" value="0.1" step="0.1"
-               style="width: 100%; accent-color: #64c8ff;">
-    </div>
-    
-    <div>
-        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
-            Rebote: <span id="bounceValue">0.6</span>
-        </label>
-        <input type="range" id="bounceSlider" min="0" max="1" value="0.6" step="0.1"
-               style="width: 100%; accent-color: #64c8ff;">
+
+    <!-- Crystals Section -->
+    <div id="crystalsSection" class="hidden">
+        <div class="crystals-grid">
+            <button class="control-btn" id="crystalNaCl" style="font-size: 11px; padding: 8px;">🧂 NaCl</button>
+            <button class="control-btn" id="crystalFe"   style="font-size: 11px; padding: 8px;">🔩 Hierro</button>
+            <button class="control-btn" id="crystalDiamond" style="font-size: 11px; padding: 8px;">💎 Diamante</button>
+            <button class="control-btn" id="crystalIce"  style="font-size: 11px; padding: 8px;">❄️ Hielo</button>
+        </div>
+
+        <div class="slider-group">
+            <label>
+                <span class="crystal-size-label">Tamaño: <span id="crystalSizeValue">3</span>×<span id="crystalSizeValue2">3</span>×<span id="crystalSizeValue3">3</span></span>
+            </label>
+            <input type="range" id="crystalSizeSlider" min="2" max="6" value="3" step="1">
+        </div>
+
+        <div>
+            <label class="panel-check-row">
+                <input type="checkbox" id="freezeCrystalToggle">
+                <span>Congelar estructura</span>
+            </label>
+        </div>
     </div>
 </div>
 
-<!-- Molecule Panel -->
-<div class="molecule-panel">
-    <div class="molecule-panel-title">Moléculas Preestablecidas</div>
-    <div id="moleculeButtons"></div>
-</div>
-
-<!-- Element Selector -->
+<!-- Element Selector (bottom-center) -->
 <div class="element-selector" id="elementSelector">
     <div class="element-grid" id="elementGrid"></div>
 </div>
 
-<!-- Hint -->
-<div id="hint"></div>
+<!-- Temperature Panel (top-center, floating) -->
+<div class="temp-panel hidden" id="tempPanel">
+    <div class="temp-panel__header">
+        <div class="temp-panel__title">🌡️ Temperatura</div>
+        <button id="closeTempPanel" class="btn-close">✕</button>
+    </div>
 
-<!-- Crystal Panel -->
-<div id="crystalPanel" style="
-    position: fixed;
-    bottom: 10%;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(15px);
-    padding: 18px 20px;
-    border-radius: 16px;
-    border: 1px solid rgba(100, 200, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
-    font-size: 13px;
-    max-width: 280px;
-    z-index: 100;
-    color: #64c8ff;
-">
-    <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #ffffff;">💎 Cristales</h3>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-        <button class="control-btn" id="crystalNaCl" style="font-size: 11px; padding: 8px;">
-            🧂 NaCl
-        </button>
-        <button class="control-btn" id="crystalFe" style="font-size: 11px; padding: 8px;">
-            🔩 Hierro
-        </button>
-        <button class="control-btn" id="crystalDiamond" style="font-size: 11px; padding: 8px;">
-            💎 Diamante
-        </button>
-        <button class="control-btn" id="crystalIce" style="font-size: 11px; padding: 8px;">
-            ❄️ Hielo
-        </button>
+    <!-- Mode toggle -->
+    <div class="temp-panel__mode-row">
+        <span class="temp-panel__mode-label">Modo:</span>
+        <div class="temp-panel__mode-btns">
+            <button id="tempModeDidactic"  class="temp-mode-btn temp-mode-btn--active">🎓 Didáctico</button>
+            <button id="tempModeRealistic" class="temp-mode-btn">⚗️ Realista</button>
+        </div>
     </div>
-    
-    <div style="margin-bottom: 12px;">
-        <label style="display: block; margin-bottom: 4px; font-size: 11px; opacity: 0.8;">
-            Tamaño: <span id="crystalSizeValue">3</span>×<span id="crystalSizeValue2">3</span>×<span id="crystalSizeValue3">3</span>
-        </label>
-        <input type="range" id="crystalSizeSlider" min="2" max="6" value="3" step="1"
-               style="width: 100%; accent-color: #64c8ff;">
+    <div id="tempModeDesc" class="temp-panel__mode-desc">
+        Escala pedagógica — valores inventados para visibilidad. Ideal para clase.
     </div>
-    
-    <div style="margin-bottom: 12px;">
-        <label style="display: flex; align-items: center; cursor: pointer;">
-            <input type="checkbox" id="freezeCrystalToggle" style="margin-right: 8px;">
-            <span>Congelar estructura</span>
+
+    <!-- Enable -->
+    <div class="temp-panel__enable-row">
+        <label class="panel-check-row">
+            <input type="checkbox" id="tempEnabledToggle">
+            <span>Activar sistema de temperatura</span>
         </label>
+    </div>
+
+    <!-- Ambient temperature -->
+    <div class="temp-panel__section-title">🌍 Temperatura Ambiental</div>
+
+    <div class="slider-group">
+        <label>
+            <span>🌡️ Temperatura objetivo</span>
+            <span id="tempTargetValue" class="slider-value">300 K</span>
+        </label>
+        <input type="range" id="tempSlider" min="0" max="2000" step="10" value="300">
+    </div>
+
+    <!-- Readout -->
+    <div class="temp-panel__readout">
+        <div class="temp-panel__readout-row">
+            <span>T actual:</span>
+            <span id="tempCurrentValue" class="temp-panel__readout-value">— K</span>
+        </div>
+        <div class="temp-panel__readout-row">
+            <span>Fase:</span>
+            <span id="tempPhaseValue" class="temp-panel__readout-phase">—</span>
+        </div>
+    </div>
+
+    <!-- Ambient color -->
+    <div class="panel-section">
+        <label class="panel-check-row">
+            <input type="checkbox" id="tempColorToggle" checked>
+            <span>🎨 Color de ambiente por temperatura</span>
+        </label>
+        <div class="panel-section__hint">Cambia el fondo — azul = frío · naranja = caliente · ámbar = plasma</div>
+    </div>
+
+    <!-- Bond breaking -->
+    <div class="panel-section">
+        <label class="panel-check-row">
+            <input type="checkbox" id="tempBondBreakToggle">
+            <span>🔥 Ruptura de enlaces por calor</span>
+        </label>
+        <div class="panel-section__hint">Los enlaces se rompen cuando la energía cinética supera la disociación</div>
+    </div>
+
+    <!-- Thermostat speed -->
+    <div class="panel-section">
+        <div class="slider-group">
+            <label>
+                <span>⏱️ Velocidad del termostato</span>
+                <span id="tempTauValue" class="slider-value">60</span>
+            </label>
+            <input type="range" id="tempTauSlider" min="5" max="200" step="5" value="60">
+            <div class="panel-section__hint">Bajo = brusco · Alto = gradual y suave</div>
+        </div>
+    </div>
+
+    <!-- ── FLOOR TEMPERATURE ── -->
+    <div class="temp-panel__section-title">🔥 Temperatura del Suelo</div>
+
+    <div class="slider-group">
+        <label>
+            <span>T suelo</span>
+            <span id="floorTempValue" class="slider-value">0 K</span>
+        </label>
+        <input type="range" id="floorTempSlider" min="0" max="3000" step="50" value="0">
+        <div class="panel-section__hint">Calienta átomos por contacto y proximidad</div>
+    </div>
+
+    <!-- ── CEILING TEMPERATURE ── -->
+    <div class="temp-panel__section-title">❄️ Temperatura del Techo</div>
+
+    <div class="slider-group">
+        <label>
+            <span>T techo</span>
+            <span id="ceilingTempValue" class="slider-value">0 K</span>
+        </label>
+        <input type="range" id="ceilingTempSlider" min="0" max="3000" step="50" value="0">
+        <div class="panel-section__hint">Enfría o calienta átomos por contacto y proximidad</div>
+    </div>
+
+    <!-- Realistic mode warning -->
+    <div id="tempRealisticWarning" class="temp-panel__realistic-warning hidden">
+        ⚗️ <strong>Modo Realista:</strong> k<sub>B</sub> = 1.38×10⁻²³ J/K, masas en kg.
+        Velocidades físicamente correctas pero visualmente exageradas
+        (la simulación no corre en tiempo real).
     </div>
 </div>
 
-<!-- Collapse Buttons -->
-<button id="collapsePhysics" style="
-    position: fixed;
-    bottom: 9%;
-    left: 15px;
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(100, 200, 255, 0.3);
-    color: #64c8ff;
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    z-index: 101;
-">▲ Física</button>
+<!-- Hint notification -->
+<div id="hint"></div>
 
-<button id="collapseCrystal" style="
-    position: fixed;
-    bottom: 9%;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(100, 200, 255, 0.3);
-    color: #64c8ff;
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    z-index: 101;
-">▲ Cristales</button>
+<!-- Panel collapse buttons -->
+<button class="collapse-btn" id="collapsePhysics">▲ Física</button>
+<button class="collapse-btn" id="collapseAdd">▲ Agregar</button>
 
- <!-- Three.js with CDN fallback to local -->
+<!-- Three.js: CDN with local fallback -->
 <script>
-    // Try to load from CDN first
-    (function() {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-        script.async = false;
-        
-        script.onerror = function() {
-            console.warn('⚠️ CDN fallido, cargando Three.js local...');
-            // Fallback to local copy
-            const localScript = document.createElement('script');
-            localScript.src = 'lib/three.min.js';
-            localScript.async = false;
-            
-            localScript.onerror = function() {
-                console.error('❌ Error: Three.js no disponible (CDN y local fallaron)');
-                document.body.innerHTML = `
-                    <div style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        height: 100vh;
-                        background: #1a1a2e;
-                        color: #fff;
-                        font-family: system-ui;
-                        text-align: center;
-                        padding: 20px;
-                    ">
-                        <div>
-                            <h1>❌ Error de Dependencias</h1>
-                            <p>No se pudo cargar Three.js</p>
-                            <p style="font-size: 14px; opacity: 0.7;">
-                                Descarga <code>three.min.js</code> y colócalo en la carpeta <code>lib/</code>
-                            </p>
-                            <a href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" 
-                               download="three.min.js"
-                               style="
-                                   display: inline-block;
-                                   margin-top: 20px;
-                                   padding: 10px 20px;
-                                   background: #64c8ff;
-                                   color: #000;
-                                   text-decoration: none;
-                                   border-radius: 5px;
-                               ">
-                                Descargar Three.js
-                            </a>
-                        </div>
+(function() {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+    script.async = false;
+
+    script.onerror = function() {
+        console.warn('⚠️ CDN fallido, cargando Three.js local...');
+        const localScript = document.createElement('script');
+        localScript.src = 'lib/three.min.js';
+        localScript.async = false;
+
+        localScript.onerror = function() {
+            console.error('❌ Error: Three.js no disponible (CDN y local fallaron)');
+            document.body.innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:center;height:100vh;
+                            background:#1a1a2e;color:#fff;font-family:system-ui;text-align:center;padding:20px;">
+                    <div>
+                        <h1>❌ Error de Dependencias</h1>
+                        <p>No se pudo cargar Three.js</p>
+                        <p style="font-size:14px;opacity:0.7;">
+                            Descarga <code>three.min.js</code> y colócalo en la carpeta <code>lib/</code>
+                        </p>
+                        <a href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+                           download="three.min.js"
+                           style="display:inline-block;margin-top:20px;padding:10px 20px;
+                                  background:#64c8ff;color:#000;text-decoration:none;border-radius:5px;">
+                            Descargar Three.js
+                        </a>
                     </div>
-                `;
-            };
-            
-            localScript.onload = function() {
-                console.log('✅ Three.js cargado desde archivo local');
-            };
-            
-            document.head.appendChild(localScript);
+                </div>`;
         };
-        
-        script.onload = function() {
-            console.log('✅ Three.js cargado desde CDN');
-        };
-        
-        document.head.appendChild(script);
-    })();
+
+        localScript.onload = () => console.log('✅ Three.js cargado desde archivo local');
+        document.head.appendChild(localScript);
+    };
+
+    script.onload = () => console.log('✅ Three.js cargado desde CDN');
+    document.head.appendChild(script);
+})();
 </script>
 
+<!-- Error overlay (visual debug) -->
+<script>
+(function() {
+    const div = document.createElement('div');
+    div.id = 'error-overlay';
+    document.body.appendChild(div);
+
+    function show(msg) {
+        div.style.display = 'block';
+        div.textContent += msg + '\n---\n';
+    }
+
+    window.addEventListener('error', e => {
+        show('ERROR: ' + e.message + '\nArchivo: ' + e.filename + '\nLínea: ' + e.lineno);
+    });
+
+    window.addEventListener('unhandledrejection', e => {
+        show('PROMISE ERROR: ' + (e.reason?.message || e.reason || 'unknown'));
+    });
+})();
+</script>
 
 <!-- Main App (ES6 Module) -->
 <script type="module" src="src/app.js"></script>

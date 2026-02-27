@@ -4,6 +4,7 @@
  */
 
 import { Bond } from '../core/Bond.js';
+import { MetallicCloud } from '../core/MetallicCloud.js';
 
 export class CrystalGenerator {
     constructor(simulation) {
@@ -15,7 +16,24 @@ export class CrystalGenerator {
      * Alternating Na and Cl in cubic pattern
      */
     generateNaCl(size = 3) {
-        const spacing = 4; // Distance between atoms
+        const elementDatabase = window.elementDatabase || {};
+        const Na = elementDatabase['Na'];
+        const Cl = elementDatabase['Cl'];
+
+        // Usar lattice_constant_pm si está disponible en datos avanzados.
+        // NaCl tiene lattice constant = 564 pm → distancia Na-Cl = 282 pm = 2.82 wu.
+        // Esto coincide exactamente con targetDist del Bond, garantizando F=0 desde el inicio.
+        let spacing;
+        if(Na?.lattice_constant_pm) {
+            // lattice_constant es el lado del cubo — distancia entre iones = la mitad
+            spacing = (Na.lattice_constant_pm / 2) / 100; // pm → world units
+        } else {
+            // Fallback: suma de radios covalentes + 5%
+            const rNa = Na?.radius_covalent_pm || 166;
+            const rCl = Cl?.radius_covalent_pm || 99;
+            spacing = ((rNa + rCl) / 100) * 1.05;
+        }
+        
         const offset = -(size - 1) * spacing / 2; // Center the crystal
         const atoms = [];
         
@@ -46,7 +64,12 @@ export class CrystalGenerator {
      * Generate BCC (Body-Centered Cubic) - Iron, Chromium
      */
     generateBCC(size = 3, element = 'Fe') {
-        const spacing = 4;
+        // Calculate ideal spacing from covalent radius
+        const elementDatabase = window.elementDatabase || {};
+        const el = elementDatabase[element];
+        const radius = el?.radius_covalent_pm || 132; // Fe default
+        const spacing = (radius * 2 * 1.1) / 100; // Metallic lattice spacing
+        
         const offset = -(size - 1) * spacing / 2;
         const atoms = [];
         
@@ -85,7 +108,12 @@ export class CrystalGenerator {
      * Generate FCC (Face-Centered Cubic) - Diamond, Gold
      */
     generateFCC(size = 3, element = 'C') {
-        const spacing = 4;
+        // Calculate ideal spacing from covalent radius
+        const elementDatabase = window.elementDatabase || {};
+        const el = elementDatabase[element];
+        const radius = el?.radius_covalent_pm || 76; // C default
+        const spacing = (radius * 2 * 1.1) / 100; // FCC lattice spacing
+        
         const offset = -(size - 1) * spacing / 2;
         const atoms = [];
         
@@ -137,7 +165,12 @@ export class CrystalGenerator {
      * Generate Hexagonal (Ice-like)
      */
     generateHexagonal(size = 3, element = 'O') {
-        const spacing = 4;
+        // Calculate ideal spacing from covalent radius
+        const elementDatabase = window.elementDatabase || {};
+        const el = elementDatabase[element];
+        const radius = el?.radius_covalent_pm || 66; // O default
+        const spacing = (radius * 2 * 1.15) / 100; // Hexagonal lattice spacing (slightly larger)
+        
         const offset = -(size - 1) * spacing / 2;
         const atoms = [];
         
@@ -145,15 +178,15 @@ export class CrystalGenerator {
         
         for(let layer = 0; layer < size; layer++) {
             for(let ring = 0; ring < size; ring++) {
-                const radius = ring * spacing;
+                const ringRadius = ring * spacing;
                 const numAtoms = ring === 0 ? 1 : 6 * ring;
                 
                 for(let i = 0; i < numAtoms; i++) {
                     const angle = (i / numAtoms) * Math.PI * 2;
                     const position = new THREE.Vector3(
-                        offset + Math.cos(angle) * radius,
+                        offset + Math.cos(angle) * ringRadius,
                         offset + layer * spacing,
-                        offset + Math.sin(angle) * radius
+                        offset + Math.sin(angle) * ringRadius
                     );
                     
                     const atom = this.simulation.addAtom(position, element);
@@ -170,20 +203,62 @@ export class CrystalGenerator {
      * Strengthen crystal bonds (prevent collapse)
      */
     strengthenCrystalBonds(atoms) {
-        // First, ensure all nearby atoms are bonded
+        if(atoms.length === 0) return [];
+        
+        // Detect if this is a PURE metallic crystal
+        // ALL atoms must be metals (not just the first one - NaCl fix)
+        const isMetallic = atoms.every(atom => {
+            const el = atom.element;
+            return el && 
+                el.electronegativity && 
+                el.electronegativity < 2.0 &&
+                el.category && 
+                el.category.includes('metal');
+        });
+        
+        if(isMetallic) {
+            // METALLIC: remove any auto-bonds created during addAtom()
+            // then create electron sea cloud instead
+            console.log(`⚗️ Metallic crystal detected (${atoms[0].symbol}) → creating electron sea`);
+            
+            const atomSet = new Set(atoms);
+            
+            // Find and remove bonds between metal atoms
+            const bondsToRemove = this.simulation.bonds.filter(bond => 
+                bond.atom1 && bond.atom2 && // regular Bond (not MetallicCloud)
+                atomSet.has(bond.atom1) && atomSet.has(bond.atom2)
+            );
+            
+            bondsToRemove.forEach(bond => {
+                bond.remove(); // removes mesh from scene
+                // Remove from atom.bonds arrays
+                bond.atom1.bonds = bond.atom1.bonds.filter(b => b !== bond);
+                bond.atom2.bonds = bond.atom2.bonds.filter(b => b !== bond);
+            });
+            
+            // Remove from simulation.bonds
+            this.simulation.bonds = this.simulation.bonds.filter(b => !bondsToRemove.includes(b));
+            
+            // Now create the electron sea
+            const cloud = new MetallicCloud(atoms, this.simulation.scene);
+            // Register cloud reference in each atom so drag system can move all together
+            atoms.forEach(atom => { atom.metallicCloud = cloud; });
+            this.simulation.bonds.push(cloud);
+            return [cloud];
+        }
+        
+        // NON-METALLIC: use regular bonds
         this.forceConnectCrystal(atoms);
         
         const crystalBonds = [];
-        
         this.simulation.bonds.forEach(bond => {
-            if(bond.atom1.isCrystal || bond.atom2.isCrystal) {
+            if(bond.atom1 && (bond.atom1.isCrystal || bond.atom2.isCrystal)) {
                 crystalBonds.push(bond);
             }
         });
         
-        // Make crystal bonds more stable (LOWER = more stable, less oscillation)
         crystalBonds.forEach(bond => {
-            bond.springConstant = 0.01; // vs 0.02 normal (even MORE stable)
+            bond.springConstant = 0.01;
             bond.isCrystalBond = true;
         });
         
@@ -194,7 +269,20 @@ export class CrystalGenerator {
      * Force connect all nearby atoms in crystal
      */
     forceConnectCrystal(atoms) {
-        const maxBondDist = 5.5; // Slightly larger than spacing
+        if(atoms.length === 0) return;
+        
+        // Calculate appropriate bond distance based on element
+        const firstAtom = atoms[0];
+        const element = firstAtom.element;
+        const radius = element.radius_covalent_pm || 100;
+        const expectedSpacing = (radius * 2 * 1.1) / 100; // Same as crystal generation
+        
+        // maxBondDist = spacing * 1.4 (catches direct neighbors but not next-nearest)
+        const maxBondDist = expectedSpacing * 1.09;
+        
+        console.log(`🔗 Crystal bonding: ${element.symbol}, radius=${radius}pm, spacing=${expectedSpacing.toFixed(2)}, maxDist=${maxBondDist.toFixed(2)}`);
+        
+        let bondCount = 0;
         
         for(let i = 0; i < atoms.length; i++) {
             for(let j = i + 1; j < atoms.length; j++) {
@@ -211,11 +299,19 @@ export class CrystalGenerator {
                     
                     if(!bondExists) {
                         const bond = new Bond(a1, a2, this.simulation.scene);
+                        bondCount++;
+                        // Solo forzar color cristalino en enlaces homoatómicos (Fe-Fe, C-C...)
+                        // Los iónicos (Na-Cl) ya tienen su color correcto del constructor
+                        if(a1.symbol === a2.symbol) {
+                            bond.setCrystalType();
+                        }
                         this.simulation.bonds.push(bond);
                     }
                 }
             }
         }
+        
+        console.log(`✅ Created ${bondCount} bonds for ${atoms.length} atoms (avg ${(bondCount*2/atoms.length).toFixed(1)} bonds/atom)`);
     }
     
     /**

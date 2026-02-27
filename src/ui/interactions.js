@@ -3,6 +3,8 @@
  * Touch and mouse event handlers
  */
 
+import { checkAllFragmentation } from '../physics/MoleculeFragmentation.js';
+
 // Imports will be added when integrating
 let simulation, camera, scene, renderer;
 let getWorldPosition, findAtomAtPoint, updateStats, playSound, showHint;
@@ -84,15 +86,50 @@ function handlePointerDown(e) {
         
         if(atom && simulation.config.interactionMode === 'add') {
             // Drag mode
-            if(atom.bonds.length === 0) {
+            if(atom.metallicCloud) {
+                // Metal crystal: move ALL atoms in the cloud together
+                draggedObject = {
+                    atoms: atom.metallicCloud.atoms,
+                    cloud: atom.metallicCloud,
+                    moveAll(delta) {
+                        this.atoms.forEach(a => a.group.position.add(delta));
+                        // Also move free electrons so they don't pile up at bounds
+                        if(this.cloud.electronPoints && this.cloud.electronData) {
+                            const arr = this.cloud.electronPoints.geometry.attributes.position.array;
+                            for(let i = 0; i < this.cloud.electronData.length; i++) {
+                                arr[i*3]   += delta.x;
+                                arr[i*3+1] += delta.y;
+                                arr[i*3+2] += delta.z;
+                            }
+                            this.cloud.electronPoints.geometry.attributes.position.needsUpdate = true;
+                        }
+                    }
+                };
+                draggedObject.atoms.forEach(a => a.isDragging = true);
+            } else if(atom.bonds.length === 0) {
                 draggedObject = atom;
-                atom.isDragging = true; // Mark as dragging
+                atom.isDragging = true;
             } else {
                 draggedObject = simulation.findMoleculeContaining(atom);
-                draggedObject.highlight(0.5);
-                draggedObject.atoms.forEach(a => a.isDragging = true); // Mark all atoms
+                draggedObject.highlight?.(0.5);  // optional - metallic cloud doesn't have this
+                draggedObject.atoms.forEach(a => a.isDragging = true);
             }
             dragStartWorld = getWorldPosition(e.clientX, e.clientY, camera, scene);
+            
+            // Auto-select dragged atom's element in UI
+            if(window.selectElementInUI && atom) {
+                window.selectElementInUI(atom.symbol);
+            }
+            
+            // Track for freeze/unfreeze
+            if(window.setLastTouchedAtom && atom) {
+                window.setLastTouchedAtom(atom);
+            }
+            
+            // Update freeze checkbox to reflect structure's frozen state
+            if(window.updateFreezeCheckbox) {
+                window.updateFreezeCheckbox(atom);
+            }
         } else {
             // Rotate scene
             isPointerDown = true;
@@ -112,8 +149,14 @@ function handlePointerMove(e) {
             
             if(draggedObject.group) { // It's an Atom
                 draggedObject.group.position.add(delta);
-            } else if(draggedObject.atoms) { // It's a Molecule
+                // Update velocity so nucleus glows during drag
+                draggedObject.velocity.copy(delta).multiplyScalar(10);
+            } else if(draggedObject.atoms) { // It's a Molecule or metallic cloud
                 draggedObject.moveAll(delta);
+                // Update velocity for all atoms in molecule/cloud
+                draggedObject.atoms.forEach(a => {
+                    a.velocity.copy(delta).multiplyScalar(10);
+                });
             }
             
             dragStartWorld = currentWorld;
@@ -141,11 +184,15 @@ function handlePointerMove(e) {
 function handlePointerUp(e) {
     if(draggedObject) {
         // Release dragged object
-        if(draggedObject.atoms) { // Molecule
-            draggedObject.highlight(0);
-            draggedObject.atoms.forEach(a => a.isDragging = false);
+        if(draggedObject.atoms) { // Molecule or metallic cloud
+            draggedObject.highlight?.(0);  // optional - metallic cloud doesn't have this
+            draggedObject.atoms.forEach(a => {
+                a.isDragging = false;
+                a.velocity.multiplyScalar(0.1); // Decay velocity so glow fades
+            });
         } else { // Atom
             draggedObject.isDragging = false;
+            draggedObject.velocity.multiplyScalar(0.1); // Decay velocity so glow fades
         }
         draggedObject = null;
         dragStartWorld = null;
@@ -188,15 +235,49 @@ function handleTouchStart(e) {
         if(atom && simulation.config.interactionMode === 'add') {
             // Drag mode
             touchState.mode = 'drag';
-            if(atom.bonds.length === 0) {
+            if(atom.metallicCloud) {
+                draggedObject = {
+                    atoms: atom.metallicCloud.atoms,
+                    cloud: atom.metallicCloud,
+                    moveAll(delta) {
+                        this.atoms.forEach(a => a.group.position.add(delta));
+                        // Also move free electrons so they don't pile up at bounds
+                        if(this.cloud.electronPoints && this.cloud.electronData) {
+                            const arr = this.cloud.electronPoints.geometry.attributes.position.array;
+                            for(let i = 0; i < this.cloud.electronData.length; i++) {
+                                arr[i*3]   += delta.x;
+                                arr[i*3+1] += delta.y;
+                                arr[i*3+2] += delta.z;
+                            }
+                            this.cloud.electronPoints.geometry.attributes.position.needsUpdate = true;
+                        }
+                    }
+                };
+                draggedObject.atoms.forEach(a => a.isDragging = true);
+            } else if(atom.bonds.length === 0) {
                 draggedObject = atom;
                 atom.isDragging = true;
             } else {
                 draggedObject = simulation.findMoleculeContaining(atom);
-                draggedObject.highlight(0.5);
+                draggedObject.highlight?.(0.5);  // optional - metallic cloud doesn't have this
                 draggedObject.atoms.forEach(a => a.isDragging = true);
             }
             dragStartWorld = getWorldPosition(touch.clientX, touch.clientY, camera, scene);
+            
+            // Auto-select dragged atom's element in UI
+            if(window.selectElementInUI && atom) {
+                window.selectElementInUI(atom.symbol);
+            }
+            
+            // Track for freeze/unfreeze
+            if(window.setLastTouchedAtom && atom) {
+                window.setLastTouchedAtom(atom);
+            }
+            
+            // Update freeze checkbox to reflect structure's frozen state
+            if(window.updateFreezeCheckbox) {
+                window.updateFreezeCheckbox(atom);
+            }
         } else {
             // Rotate scene
             touchState.mode = 'rotate';
@@ -233,8 +314,14 @@ function handleTouchMove(e) {
             
             if(draggedObject.group) { // It's an Atom
                 draggedObject.group.position.add(delta);
-            } else if(draggedObject.atoms) { // It's a Molecule
+                // Update velocity so nucleus glows during drag
+                draggedObject.velocity.copy(delta).multiplyScalar(10);
+            } else if(draggedObject.atoms) { // It's a Molecule or metallic cloud
                 draggedObject.moveAll(delta);
+                // Update velocity for all atoms
+                draggedObject.atoms.forEach(a => {
+                    a.velocity.copy(delta).multiplyScalar(10);
+                });
             }
             
             dragStartWorld = currentWorld;
@@ -303,10 +390,14 @@ function handleTouchEnd(e) {
     if(e.touches.length === 0) {
         if(draggedObject) {
             if(draggedObject.atoms) {
-                draggedObject.highlight(0);
-                draggedObject.atoms.forEach(a => a.isDragging = false);
+                draggedObject.highlight?.(0);  // optional - metallic cloud doesn't have this
+                draggedObject.atoms.forEach(a => {
+                    a.isDragging = false;
+                    a.velocity.multiplyScalar(0.1); // Decay velocity so glow fades
+                });
             } else {
                 draggedObject.isDragging = false;
+                draggedObject.velocity.multiplyScalar(0.1); // Decay velocity so glow fades
             }
             draggedObject = null;
             dragStartWorld = null;
@@ -362,7 +453,128 @@ function handleWheel(e) {
 
 // Helper functions
 function deleteAtomOrMolecule(atom) {
-    if(atom.bonds.length === 0) {
+    const mode = simulation.config.deleteMode || 'structure'; // Default structure
+    
+    // Mode: atom - ALWAYS delete only the clicked atom
+    if(mode === 'atom') {
+        // Special handling for metallic crystals
+        if(atom.metallicCloud) {
+            const cloud = atom.metallicCloud;
+            
+            // Remove structure lines connected to this atom
+            if(cloud.structureLines && Array.isArray(cloud.structureLines)) {
+                const linesToRemove = cloud.structureLines.filter(line => {
+                    const { atom1, atom2 } = line.userData;
+                    return atom1 === atom || atom2 === atom;
+                });
+                
+                linesToRemove.forEach(line => {
+                    scene.remove(line);
+                    if(line.geometry) line.geometry.dispose();
+                    if(line.material) line.material.dispose();
+                });
+                
+                // Keep only lines that don't involve this atom
+                cloud.structureLines = cloud.structureLines.filter(line => {
+                    const { atom1, atom2 } = line.userData;
+                    return atom1 !== atom && atom2 !== atom;
+                });
+            }
+            
+            // IMPORTANT: Remove atom from simulation FIRST
+            simulation.removeAtom(atom);
+            
+            // Then remove from cloud's atoms array
+            cloud.atoms = cloud.atoms.filter(a => a !== atom);
+            
+            // If cloud has 2 or fewer atoms, destroy it and convert to normal bonds
+            if(cloud.atoms.length <= 2) {
+                // Remove cloud visualization
+                if(cloud.electronPoints) {
+                    scene.remove(cloud.electronPoints);
+                    cloud.electronPoints.geometry.dispose();
+                    cloud.electronPoints.material.dispose();
+                }
+                
+                // Remove structure lines (array of Line objects)
+                if(cloud.structureLines && Array.isArray(cloud.structureLines)) {
+                    cloud.structureLines.forEach(line => {
+                        scene.remove(line);
+                        if(line.geometry) line.geometry.dispose();
+                        if(line.material) line.material.dispose();
+                    });
+                    cloud.structureLines = [];
+                }
+                
+                // Remove cloud from simulation.bonds
+                simulation.bonds = simulation.bonds.filter(b => b !== cloud);
+                
+                // Clear metallicCloud reference from remaining atoms
+                cloud.atoms.forEach(a => { a.metallicCloud = null; });
+                
+                // If exactly 2 atoms remain, create a normal bond between them
+                if(cloud.atoms.length === 2) {
+                    const [a1, a2] = cloud.atoms;
+                    const Bond = window.Bond; // Access Bond class from global
+                    if(Bond) {
+                        const bond = new Bond(a1, a2, scene);
+                        simulation.bonds.push(bond);
+                        showHint('⚛️ Átomo eliminado (cristal → enlace metálico)');
+                    } else {
+                        showHint('⚛️ Átomo eliminado (cristal disuelto)');
+                    }
+                } else {
+                    showHint('⚛️ Átomo eliminado (cristal metálico destruido)');
+                }
+            } else {
+                showHint(`⚛️ Átomo eliminado (quedan ${cloud.atoms.length} en cristal)`);
+                
+                // Check if crystal fragmented into disconnected pieces
+                checkAllFragmentation(simulation);
+            }
+        } else {
+            // Regular atom
+            simulation.removeAtom(atom);
+            showHint('⚛️ Átomo eliminado');
+        }
+        updateStats();
+        playSound('delete');
+        return;
+    }
+    
+    // Mode: structure - Delete entire structure
+    // Check if atom is part of metallic cloud (Fe crystal)
+    if(atom.metallicCloud) {
+        const cloud = atom.metallicCloud;
+        const atomCount = cloud.atoms.length;
+        
+        // Remove all atoms in the cloud
+        cloud.atoms.forEach(a => {
+            simulation.removeAtom(a);
+        });
+        
+        // Remove the cloud itself from scene
+        if(cloud.electronPoints) {
+            scene.remove(cloud.electronPoints);
+            cloud.electronPoints.geometry.dispose();
+            cloud.electronPoints.material.dispose();
+        }
+        
+        // Remove structure lines (array of Line objects)
+        if(cloud.structureLines && Array.isArray(cloud.structureLines)) {
+            cloud.structureLines.forEach(line => {
+                scene.remove(line);
+                if(line.geometry) line.geometry.dispose();
+                if(line.material) line.material.dispose();
+            });
+            cloud.structureLines = [];
+        }
+        
+        // Remove from simulation.bonds
+        simulation.bonds = simulation.bonds.filter(b => b !== cloud);
+        
+        showHint(`🧲 Cristal metálico eliminado (${atomCount} átomos)`);
+    } else if(atom.bonds.length === 0) {
         simulation.removeAtom(atom);
         showHint('Átomo eliminado');
     } else {

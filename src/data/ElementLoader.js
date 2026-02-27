@@ -9,6 +9,10 @@ export class ElementLoader {
         this.elements = {};
         this.activeGroups = new Set();
         this.config = null;
+        
+        // Advanced data tracking
+        this.advancedDataLoaded = new Set(); // Which groups have advanced data loaded
+        this.advancedDataCache = {};         // Cache of advanced data per group
     }
     
     /**
@@ -60,12 +64,23 @@ export class ElementLoader {
             const response = await fetch(`data/${group.file}`);
             const data = await response.json();
             
+            // Parse group color once (always as number)
+            const groupColorNum = typeof group.color === 'string' 
+                ? parseInt(group.color.replace('0x', ''), 16) 
+                : group.color;
+            
             // Merge elements, adding group metadata
             for(const [symbol, element] of Object.entries(data.elements)) {
+                // Convert element color to number (fixes Bug 1 & 2)
+                const elementColorNum = typeof element.color === 'string'
+                    ? parseInt(element.color.replace('0x', ''), 16)
+                    : element.color;
+                
                 this.elements[symbol] = {
                     ...element,
+                    color: elementColorNum,
                     group: groupKey,
-                    groupColor: group.color,
+                    groupColor: groupColorNum,
                     groupName: group.name
                 };
             }
@@ -84,6 +99,8 @@ export class ElementLoader {
     async toggleGroup(groupKey, enabled) {
         if(enabled && !this.activeGroups.has(groupKey)) {
             await this.loadGroup(groupKey);
+            // Automatically load advanced data when activating a group
+            await this.loadAdvancedData(groupKey);
             return true;
         } else if(!enabled && this.activeGroups.has(groupKey)) {
             return this.unloadGroup(groupKey);
@@ -132,6 +149,98 @@ export class ElementLoader {
      */
     getGroup(groupKey) {
         return this.index.groups[groupKey];
+    }
+    
+    /**
+     * Load advanced data for a specific group
+     * @param {string} groupKey - Group identifier (e.g., 'alkali_metals')
+     * @returns {Promise<boolean>} - Success status
+     */
+    async loadAdvancedData(groupKey) {
+        // Already loaded?
+        if(this.advancedDataLoaded.has(groupKey)) {
+            console.log(`⚠️ Advanced data for ${groupKey} already loaded`);
+            return true;
+        }
+        
+        const group = this.index.groups[groupKey];
+        if(!group) {
+            console.error(`❌ Group ${groupKey} not found in index`);
+            return false;
+        }
+        
+        // Check if group has advanced data file
+        if(!group.file_adv) {
+            console.warn(`⚠️ No advanced data file for ${groupKey}`);
+            return false;
+        }
+        
+        try {
+            const response = await fetch(`data/${group.file_adv}`);
+            const advancedData = await response.json();
+            
+            // Cache the advanced data
+            this.advancedDataCache[groupKey] = advancedData;
+            
+            // Merge advanced data into existing elements
+            for(const [symbol, advData] of Object.entries(advancedData)) {
+                if(this.elements[symbol]) {
+                    // Merge advanced properties into element
+                    this.elements[symbol] = {
+                        ...this.elements[symbol],
+                        ...advData
+                    };
+                }
+            }
+            
+            this.advancedDataLoaded.add(groupKey);
+            console.log(`🔬 Advanced data loaded for ${group.name}`);
+            return true;
+            
+        } catch(error) {
+            console.error(`❌ Failed to load advanced data for ${groupKey}:`, error);
+            return false;
+        }
+    }
+    
+    /**
+     * Load advanced data for all active groups
+     * @returns {Promise<void>}
+     */
+    async loadAllAdvancedData() {
+        const promises = [];
+        for(const groupKey of this.activeGroups) {
+            promises.push(this.loadAdvancedData(groupKey));
+        }
+        await Promise.all(promises);
+        console.log(`🔬 Advanced data loaded for ${this.advancedDataLoaded.size} groups`);
+    }
+    
+    /**
+     * Get element with optional advanced data
+     * @param {string} symbol - Element symbol (e.g., 'H', 'Na')
+     * @param {boolean} ensureAdvanced - If true, load advanced data if not present
+     * @returns {Promise<Object|null>} - Element data or null
+     */
+    async getElement(symbol, ensureAdvanced = false) {
+        const element = this.elements[symbol];
+        if(!element) return null;
+        
+        // If advanced data requested and not loaded, load it
+        if(ensureAdvanced && !this.advancedDataLoaded.has(element.group)) {
+            await this.loadAdvancedData(element.group);
+            // Return updated element after merge
+            return this.elements[symbol];
+        }
+        
+        return element;
+    }
+    
+    /**
+     * Check if advanced data is loaded for a group
+     */
+    hasAdvancedData(groupKey) {
+        return this.advancedDataLoaded.has(groupKey);
     }
     
     /**

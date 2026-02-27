@@ -1,47 +1,220 @@
-/* GroupPanel.css - Optional enhancements */
+/* ========================================
+   GROUP PANEL CSS
+   Estilos extraídos de GroupPanel.js
+   ======================================== */
 
-/* Scrollbar styling for group panel */
-#groupPanel::-webkit-scrollbar {
-    width: 6px;
+/* ── Panel container ─────────────────────────────────────────────────────── */
+
+#groupPanel {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: rgba(20, 20, 30, 0.95);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    color: white;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px;
+    max-height: 80vh;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    min-width: 240px;
+    transition: all 0.3s ease;
 }
 
-#groupPanel::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+#groupPanel.hidden {
+    transform: translateX(150%) translateY(-50%);
+    opacity: 0;
+    pointer-events: none;
 }
 
-#groupPanel::-webkit-scrollbar-thumb {
-    background: rgba(100, 200, 255, 0.3);
-    border-radius: 3px;
+/* ── Panel header ────────────────────────────────────────────────────────── */
+
+.group-panel__header {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+    color: #64c8ff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-#groupPanel::-webkit-scrollbar-thumb:hover {
-    background: rgba(100, 200, 255, 0.5);
+/* ── Header buttons (sort + collapse-in-header) ──────────────────────────── */
+
+.group-panel__btn {
+    background: rgba(100, 200, 255, 0.1);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 4px 8px;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-/* Smooth transitions for checkboxes */
-#groupPanel input[type="checkbox"] {
+.group-panel__btn:hover {
+    background: rgba(100, 200, 255, 0.2);
+    border-color: rgba(100, 200, 255, 0.5);
+}
+
+.group-panel__header-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* ── Group items ─────────────────────────────────────────────────────────── */
+
+.group-panel__item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 6px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.group-panel__item:hover {
+    background: rgba(100, 200, 255, 0.1);
+}
+
+.group-panel__checkbox {
+    margin-right: 8px;
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
     accent-color: #64c8ff;
     transition: all 0.2s ease;
 }
 
-#groupPanel input[type="checkbox"]:hover {
+.group-panel__checkbox:hover {
     transform: scale(1.1);
 }
 
-#groupPanel input[type="checkbox"]:disabled {
+.group-panel__checkbox:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-/* Button hover effects */
+.group-panel__color-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    margin-right: 8px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.2s;
+    flex-shrink: 0;
+}
+
+.group-panel__color-box:hover {
+    box-shadow: 0 0 8px currentColor;
+}
+
+.group-panel__label {
+    flex: 1;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.group-panel__count {
+    color: rgba(255, 255, 255, 0.4);
+    margin-left: 4px;
+}
+
+/* ── Advanced data button ────────────────────────────────────────────────── */
+
+.group-panel__advanced-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 8px;
+    background: rgba(100, 200, 255, 0.1);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 6px;
+    color: #64c8ff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.group-panel__advanced-btn:hover:not(:disabled) {
+    background: rgba(100, 200, 255, 0.2);
+}
+
+.group-panel__advanced-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.group-panel__advanced-btn--loaded {
+    background: rgba(100, 255, 100, 0.1);
+    border-color: rgba(100, 255, 100, 0.3);
+    color: #90ee90;
+}
+
+.group-panel__advanced-btn--error {
+    background: rgba(255, 100, 100, 0.1);
+    border-color: rgba(255, 100, 100, 0.3);
+    color: #ff8888;
+}
+
+/* ── Stats footer ────────────────────────────────────────────────────────── */
+
+.group-panel__footer {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(100, 200, 255, 0.2);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+
+#groupPanel::-webkit-scrollbar       { width: 6px; }
+#groupPanel::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 3px; }
+#groupPanel::-webkit-scrollbar-thumb { background: rgba(100, 200, 255, 0.3); border-radius: 3px; }
+#groupPanel::-webkit-scrollbar-thumb:hover { background: rgba(100, 200, 255, 0.5); }
+
+/* ── Collapse button — ◀ Grupos (el bonito azul) ─────────────────────────── */
+/* Este es el estilo que también vamos a aplicar a collapsePhysics y collapseAdd */
+
+#collapseGroups {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: rgba(20, 20, 30, 0.95);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 6px;
+    color: #64c8ff;
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 101;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+#collapseGroups.visible {
+    display: block;
+}
+
 #collapseGroups:hover {
     background: rgba(30, 30, 40, 0.98);
     border-color: rgba(100, 200, 255, 0.5);
     transform: translateY(-50%) scale(1.05);
 }
 
-/* Responsive adjustments */
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
     #groupPanel {
         right: 10px;
@@ -49,13 +222,4 @@
         font-size: 12px;
         max-height: 60vh;
     }
-}
-
-/* Group color boxes glow effect */
-#groupPanel [style*="border-radius: 3px"] {
-    transition: box-shadow 0.2s;
-}
-
-#groupPanel [style*="border-radius: 3px"]:hover {
-    box-shadow: 0 0 8px currentColor;
 }

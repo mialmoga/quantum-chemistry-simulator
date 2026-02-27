@@ -3,20 +3,65 @@
  * Physics engine for gravity, collisions, and forces
  */
 
+import { LennardJonesForces } from '../physics/LennardJones.js';
+import { PhysicsModeManager, PHYSICS_MODE } from '../physics/PhysicsMode.js';
+
 export class PhysicsEngine {
     constructor() {
         // Gravity settings
         this.gravityEnabled = false;
-        this.gravityStrength = 5;      // 0-10 scale
-        this.gravityConstant = 0.001;  // Multiplier for realistic fall
+        this.gravityStrength = 5;      // 0-10 scale (UI slider)
+        this.gravityConstant = 0.00001;  // Atomic scale (100x weaker than before)
+        // NOTE: At atomic scale, gravity is ~10^36 weaker than electromagnetic forces
+        // This value is still exaggerated for visibility, but much more realistic
         
         // Floor settings
         this.floorEnabled = true;
         this.floorY = -15;
-        this.restitution = 0.6;  // Bounce coefficient (0-1)
+        this.restitution = 0.6;
+        this.floorCurvature = 0.0;
+
+        // Ceiling settings
+        this.ceilingEnabled = false;
+        this.ceilingY = 15;
+        this.ceilingRestitution = 0.6;
+        this.ceilingCurvature = 0.0;
+        this.ceilingTemperature = 300;
+        this.floorTemperature   = 300;
+
+        // Sphere container settings
+        this.sphereEnabled = false;
+        this.sphereRadius = 20;
+        this.sphereCenterY = 0;
+        this.sphereRestitution = 0.6;
         
         // General physics
         this.friction = 0.98;
+        
+        // Terminal velocity (prevents atoms from moving too fast)
+        this.terminalVelocity = 2.0;  // Max speed in world units/frame
+        // Prevents atoms from "tunneling" through repulsion barriers
+        
+        // Atomic repulsion (Pauli exclusion principle - by Éter)
+        this.repulsionEnabled = true;
+        this.repulsionStrength = 0.5;  // Fuerza de la barrera
+        this.repulsionFactor = 1.6;    // Multiplicador de distancia mínima (punto dulce)
+        
+        // Bond angle constraints (molecular geometry)
+        this.bondAnglesEnabled = true;
+        this.bondAngleStrength = 0.5;  // 0-1, how strongly angles are enforced
+        
+        // Lennard-Jones forces (Van der Waals)
+        this.lennardJones = new LennardJonesForces();
+        this.lennardJones.enabled = false; // Start disabled
+        
+        // Physics mode manager (Pedagogical vs Realistic)
+        this.modeManager = new PhysicsModeManager(this);
+        this.bondSpringMultiplier = 1.0; // Controlled by mode
+        
+        // Reusable objects (avoid GC)
+        this._delta = new THREE.Vector3();
+        this._force = new THREE.Vector3();
     }
     
     applyGravity(atom) {
@@ -35,16 +80,85 @@ export class PhysicsEngine {
         const position = atom.group.position;
         const effectiveRadius = atom.getEffectiveRadius(); // Use electron cloud boundary
         
-        if(position.y - effectiveRadius < this.floorY) {
+        // Calculate floor height at atom's XZ position (curvature)
+        const floorHeight = this.floorY + this.floorCurvature * (position.x * position.x + position.z * position.z);
+        
+        if(position.y - effectiveRadius < floorHeight) {
             // Place on floor with offset for radius
-            position.y = this.floorY + effectiveRadius;
+            position.y = floorHeight + effectiveRadius;
             
-            // Bounce
+            // Bounce with energy loss
             atom.velocity.y *= -this.restitution;
+            
+            // Collision damping: absorb horizontal energy too (friction)
+            atom.velocity.x *= 0.85;
+            atom.velocity.z *= 0.85;
             
             // Dampen if bounce is small (to stop eventually)
             if(Math.abs(atom.velocity.y) < 0.01) {
                 atom.velocity.y = 0;
+            }
+            
+            // If floor is curved, apply slope force (atoms roll down/up)
+            if(Math.abs(this.floorCurvature) > 0.001) {
+                const slopeForce = new THREE.Vector3(
+                    -2 * this.floorCurvature * position.x,
+                    0,
+                    -2 * this.floorCurvature * position.z
+                ).multiplyScalar(0.01); // Small force
+                atom.applyForce(slopeForce);
+            }
+        }
+    }
+    
+    /**
+     * Apply Pauli exclusion repulsion between all atoms
+     * Prevents atoms from overlapping (designed by Éter)
+     * Uses quadratic force: stronger as atoms get closer
+     */
+    applyAtomicRepulsion(atoms) {
+        if(!this.repulsionEnabled) return;
+        
+        for(let i = 0; i < atoms.length; i++) {
+            for(let j = i + 1; j < atoms.length; j++) {
+                const a = atoms[i];
+                const b = atoms[j];
+                
+                // Skip if both frozen
+                if(a.frozen && b.frozen) continue;
+
+                // Skip directly bonded pairs — el enlace XPBD ya maneja esa distancia.
+                // Pauli entre enlazados crea fuerzas opuestas al constraint → resonancia.
+                if(a.bonds.some(b2 => b2.atom1 === b || b2.atom2 === b)) continue;
+                
+                this._delta.subVectors(b.group.position, a.group.position);
+                const dist = this._delta.length();
+                
+                // Minimum distance based on nucleus radii
+                // Si hay datos avanzados con radio iónico, usarlo para iones (NaCl, etc.)
+                // Solo cuando el dato existe explícitamente — sin estimaciones.
+                const rA = a.element?.radius_ionic_pm
+                    ? a.element.radius_ionic_pm / 100
+                    : a.nucleusRadius;
+                const rB = b.element?.radius_ionic_pm
+                    ? b.element.radius_ionic_pm / 100
+                    : b.nucleusRadius;
+                const minDist = (rA + rB) * this.repulsionFactor;
+                
+                if(dist < minDist && dist > 0.01) {
+                    // Quadratic repulsion: stronger at close range
+                    const overlap = minDist - dist;
+                    const forceMag = (overlap * overlap) * this.repulsionStrength;
+                    
+                    this._force.copy(this._delta).normalize().multiplyScalar(forceMag);
+                    
+                    if(!a.frozen) {
+                        a.force.sub(this._force);  // Push a away
+                    }
+                    if(!b.frozen) {
+                        b.force.add(this._force);  // Push b away
+                    }
+                }
             }
         }
     }
@@ -56,15 +170,29 @@ export class PhysicsEngine {
         // Apply gravity
         this.applyGravity(atom);
         
-        // Update velocity from forces
-        atom.velocity.add(atom.force);
+        // Update velocity from forces: F = ma → a = F/m
+        const mass = atom.element.mass || 1.0; // Use actual atomic mass
+        const acceleration = atom.force.clone().divideScalar(mass);
+        atom.velocity.add(acceleration);
         atom.velocity.multiplyScalar(this.friction);
+        
+        // Apply terminal velocity (prevent tunneling through repulsion)
+        const speed = atom.velocity.length();
+        if(speed > this.terminalVelocity) {
+            atom.velocity.multiplyScalar(this.terminalVelocity / speed);
+        }
         
         // Update position
         atom.group.position.add(atom.velocity);
         
         // Check floor collision
         this.checkFloorCollision(atom);
+
+        // Check ceiling collision
+        this.checkCeilingCollision(atom);
+
+        // Check sphere container collision
+        this.checkSphereCollision(atom);
         
         // Reset forces
         atom.force.set(0, 0, 0);
@@ -77,6 +205,50 @@ export class PhysicsEngine {
         }
     }
     
+    checkCeilingCollision(atom) {
+        if(!this.ceilingEnabled) return;
+        const pos = atom.group.position;
+        const r   = atom.getEffectiveRadius();
+        // Simétrico al piso pero invertido: techo baja en el centro cuando curvature > 0
+        const ceilH = this.ceilingY - this.ceilingCurvature * (pos.x * pos.x + pos.z * pos.z);
+        if(pos.y + r > ceilH) {
+            pos.y = ceilH - r;
+            atom.velocity.y *= -this.ceilingRestitution;
+            atom.velocity.x *= 0.85;
+            atom.velocity.z *= 0.85;
+            if(Math.abs(atom.velocity.y) < 0.01) atom.velocity.y = 0;
+        }
+    }
+
+    checkSphereCollision(atom) {
+        if(!this.sphereEnabled) return;
+        const pos    = atom.group.position;
+        const r      = atom.getEffectiveRadius();
+        const center = new THREE.Vector3(0, this.sphereCenterY, 0);
+        const dist   = pos.distanceTo(center);
+        const limit  = this.sphereRadius - r;
+        if(dist > limit && limit > 0) {
+            const normal = pos.clone().sub(center).normalize();
+            pos.copy(center).addScaledVector(normal, limit);
+            const vDot = atom.velocity.dot(normal);
+            if(vDot > 0) {
+                atom.velocity.addScaledVector(normal, -vDot * (1 + this.sphereRestitution));
+            }
+        }
+    }
+
+    setCeiling(enabled, y = null, restitution = null) {
+        this.ceilingEnabled = enabled;
+        if(y !== null) this.ceilingY = y;
+        if(restitution !== null) this.ceilingRestitution = Math.max(0, Math.min(1, restitution));
+    }
+
+    setSphere(enabled, radius = null, restitution = null) {
+        this.sphereEnabled = enabled;
+        if(radius !== null) this.sphereRadius = radius;
+        if(restitution !== null) this.sphereRestitution = Math.max(0, Math.min(1, restitution));
+    }
+
     setFloor(enabled, y = null, restitution = null) {
         this.floorEnabled = enabled;
         if(y !== null) this.floorY = y;

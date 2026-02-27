@@ -69,41 +69,561 @@
     padding: 8px 10px;
 }
 
-/* Molecule Panel (Top Right) */
-.molecule-panel {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(15px);
-    padding: 16px;
-    border-radius: 16px;
-    border: 1px solid rgba(100, 200, 255, 0.3);
-    transition: all 0.3s ease;
-    z-index: 99;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-height: 60vh;
-    overflow-y: auto;
-    max-width: 300px;
+/* ========================================
+   AMBIENT TEMPERATURE GRADIENT
+   Variable --ambient-temp-rgb se actualiza desde Temperature.js
+   ======================================== */
+
+:root {
+    --ambient-temp-rgb: 5, 5, 15; /* neutral dark — updated by JS */
 }
 
-.molecule-panel.hidden {
+body {
+    background: radial-gradient(
+        ellipse at center,
+        rgba(var(--ambient-temp-rgb), 0.85) 0%,
+        rgba(0, 0, 0, 1) 70%
+    );
+    transition: background 0.8s ease;
+}
+
+/* ========================================
+   PHYSICS LAB PANEL (Top Right, floating)
+   ======================================== */
+.physics-panel {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    width: 320px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    background: rgba(15, 20, 30, 0.95);
+    border: 2px solid rgba(100, 200, 255, 0.4);
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #e0e0e0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.physics-panel.hidden {
     transform: translateY(-150%);
     opacity: 0;
     pointer-events: none;
 }
 
-.molecule-panel-title {
-    font-size: 14px;
-    color: #ffffff;
-    font-weight: 600;
+.physics-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.physics-panel__title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.physics-panel__warning {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.physics-panel__section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(100, 200, 255, 0.3);
+}
+
+.physics-panel__section-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #ffd700;
+}
+
+.physics-panel__hint {
+    font-size: 10px;
+    opacity: 0.6;
+    margin-top: 4px;
     text-align: center;
+}
+
+.physics-panel__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+/* ========================================
+   PHYSICS PANEL (Bottom Left)
+   ======================================== */
+#physicsPanel {
+    position: fixed;
+    bottom: 5%;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(15px);
+    padding: 18px 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    font-size: 13px;
+    max-width: 280px;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 100;
+    color: #64c8ff;
+    transition: all 0.3s ease;
+}
+
+#physicsPanel::-webkit-scrollbar       { width: 4px; }
+#physicsPanel::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 2px; }
+#physicsPanel::-webkit-scrollbar-thumb { background: rgba(100,200,255,0.3); border-radius: 2px; }
+
+#physicsPanel.hidden {
+    transform: translateY(150%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#physicsPanel h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: #ffffff;
+}
+
+/* ========================================
+   TEMPERATURE PANEL (top-center, floating)
+   ======================================== */
+.temp-panel {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: rgba(15, 20, 30, 0.96);
+    border: 2px solid rgba(255, 140, 0, 0.45);
+    border-radius: 14px;
+    padding: 16px;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px;
+    color: #e0e0e0;
+    box-shadow: 0 8px 32px rgba(255, 100, 0, 0.15), 0 4px 16px rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.temp-panel::-webkit-scrollbar       { width: 4px; }
+.temp-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 2px; }
+.temp-panel::-webkit-scrollbar-thumb { background: rgba(255,140,0,0.3); border-radius: 2px; }
+
+.temp-panel.hidden {
+    transform: translateX(-50%) translateY(-150%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.temp-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.temp-panel__title {
+    font-size: 17px;
+    font-weight: bold;
+    color: #ff9933;
+}
+
+/* Mode toggle row */
+.temp-panel__mode-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 8px;
 }
 
-/* Element Selector (Bottom) */
+.temp-panel__mode-label {
+    font-size: 11px;
+    opacity: 0.7;
+    white-space: nowrap;
+}
+
+.temp-panel__mode-btns {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+}
+
+.temp-mode-btn {
+    flex: 1;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    background: rgba(100, 100, 100, 0.2);
+    border: 1px solid rgba(100, 100, 100, 0.3);
+    color: #888;
+    transition: all 0.2s;
+}
+
+.temp-mode-btn--active {
+    background: rgba(255, 140, 0, 0.25);
+    border-color: rgba(255, 140, 0, 0.6);
+    color: #ff9933;
+    font-weight: bold;
+}
+
+.temp-mode-btn:hover:not(.temp-mode-btn--active) {
+    background: rgba(100, 100, 100, 0.35);
+    color: #ccc;
+}
+
+/* Mode description */
+.temp-panel__mode-desc {
+    font-size: 10px;
+    opacity: 0.6;
+    margin-bottom: 14px;
+    line-height: 1.4;
+    padding: 6px 8px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    border-left: 2px solid rgba(255,140,0,0.4);
+}
+
+/* Enable toggle row */
+.temp-panel__enable-row {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,140,0,0.2);
+}
+
+/* Live readout */
+.temp-panel__readout {
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255,140,0,0.2);
+}
+
+.temp-panel__readout-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.temp-panel__readout-row:last-child { margin-bottom: 0; }
+
+.temp-panel__readout-value {
+    color: #ff9933;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.temp-panel__readout-phase {
+    font-family: monospace;
+    font-weight: bold;
+}
+
+/* Realistic mode warning */
+.temp-panel__realistic-warning {
+    margin-top: 12px;
+    padding: 8px 10px;
+    background: rgba(255, 200, 0, 0.08);
+    border: 1px solid rgba(255, 200, 0, 0.3);
+    border-radius: 6px;
+    font-size: 10px;
+    color: rgba(255, 220, 100, 0.85);
+    line-height: 1.5;
+}
+
+/* Section title inside temp panel */
+.temp-panel__section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #ff9933;
+    opacity: 0.8;
+    margin: 14px 0 8px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(255, 140, 0, 0.2);
+}
+
+/* Generic panel section divider */
+.panel-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.panel-section--gold {
+    border-top-color: rgba(255, 200, 100, 0.3);
+}
+
+.panel-section__title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #ffd700;
+}
+
+.panel-section__hint {
+    font-size: 10px;
+    opacity: 0.6;
+    margin-top: 4px;
+    margin-left: 24px;
+    line-height: 1.4;
+}
+
+/* Checkbox rows inside panels */
+.panel-check-row {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.panel-check-row input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Floor visibility row (checkbox + button side by side) */
+.floor-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.floor-row label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex: 1;
+}
+
+.floor-row label input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* ── physicsPanel tab bar ──────────────────────────────────────────────── */
+
+.physics-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.physics-tab {
+    flex: 1;
+    padding: 7px 6px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(100, 200, 255, 0.07);
+    border: 1px solid rgba(100, 200, 255, 0.2);
+    color: rgba(100, 200, 255, 0.5);
+}
+
+.physics-tab--active {
+    background: rgba(100, 200, 255, 0.2);
+    border-color: rgba(100, 200, 255, 0.5);
+    color: #64c8ff;
+}
+
+.physics-tab:hover:not(.physics-tab--active) {
+    background: rgba(100, 200, 255, 0.12);
+    color: rgba(100, 200, 255, 0.75);
+}
+
+/* Geometry section titles (inside Geometría tab) */
+.geom-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64c8ff;
+    opacity: 0.7;
+    margin: 14px 0 8px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(100, 200, 255, 0.15);
+}
+
+.geom-section-title:first-child { margin-top: 0; }
+
+
+.add-panel {
+    position: fixed;
+    bottom: 5%;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(15px);
+    padding: 18px 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    font-size: 13px;
+    max-width: 280px;
+    z-index: 100;
+    color: #64c8ff;
+    transition: all 0.3s ease;
+}
+
+.add-panel.hidden {
+    transform: translateY(150%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.add-panel h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: #ffffff;
+    text-align: center;
+}
+
+/* Toggle bar (Moléculas / Cristales) */
+.add-panel__toggle-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.add-panel__tab {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-size: 13px;
+}
+
+.add-panel__tab--active {
+    background: rgba(100, 200, 255, 0.3);
+    border: 1px solid rgba(100, 200, 255, 0.5);
+    color: #fff;
+}
+
+.add-panel__tab--inactive {
+    background: rgba(50, 50, 50, 0.3);
+    border: 1px solid rgba(100, 100, 100, 0.3);
+    color: #888;
+}
+
+/* Crystals section grid */
+.crystals-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.crystal-size-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+/* ========================================
+   GROUP PANEL (Right side, created by JS)
+   Estilos base y animaciones en GroupPanel.css
+   ======================================== */
+
+/* ========================================
+   COLLAPSE BUTTONS (panel toggles)
+   Estilo base azul — igual al botón ◀ Grupos
+   ======================================== */
+
+.collapse-btn {
+    background: rgba(20, 20, 30, 0.95);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 6px;
+    color: #64c8ff;
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 101;
+}
+
+.collapse-btn:hover {
+    background: rgba(30, 30, 40, 0.98);
+    border-color: rgba(100, 200, 255, 0.5);
+    box-shadow: 0 0 10px rgba(100, 200, 255, 0.2);
+}
+
+/* ▲ Física — bottom-left */
+#collapsePhysics {
+    position: fixed;
+    bottom: 10px;
+    left: 18px;
+    z-index: 101;
+}
+
+#collapsePhysics:hover {
+    transform: scale(1.05);
+}
+
+/* ▲ Agregar — bottom-right */
+#collapseAdd {
+    position: fixed;
+    bottom: 10px;
+    right: 18px;
+    z-index: 101;
+}
+
+#collapseAdd:hover {
+    transform: scale(1.05);
+}
+
+/* ◀ — Element selector, bottom-center */
+#collapseElements {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 101;
+}
+
+#collapseElements:hover {
+    transform: translateX(-50%) scale(1.05);
+}
+
+/* ◀ — Main UI panel, left side */
+#collapseUI {
+    position: fixed;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 101;
+}
+
+#collapseUI:hover {
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* ◀ Grupos — definido en GroupPanel.css */
+
+/* ========================================
+   ELEMENT SELECTOR (Bottom Center)
+   ======================================== */
 .element-selector {
     position: fixed;
     bottom: 20px;
@@ -116,6 +636,7 @@
     border: 1px solid rgba(100, 200, 255, 0.3);
     transition: all 0.3s ease;
     max-width: 95%;
+    font-size: 13px;
     z-index: 100;
 }
 
@@ -177,21 +698,344 @@
     opacity: 0.8;
 }
 
-/* Collapse Button Positions */
-#collapseElements {
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+/* ========================================
+   SLIDER GROUPS
+   ======================================== */
+.slider-group {
+    margin-bottom: 12px;
 }
 
-#collapseUI {
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+.slider-group label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
 }
 
-#collapseMolecules {
-    right: 10px;
-    top: 40%;
-    transform: translateY(-50%);
+.slider-group input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: rgba(100, 200, 255, 0.2);
+    border-radius: 3px;
+    outline: none;
+    accent-color: #64c8ff;
+}
+
+.slider-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #88ccff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(136, 204, 255, 0.5);
+}
+
+.slider-group input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #88ccff;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+/* Slider value display (monospace green) */
+.slider-value {
+    color: #88ff88;
+    font-family: monospace;
+}
+
+/* ========================================
+   PANEL BUTTONS
+   ======================================== */
+
+/* Close button (red X) */
+.btn-close {
+    background: rgba(255, 100, 100, 0.2);
+    border: 1px solid rgba(255, 100, 100, 0.5);
+    color: #ff6666;
+    padding: 4px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-close:hover {
+    background: rgba(255, 100, 100, 0.35);
+}
+
+/* Reset button (blue) */
+.btn-reset {
+    flex: 1;
+    background: rgba(100, 200, 255, 0.2);
+    border: 1px solid rgba(100, 200, 255, 0.5);
+    color: #88ccff;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.btn-reset:hover {
+    background: rgba(100, 200, 255, 0.35);
+}
+
+/* Random button (gold) */
+.btn-random {
+    flex: 1;
+    background: rgba(255, 200, 100, 0.2);
+    border: 1px solid rgba(255, 200, 100, 0.5);
+    color: #ffcc88;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.btn-random:hover {
+    background: rgba(255, 200, 100, 0.35);
+}
+
+/* Floor visibility button */
+.btn-floor-visibility {
+    padding: 6px 12px;
+    background: rgba(100, 200, 255, 0.2);
+    border: 1px solid rgba(100, 200, 255, 0.4);
+    color: #64c8ff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+}
+
+.btn-floor-visibility.hidden-floor {
+    background: rgba(100, 100, 100, 0.2);
+    border-color: rgba(100, 100, 100, 0.4);
+    color: #888;
+}
+
+/* Open Physics Lab button */
+.btn-open-lab {
+    margin-top: 10px;
+    background: rgba(255, 215, 0, 0.2);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    color: #ffd700;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.btn-open-lab:hover {
+    background: rgba(255, 215, 0, 0.35);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Open Temperature panel button */
+.btn-open-temp {
+    margin-top: 10px;
+    background: rgba(255, 140, 0, 0.2);
+    border: 2px solid rgba(255, 140, 0, 0.5);
+    color: #ff9933;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    box-shadow: 0 4px 16px rgba(255, 140, 0, 0.2);
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.btn-open-temp:hover {
+    background: rgba(255, 140, 0, 0.35);
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.35);
+}
+
+/* Container for side-by-side action buttons */
+.panel-section__action-btns {
+    display: flex;
+    gap: 8px;
+    margin-left: 0;
+}
+
+/* Delete mode button states */
+.btn-delete-active {
+    background: rgba(255, 50, 50, 0.3) !important;
+    border-color: rgba(255, 100, 100, 0.5) !important;
+}
+
+/* ========================================
+   FULLSCREEN BUTTON
+   ======================================== */
+.fullscreen-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(100, 200, 255, 0.15);
+    border: 1px solid rgba(100, 200, 255, 0.4);
+    border-radius: 6px;
+    color: #64c8ff;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.fullscreen-btn:hover {
+    background: rgba(100, 200, 255, 0.3);
+    border-color: rgba(100, 200, 255, 0.6);
+    transform: scale(1.05);
+}
+
+/* ========================================
+   DELETE MODAL
+   ======================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-box {
+    background: rgba(20, 20, 30, 0.95);
+    border: 2px solid rgba(100, 200, 255, 0.5);
+    border-radius: 12px;
+    padding: 25px;
+    max-width: 400px;
+    color: white;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.modal-box h3 {
+    margin: 0 0 15px 0;
+    color: #ff6666;
+}
+
+.modal-box p {
+    margin: 0 0 20px 0;
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+.modal-box__actions {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+}
+
+.modal-btn {
+    padding: 15px;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-btn--atom {
+    background: rgba(255, 100, 100, 0.2);
+    border: 2px solid rgba(255, 100, 100, 0.5);
+}
+
+.modal-btn--atom:hover {
+    background: rgba(255, 100, 100, 0.4);
+    transform: scale(1.02);
+}
+
+.modal-btn--structure {
+    background: rgba(255, 50, 50, 0.3);
+    border: 2px solid rgba(255, 50, 50, 0.6);
+}
+
+.modal-btn--structure:hover {
+    background: rgba(255, 50, 50, 0.5);
+    transform: scale(1.02);
+}
+
+/* ========================================
+   ERROR OVERLAY (debug, injected by JS)
+   ======================================== */
+#error-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(200, 0, 0, 0.92);
+    color: #fff;
+    font: 13px monospace;
+    padding: 12px;
+    z-index: 99999;
+    max-height: 50vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+/* ========================================
+   UTILITY
+   ======================================== */
+
+/* NOTE: .hidden is used for ANIMATIONS (opacity + transform)
+   If you need display:none, use .display-none instead */
+   
+.display-none {
+    display: none !important;
+}
+
+/* Tab content toggle — usa display:none real, no animación */
+.tab-hidden {
+    display: none !important;
+}
+
+/* ========================================
+   MOBILE
+   ======================================== */
+@media (max-width: 768px) {
+    #physicsPanel {
+        max-width: 90vw;
+        left: 10px;
+    }
+
+    .add-panel {
+        max-width: 90vw;
+        right: 10px;
+    }
+
+    .physics-panel {
+        width: 90vw;
+        right: 5vw;
+    }
+}
+
+/* ========================================
+   ADD PANEL TAB SECTIONS (molecules/crystals toggle)
+   ======================================== */
+#moleculesSection.hidden,
+#crystalsSection.hidden {
+    display: none !important;
 }

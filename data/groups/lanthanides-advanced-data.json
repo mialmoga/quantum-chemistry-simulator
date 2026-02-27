@@ -1,0 +1,296 @@
+{
+  "La": {
+    "number": 57,
+    "electron_affinity_ev": 0.5,
+    "vanderwaals_radius_pm": 240,
+    "max_bonds": 3,
+    "standard_state": "solid",
+    "geometry_preference": "hexagonal",
+    "ideal_bond_angle": 90,
+    "bond_energy_ev": 1.3,
+    "critical_temp_K": 3500,
+    "critical_press_MPa": 85,
+    "specific_heat_j_gK": 0.19,
+    "magnetic_susceptibility": 1.1e-4,
+    "effective_nuclear_charge": 7.5,
+    "polarizability_angstrom3": 31.1,
+    "ionic_radius_pm": 103,
+    "standard_reduction_potential_v": -2.37,
+    "thermal_conductivity_wmk": 13.4,
+    "thermal_expansion_coefficient": 0.0000121,
+    "viscosity_pa_s": 0.0035,
+    "neutron_cross_section_barns": 9.0,
+    "nuclear_binding_energy_mev": 8.25,
+    "surface_tension_nm": 0.72,
+    "abundance_crust_mg_kg": 39.0,
+    "electrical_conductivity_sm": 1.6e6,
+    "refractive_index": 1.0,
+    "work_function_ev": 3.5,
+    "allotropes": ["Double Hexagonal", "FCC"],
+    "toxicity_level": 1,
+    "discovery_year": 1839,
+    "youngs_modulus_gba": 37.9,
+    "poisson_ratio": 0.28,
+    "brinell_hardness_m_pa": 360,
+    "lattice_constant_pm": 375,
+    "lattice_structure": "dhcp",
+    "vapor_pressure_pa": 0.0,
+    "fusion_heat_kj_mol": 6.2,
+    "evaporation_heat_kj_mol": 400,
+    "electron_configuration_string": "[Xe] 5d1 6s2",
+    "quantum_numbers": { "s": 2, "p": 0, "d": 1, "f": 0 }
+  },
+  "Ce": {
+    "number": 58,
+    "electron_affinity_ev": 0.5,
+    "vanderwaals_radius_pm": 235,
+    "max_bonds": 4,
+    "standard_state": "solid",
+    "geometry_preference": "octahedral",
+    "ideal_bond_angle": 90,
+    "bond_energy_ev": 1.5,
+    "critical_temp_K": 3700,
+    "critical_press_MPa": 90,
+    "specific_heat_j_gK": 0.192,
+    "magnetic_susceptibility": 2.4e-3,
+    "effective_nuclear_charge": 7.6,
+    "polarizability_angstrom3": 29.6,
+    "ionic_radius_pm": 101,
+    "standard_reduction_potential_v": -2.34,
+    "thermal_conductivity_wmk": 11.3,
+    "thermal_expansion_coefficient": 0.0000063,
+    "viscosity_pa_s": 0.003,
+    "neutron_cross_section_barns": 0.63,
+    "nuclear_binding_energy_mev": 8.28,
+    "surface_tension_nm": 0.70,
+    "abundance_crust_mg_kg": 66.5,
+    "electrical_conductivity_sm": 1.4e6,
+    "refractive_index": 1.0,
+    "work_function_ev": 2.9,
+    "allotropes": [
+      "Alpha",
+      "Beta",
+      "Gamma",
+      "Delta"
+    ],
+    "discovery_year": 1803,
+    "youngs_modulus_gba": 33.6,
+    "poisson_ratio": 0.24,
+    "brinell_hardness_m_pa": 235,
+    "lattice_constant_pm": 516,
+    "lattice_structure": "face_centered_cubic",
+    "vapor_pressure_pa": 0,
+    "fusion_heat_kj_mol": 5.46,
+    "evaporation_heat_kj_mol": 398,
+    "electron_configuration_string": "[Xe] 4f1 5d1 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 1,
+      "f": 1
+    }
+  },
+  "Pr": {
+    "number": 59,
+    "electron_configuration_string": "[Xe] 4f3 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 3
+    },
+    "magnetic_susceptibility": 5.3e-3,
+    "discovery_year": 1885,
+    "max_bonds": 4
+  },
+  "Nd": {
+    "number": 60,
+    "electron_configuration_string": "[Xe] 4f4 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 4
+    },
+    "magnetic_susceptibility": 5.6e-3,
+    "discovery_year": 1885,
+    "max_bonds": 3
+  },
+  "Pm": {
+    "number": 61,
+    "electron_configuration_string": "[Xe] 4f5 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 5
+    },
+    "standard_state": "solid",
+    "discovery_year": 1945,
+    "max_bonds": 3
+  },
+  "Sm": {
+    "number": 62,
+    "electron_configuration_string": "[Xe] 4f6 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 6
+    },
+    "magnetic_susceptibility": 1.9e-3,
+    "discovery_year": 1879,
+    "max_bonds": 3
+  },
+  "Eu": {
+    "number": 63,
+    "electron_configuration_string": "[Xe] 4f7 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 7
+    },
+    "magnetic_susceptibility": 3.4e-2,
+    "discovery_year": 1901,
+    "max_bonds": 2
+  },
+  "Gd": {
+    "number": 64,
+    "electron_configuration_string": "[Xe] 4f7 5d1 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 1,
+      "f": 7
+    },
+    "magnetic_susceptibility": 0.48,
+    "discovery_year": 1880,
+    "max_bonds": 3
+  },
+  "Tb": {
+    "number": 65,
+    "electron_configuration_string": "[Xe] 4f9 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 9
+    },
+    "magnetic_susceptibility": 1.7e-1,
+    "discovery_year": 1843,
+    "max_bonds": 4
+  },
+  "Dy": {
+    "number": 66,
+    "electron_configuration_string": "[Xe] 4f10 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 10
+    },
+    "magnetic_susceptibility": 5.9e-1,
+    "discovery_year": 1886,
+    "max_bonds": 3
+  },
+  "Ho": {
+    "number": 67,
+    "electron_configuration_string": "[Xe] 4f11 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 11
+    },
+    "magnetic_susceptibility": 7.3e-1,
+    "discovery_year": 1878,
+    "max_bonds": 3
+  },
+  "Er": {
+    "number": 68,
+    "electron_configuration_string": "[Xe] 4f12 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 12
+    },
+    "magnetic_susceptibility": 4.4e-1,
+    "discovery_year": 1843,
+    "max_bonds": 3
+  },
+  "Tm": {
+    "number": 69,
+    "electron_configuration_string": "[Xe] 4f13 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 13
+    },
+    "magnetic_susceptibility": 2.5e-1,
+    "discovery_year": 1879,
+    "max_bonds": 3
+  },
+  "Yb": {
+    "number": 70,
+    "electron_configuration_string": "[Xe] 4f14 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 0,
+      "f": 14
+    },
+    "magnetic_susceptibility": 6.7e-5,
+    "discovery_year": 1878,
+    "max_bonds": 2
+  },
+  "Lu": {
+    "number": 71,
+    "electron_affinity_ev": 0.346,
+    "vanderwaals_radius_pm": 221,
+    "max_bonds": 3,
+    "standard_state": "solid",
+    "geometry_preference": "hexagonal",
+    "ideal_bond_angle": 90,
+    "bond_energy_ev": 1.8,
+    "critical_temp_K": 3700,
+    "critical_press_MPa": 100,
+    "specific_heat_j_gK": 0.154,
+    "magnetic_susceptibility": 1.0e-5,
+    "effective_nuclear_charge": 8.5,
+    "polarizability_angstrom3": 21.9,
+    "ionic_radius_pm": 86.1,
+    "standard_reduction_potential_v": -2.28,
+    "thermal_conductivity_wmk": 16.4,
+    "thermal_expansion_coefficient": 0.0000099,
+    "viscosity_pa_s": 0.004,
+    "neutron_cross_section_barns": 77.0,
+    "nuclear_binding_energy_mev": 8.16,
+    "surface_tension_nm": 0.9,
+    "abundance_crust_mg_kg": 0.8,
+    "electrical_conductivity_sm": 1.8e6,
+    "refractive_index": 1.0,
+    "work_function_ev": 3.3,
+    "allotropes": [
+      "Alpha-hexagonal"
+    ],
+    "discovery_year": 1907,
+    "youngs_modulus_gba": 68.6,
+    "poisson_ratio": 0.26,
+    "brinell_hardness_m_pa": 890,
+    "lattice_constant_pm": 350,
+    "lattice_structure": "hexagonal_close_packed",
+    "vapor_pressure_pa": 0,
+    "fusion_heat_kj_mol": 22,
+    "evaporation_heat_kj_mol": 414,
+    "electron_configuration_string": "[Xe] 4f14 5d1 6s2",
+    "quantum_numbers": {
+      "s": 2,
+      "p": 0,
+      "d": 1,
+      "f": 14
+    }
+  }
+}
