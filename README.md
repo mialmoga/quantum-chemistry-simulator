@@ -17,6 +17,7 @@ Con contribuciones de Velvet (GPT5) y Éter (GEMINI) (118 elementos CPK)
 
 ### Versión Online
 [**🔗 Abrir Simulador (GitHub Pages)**](https://mialmoga.github.io/quantum-chemistry-simulator/)
+
 <img width="72" height="161" alt="1000014781" src="https://github.com/user-attachments/assets/331402c9-c867-406f-a51a-c1a4d63472a7" />
 <img width="72" height="161" alt="1000014815" src="https://github.com/user-attachments/assets/6855c1bb-c475-46ed-b404-afc407490e34" />
 <img width="191" height="107" alt="Captura de pantalla 2026-02-27 102921" src="https://github.com/user-attachments/assets/d1c4afb1-d359-4e42-a844-6465febccf0b" />
