@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QSim — Nuclear + Field</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:#04060f; overflow:hidden; font-family:'Courier New',monospace; }
+        canvas { display:block; }
+
+        #hud {
+            position:fixed; top:20px; left:20px;
+            color:rgba(255,255,255,0.5); font-size:11px;
+            line-height:2; pointer-events:none; letter-spacing:.05em;
+        }
+        #hud .stat { display:flex; gap:8px; }
+        #hud span  { color:rgba(255,255,255,0.9); font-weight:bold; min-width:36px; }
+        #hud .c-blue  { color:#5588ff; }
+        #hud .c-grey  { color:#aaaaaa; }
+        #hud .c-red   { color:#ff5555; }
+        #hud .c-teal  { color:#44ddcc; }
+        #hud .c-green { color:#44ffaa; }
+        #hud .divider { height:8px; }
+
+        #title {
+            position:fixed; top:20px; right:20px;
+            text-align:right; pointer-events:none;
+        }
+        #title h1 {
+            font-size:13px; font-weight:normal;
+            color:rgba(255,255,255,0.2); letter-spacing:.2em; text-transform:uppercase;
+        }
+        #title p { font-size:10px; color:rgba(255,255,255,0.1); margin-top:4px; }
+
+        #controls {
+            position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+            display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+        }
+        button {
+            background:rgba(255,255,255,0.04);
+            border:1px solid rgba(255,255,255,0.1);
+            color:rgba(255,255,255,0.65);
+            font-family:'Courier New',monospace; font-size:11px;
+            letter-spacing:.06em; padding:8px 14px;
+            cursor:pointer; border-radius:3px; transition:all .15s;
+        }
+        button:hover {
+            background:rgba(255,255,255,0.09);
+            border-color:rgba(255,255,255,0.3);
+            color:rgba(255,255,255,0.95);
+        }
+
+        #legend {
+            position:fixed; bottom:76px; right:20px;
+            font-size:10px; color:rgba(255,255,255,0.25);
+            line-height:2; pointer-events:none;
+        }
+        .dot { display:inline-block; width:7px; height:7px;
+                border-radius:50%; margin-right:6px; }
+        .dr { background:#ff3a3a; }
+        .dg { background:#3aff6e; }
+        .db { background:#3a8fff; }
+        .dh { background:rgba(136,170,255,.25);
+              border:1px solid rgba(136,170,255,.4); }
+        .df { background:rgba(68,221,204,.3);
+              border:1px solid rgba(68,221,204,.4); }
+        .de { background:rgba(68,255,170,.5);
+              border:1px solid rgba(68,255,170,.6); }
+    </style>
+</head>
+<body>
+    <div id="hud"></div>
+
+    <div id="title">
+        <h1>QSim · Nuclear + Field</h1>
+        <p>1 wu = 1 pm &nbsp;·&nbsp; Three.js r128</p>
+    </div>
+
+    <div id="legend">
+        <div><span class="dot dr"></span>Red quark</div>
+        <div><span class="dot dg"></span>Green quark</div>
+        <div><span class="dot db"></span>Blue quark</div>
+        <div><span class="dot dh"></span>Hadron boundary</div>
+        <div><span class="dot df"></span>Field node (medium)</div>
+        <div><span class="dot de"></span>e⁻ zone (Chladni node)</div>
+    </div>
+
+    <div id="controls">
+        <button id="btn-proton">+ Proton</button>
+        <button id="btn-neutron">+ Neutron</button>
+        <button id="btn-zoom">🔴 Hadron</button>
+        <button id="btn-field">🌊 Hide Field</button>
+        <button id="btn-pause">⏸ Pause</button>
+        <button id="btn-clear">Clear</button>
+    </div>
+<script type="importmap">
+    {
+      "imports": {
+        "three":          "/lib/three/build/three.module.js",
+        "three/addons/":  "/lib/three/examples/jsm/",
+        "three/webgpu":   "/lib/three/build/three.webgpu.js",
+        "three/tsl":      "/lib/three/build/three.tsl.js"
+      }
+    }
+    </script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Wood Tetris — Zen</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1410; font-family: 'Georgia', serif; touch-action: none; }
+  #app { position: fixed; inset: 0; }
+  canvas { display: block; }
+
+  /* HUD */
+  .hud {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    pointer-events: none;
+    z-index: 10;
+    color: #f5e6d0;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  }
+  .hud-block { display: flex; flex-direction: column; gap: 2px; }
+  .hud-block.right { align-items: flex-end; }
+  .label { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0.55; font-family: 'Helvetica Neue', sans-serif; font-weight: 300; }
+  .value { font-size: 28px; font-weight: 300; letter-spacing: 0.05em; font-variant-numeric: tabular-nums; }
+  .value.small { font-size: 18px; }
+
+  /* Bottom controls hint */
+  .hint {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    color: #f5e6d0; opacity: 0.35; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    font-family: 'Helvetica Neue', sans-serif; font-weight: 300;
+    pointer-events: none; text-align: center;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  }
+
+  /* Pause / Game Over overlay */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(20, 14, 10, 0.78);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 20; color: #f5e6d0;
+    font-family: 'Georgia', serif;
+  }
+  .overlay.show { display: flex; }
+  .overlay h1 { font-size: 38px; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 8px; text-transform: uppercase; }
+  .overlay p { font-size: 13px; letter-spacing: 0.2em; opacity: 0.6; text-transform: uppercase; margin-bottom: 28px; font-family: 'Helvetica Neue', sans-serif; }
+  .overlay button {
+    background: transparent; border: 1px solid #f5e6d0;
+    color: #f5e6d0; padding: 14px 36px;
+    font-family: 'Helvetica Neue', sans-serif; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 300;
+    cursor: pointer; transition: all 0.3s ease;
+  }
+  .overlay button:hover, .overlay button:active { background: #f5e6d0; color: #1a1410; }
+
+  /* Touch controls */
+  .touch-controls {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    display: none;
+    z-index: 5;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .touch-controls.show { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; padding: 0 8px 8px; }
+  .tc-btn {
+    background: rgba(245, 230, 208, 0.06);
+    border: 1px solid rgba(245, 230, 208, 0.12);
+    color: #f5e6d0;
+    padding: 16px 0;
+    font-family: 'Helvetica Neue', sans-serif; font-size: 22px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    cursor: pointer; transition: background 0.15s;
+  }
+  .tc-btn:active { background: rgba(245, 230, 208, 0.18); }
+  .tc-row { display: flex; gap: 1px; }
+  .tc-row .tc-btn { flex: 1; }
+
+  /* Pause button */
+  .pause-btn {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    background: transparent; border: none; color: #f5e6d0; opacity: 0.4;
+    font-size: 22px; cursor: pointer; z-index: 11; padding: 8px;
+  }
+  .pause-btn:active { opacity: 0.8; }
+</style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="hud">
+    <div class="hud-block">
+      <span class="label">Score</span>
+      <span class="value" id="score">0</span>
+    </div>
+    <div class="hud-block right">
+      <span class="label">Lines</span>
+      <span class="value small" id="lines">0</span>
+      <span class="label" style="margin-top: 8px;">Level</span>
+      <span class="value small" id="level">1</span>
+    </div>
+  </div>
+
+  <button class="pause-btn" id="pauseBtn">⏸</button>
+
+  <div class="hint" id="hint">← → MOVE  ·  ↑ ROTATE  ·  ↓ SOFT DROP  ·  SPACE HARD DROP</div>
+
+  <div class="touch-controls" id="touchControls">
+    <div class="tc-row" style="grid-column: 1 / span 3;">
+      <button class="tc-btn" data-action="left">◀</button>
+      <button class="tc-btn" data-action="rotate">↻</button>
+      <button class="tc-btn" data-action="right">▶</button>
+      <button class="tc-btn" data-action="soft">▼</button>
+      <button class="tc-btn" data-action="hard">⤓</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <h1 id="overlayTitle">Paused</h1>
+    <p id="overlaySubtitle">Take a breath</p>
+    <button id="overlayBtn">Resume</button>
+  </div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+// ===== CONFIG =====
+const COLS = 10;
+const ROWS = 20;
+const CUBE_SIZE = 1.0;
+const SUBDIV = 4;          // Subdivisión por cubo en el shatter (4³ = 64 voxelitos)
+const SUB_SIZE = CUBE_SIZE / SUBDIV;
+const PARTICLE_LIFE = 1.6; // segundos
+const GRAVITY = -22;       // ud/s²
+
+// ===== TEXTURA PROCEDURAL DE MADERA =====
+// Genera una textura de madera con canvas. Una sola vez, reusable.
+function makeWoodTextures() {
+  const SIZE = 256;
+
+  // -- ALBEDO --
+  const albedoCanvas = document.createElement('canvas');
+  albedoCanvas.width = albedoCanvas.height = SIZE;
+  const ac = albedoCanvas.getContext('2d');
+
+  // Base: gradiente cálido caoba
+  const base = ac.createLinearGradient(0, 0, 0, SIZE);
+  base.addColorStop(0, '#9a3a1f');
+  base.addColorStop(0.5, '#a64a2a');
+  base.addColorStop(1, '#8a3520');
+  ac.fillStyle = base;
+  ac.fillRect(0, 0, SIZE, SIZE);
+
+  // Veta vertical (líneas onduladas oscuras y claras)
+  const grainCount = 80;
+  for (let i = 0; i < grainCount; i++) {
+    const x = Math.random() * SIZE;
+    const alpha = 0.04 + Math.random() * 0.12;
+    const dark = Math.random() > 0.5;
+    ac.strokeStyle = dark ? `rgba(40, 18, 10, ${alpha})` : `rgba(220, 160, 110, ${alpha * 0.6})`;
+    ac.lineWidth = 0.5 + Math.random() * 1.5;
+    ac.beginPath();
+    let y = 0;
+    let cx = x;
+    ac.moveTo(cx, y);
+    while (y < SIZE) {
+      y += 4 + Math.random() * 8;
+      cx += (Math.random() - 0.5) * 3;
+      ac.lineTo(cx, y);
+    }
+    ac.stroke();
+  }
+
+  // Anillos de crecimiento (ovales suaves muy desviados verticalmente)
+  for (let i = 0; i < 6; i++) {
+    const cx = SIZE * (0.2 + Math.random() * 0.6);
+    const cy = SIZE * (Math.random() * 1.5 - 0.25);
+    const rx = 30 + Math.random() * 40;
+    const ry = rx * (4 + Math.random() * 3);
+    ac.strokeStyle = `rgba(60, 25, 12, ${0.06 + Math.random() * 0.08})`;
+    ac.lineWidth = 1 + Math.random() * 2;
+    ac.beginPath();
+    ac.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ac.stroke();
+  }
+
+  // Grano fino (ruido)
+  const imgData = ac.getImageData(0, 0, SIZE, SIZE);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const n = (Math.random() - 0.5) * 18;
+    d[i]   = Math.max(0, Math.min(255, d[i]   + n));
+    d[i+1] = Math.max(0, Math.min(255, d[i+1] + n * 0.7));
+    d[i+2] = Math.max(0, Math.min(255, d[i+2] + n * 0.5));
+  }
+  ac.putImageData(imgData, 0, 0);
+
+  // -- NORMAL MAP -- (derivado del grano, simple)
+  const normalCanvas = document.createElement('canvas');
+  normalCanvas.width = normalCanvas.height = SIZE;
+  const nc = normalCanvas.getContext('2d');
+  nc.fillStyle = 'rgb(128, 128, 255)';
+  nc.fillRect(0, 0, SIZE, SIZE);
+  // Variaciones sutiles siguiendo la veta
+  for (let i = 0; i < 200; i++) {
+    const x = Math.random() * SIZE;
+    const grad = nc.createLinearGradient(x - 2, 0, x + 2, 0);
+    grad.addColorStop(0, 'rgba(100, 128, 255, 0.3)');
+    grad.addColorStop(0.5, 'rgba(128, 128, 255, 0)');
+    grad.addColorStop(1, 'rgba(156, 128, 255, 0.3)');
+    nc.fillStyle = grad;
+    nc.fillRect(x - 2, 0, 4, SIZE);
+  }
+
+  // -- ROUGHNESS --
+  const roughCanvas = document.createElement('canvas');
+  roughCanvas.width = roughCanvas.height = SIZE;
+  const rc = roughCanvas.getContext('2d');
+  rc.fillStyle = '#b0b0b0'; // ~0.7 roughness base
+  rc.fillRect(0, 0, SIZE, SIZE);
+  // Variaciones ligeras
+  const rImg = rc.getImageData(0, 0, SIZE, SIZE);
+  const rd = rImg.data;
+  for (let i = 0; i < rd.length; i += 4) {
+    const n = (Math.random() - 0.5) * 30;
+    const v = Math.max(140, Math.min(220, 176 + n));
+    rd[i] = rd[i+1] = rd[i+2] = v;
+  }
+  rc.putImageData(rImg, 0, 0);
+
+  const albedoTex = new THREE.CanvasTexture(albedoCanvas);
+  const normalTex = new THREE.CanvasTexture(normalCanvas);
+  const roughTex = new THREE.CanvasTexture(roughCanvas);
+
+  [albedoTex, normalTex, roughTex].forEach(t => {
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.anisotropy = 4;
+  });
+  albedoTex.colorSpace = THREE.SRGBColorSpace;
+
+  return { albedoTex, normalTex, roughTex };
+}
+
+// ===== TETROMINOS =====
+const SHAPES = {
+  I: [[0,1],[1,1],[2,1],[3,1]],
+  O: [[0,0],[1,0],[0,1],[1,1]],
+  T: [[0,1],[1,1],[2,1],[1,0]],
+  S: [[1,0],[2,0],[0,1],[1,1]],
+  Z: [[0,0],[1,0],[1,1],[2,1]],
+  J: [[0,0],[0,1],[1,1],[2,1]],
+  L: [[2,0],[0,1],[1,1],[2,1]],
+};
+const SHAPE_KEYS = Object.keys(SHAPES);
+
+// ===== ESCENA =====
+const app = document.getElementById('app');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#1a1410');
+scene.fog = new THREE.Fog('#1a1410', 22, 45);
+
+const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
+// Cámara ligeramente desde arriba en perspectiva, para ver biseles de los cubos
+const aspectFactor = window.innerWidth / window.innerHeight < 0.7 ? 1.3 : 1.0;
+camera.position.set(0, 2, 30 * aspectFactor);
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+app.appendChild(renderer.domElement);
+
+// ===== ILUMINACIÓN =====
+const ambient = new THREE.AmbientLight(0xffd8b0, 0.25);
+scene.add(ambient);
+
+const keyLight = new THREE.DirectionalLight(0xfff0d8, 2.4);
+keyLight.position.set(8, 14, 10);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(1024, 1024);
+keyLight.shadow.camera.near = 1;
+keyLight.shadow.camera.far = 50;
+keyLight.shadow.camera.left = -15;
+keyLight.shadow.camera.right = 15;
+keyLight.shadow.camera.top = 18;
+keyLight.shadow.camera.bottom = -18;
+keyLight.shadow.bias = -0.0005;
+keyLight.shadow.radius = 4;
+scene.add(keyLight);
+
+const fillLight = new THREE.DirectionalLight(0xffaa66, 0.5);
+fillLight.position.set(-6, 4, 6);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xffd6a0, 0.3);
+rimLight.position.set(0, -4, -6);
+scene.add(rimLight);
+
+// ===== TEXTURAS =====
+const { albedoTex, normalTex, roughTex } = makeWoodTextures();
+
+// ===== MATERIAL DE MADERA =====
+// Un material por cubo, pero compartiendo texturas. Vamos a hacer instanced cuando sea posible.
+// Para simplicidad, cada cubo es un Mesh con el mismo material compartido.
+const woodMaterial = new THREE.MeshStandardMaterial({
+  map: albedoTex,
+  normalMap: normalTex,
+  roughnessMap: roughTex,
+  roughness: 0.85,
+  metalness: 0.0,
+  normalScale: new THREE.Vector2(0.4, 0.4),
+});
+
+// Geometría de cubo con BISEL (esto es CLAVE para el look del ad)
+// Usamos BoxGeometry con segments=1 y le aplicamos un chamfer manual con vertex displacement,
+// pero más simple: usamos una BoxGeometry y le agregamos un BORDE NEGRO con EdgesGeometry.
+const cubeGeo = new THREE.BoxGeometry(CUBE_SIZE * 0.96, CUBE_SIZE * 0.96, CUBE_SIZE * 0.96);
+
+// Material para los bordes (líneas oscuras entre cubos)
+const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x1a0a05, transparent: true, opacity: 0.7 });
+
+function makeCube() {
+  const mesh = new THREE.Mesh(cubeGeo, woodMaterial);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  // Bordes oscuros
+  const edges = new THREE.EdgesGeometry(cubeGeo);
+  const line = new THREE.LineSegments(edges, edgeMaterial);
+  mesh.add(line);
+  return mesh;
+}
+
+// ===== TABLERO (FONDO) =====
+// Plano de madera más clara detrás del área de juego
+const bgPlane = new THREE.Mesh(
+  new THREE.PlaneGeometry(40, 50),
+  new THREE.MeshStandardMaterial({
+    map: albedoTex,
+    normalMap: normalTex,
+    roughnessMap: roughTex,
+    roughness: 0.9,
+    metalness: 0,
+    color: 0x6a4a35, // Más claro y desaturado para contraste
+  })
+);
+const bgTexClone = albedoTex.clone();
+bgTexClone.repeat.set(8, 10);
+bgTexClone.needsUpdate = true;
+bgPlane.material.map = bgTexClone;
+const bgNormalClone = normalTex.clone();
+bgNormalClone.repeat.set(8, 10);
+bgNormalClone.needsUpdate = true;
+bgPlane.material.normalMap = bgNormalClone;
+const bgRoughClone = roughTex.clone();
+bgRoughClone.repeat.set(8, 10);
+bgRoughClone.needsUpdate = true;
+bgPlane.material.roughnessMap = bgRoughClone;
+bgPlane.position.z = -1.2;
+bgPlane.receiveShadow = true;
+scene.add(bgPlane);
+
+// Marco (líneas del área de juego)
+function makeFrame() {
+  const w = COLS * CUBE_SIZE;
+  const h = ROWS * CUBE_SIZE;
+  const frame = new THREE.Group();
+  const mat = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.5 });
+  const pts = [
+    new THREE.Vector3(-w/2, -h/2, 0.01),
+    new THREE.Vector3( w/2, -h/2, 0.01),
+    new THREE.Vector3( w/2,  h/2, 0.01),
+    new THREE.Vector3(-w/2,  h/2, 0.01),
+    new THREE.Vector3(-w/2, -h/2, 0.01),
+  ];
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  frame.add(new THREE.Line(geo, mat));
+  return frame;
+}
+scene.add(makeFrame());
+
+// Origen del tablero: (col, row) → world (x, y)
+function gridToWorld(col, row) {
+  return {
+    x: (col - COLS / 2 + 0.5) * CUBE_SIZE,
+    y: (ROWS / 2 - row - 0.5) * CUBE_SIZE,
+  };
+}
+
+// ===== ESTADO DEL JUEGO =====
+const board = []; // 2D array: board[row][col] = mesh | null
+for (let r = 0; r < ROWS; r++) {
+  const row = [];
+  for (let c = 0; c < COLS; c++) row.push(null);
+  board.push(row);
+}
+
+const boardGroup = new THREE.Group();
+scene.add(boardGroup);
+
+let currentPiece = null;
+let nextShape = null;
+let dropTimer = 0;
+let dropInterval = 0.8; // segundos entre caídas
+let score = 0;
+let lines = 0;
+let level = 1;
+let gameOver = false;
+let paused = false;
+
+const scoreEl = document.getElementById('score');
+const linesEl = document.getElementById('lines');
+const levelEl = document.getElementById('level');
+
+function spawnPiece() {
+  const shapeKey = nextShape || SHAPE_KEYS[Math.floor(Math.random() * SHAPE_KEYS.length)];
+  nextShape = SHAPE_KEYS[Math.floor(Math.random() * SHAPE_KEYS.length)];
+
+  const shape = SHAPES[shapeKey].map(([x, y]) => [x, y]);
+  // Centrar la pieza
+  const minX = Math.min(...shape.map(s => s[0]));
+  const maxX = Math.max(...shape.map(s => s[0]));
+  const w = maxX - minX + 1;
+  const offsetX = Math.floor((COLS - w) / 2) - minX;
+  const offsetY = -1; // Aparece justo arriba
+
+  const piece = {
+    shape: shape,
+    blocks: [], // {col, row, mesh}
+    pivot: getPivot(shapeKey, shape),
+    shapeKey,
+  };
+  for (const [x, y] of shape) {
+    const col = x + offsetX;
+    const row = y + offsetY;
+    const mesh = makeCube();
+    boardGroup.add(mesh);
+    const pos = gridToWorld(col, row);
+    mesh.position.set(pos.x, pos.y, 0);
+    piece.blocks.push({ col, row, mesh });
+  }
+
+  // Verificar si choca al aparecer (game over)
+  if (collides(piece, 0, 0)) {
+    triggerGameOver();
+    return;
+  }
+
+  currentPiece = piece;
+}
+
+function getPivot(key, shape) {
+  // Devuelve el pivote de rotación local (en coords de la pieza)
+  if (key === 'O') return null; // O no rota
+  if (key === 'I') return { x: 1.5, y: 1.5 }; // entre los 4 bloques
+  // Para el resto, el pivote es típicamente el segundo bloque o centro
+  // Tomamos el bloque central del shape original
+  return { x: 1, y: 1 };
+}
+
+function collides(piece, dCol, dRow, newBlocks = null) {
+  const blocks = newBlocks || piece.blocks;
+  for (const b of blocks) {
+    const c = b.col + dCol;
+    const r = b.row + dRow;
+    if (c < 0 || c >= COLS || r >= ROWS) return true;
+    if (r >= 0 && board[r][c]) return true;
+  }
+  return false;
+}
+
+function move(dCol, dRow) {
+  if (!currentPiece || gameOver || paused) return false;
+  if (collides(currentPiece, dCol, dRow)) return false;
+  for (const b of currentPiece.blocks) {
+    b.col += dCol;
+    b.row += dRow;
+    const pos = gridToWorld(b.col, b.row);
+    b.mesh.position.set(pos.x, pos.y, 0);
+  }
+  return true;
+}
+
+function rotate() {
+  if (!currentPiece || gameOver || paused) return;
+  if (currentPiece.shapeKey === 'O') return;
+  const pivot = currentPiece.pivot;
+  if (!pivot) return;
+
+  // Rotar 90° en sentido horario alrededor del pivote
+  // Calculamos las nuevas posiciones relativas
+  // Necesitamos rotar coords absolutas; primero llevamos a coords relativas al pivote del piece
+  // El pivote está en coords de shape original, pero los bloques se han movido.
+  // Mejor: calcular el centroide del piece actual y rotar alrededor de él.
+  const cx = currentPiece.blocks.reduce((s, b) => s + b.col, 0) / 4;
+  const cy = currentPiece.blocks.reduce((s, b) => s + b.row, 0) / 4;
+
+  // Para que la rotación sea consistente con tetris clásico, redondeamos al pivote teórico
+  const px = Math.round(cx);
+  const py = Math.round(cy);
+
+  const newBlocks = currentPiece.blocks.map(b => {
+    const dx = b.col - px;
+    const dy = b.row - py;
+    return {
+      col: px - dy,
+      row: py + dx,
+      mesh: b.mesh,
+    };
+  });
+
+  // Wall kicks simples
+  const kicks = [[0,0],[1,0],[-1,0],[0,-1],[2,0],[-2,0]];
+  for (const [kx, ky] of kicks) {
+    const candidate = newBlocks.map(b => ({ ...b, col: b.col + kx, row: b.row + ky }));
+    if (!collides({ blocks: candidate }, 0, 0)) {
+      // Aplicar
+      for (let i = 0; i < currentPiece.blocks.length; i++) {
+        currentPiece.blocks[i].col = candidate[i].col;
+        currentPiece.blocks[i].row = candidate[i].row;
+        const pos = gridToWorld(candidate[i].col, candidate[i].row);
+        currentPiece.blocks[i].mesh.position.set(pos.x, pos.y, 0);
+      }
+      return;
+    }
+  }
+}
+
+function lockPiece() {
+  if (!currentPiece) return;
+  for (const b of currentPiece.blocks) {
+    if (b.row >= 0 && b.row < ROWS) {
+      board[b.row][b.col] = b.mesh;
+    } else {
+      // Pieza que se asentó arriba del tablero → game over
+      triggerGameOver();
+      return;
+    }
+  }
+  currentPiece = null;
+  checkLines();
+  if (!gameOver) spawnPiece();
+}
+
+function checkLines() {
+  const fullRows = [];
+  for (let r = 0; r < ROWS; r++) {
+    if (board[r].every(c => c !== null)) fullRows.push(r);
+  }
+  if (fullRows.length === 0) return;
+
+  // SHATTER 🎉
+  for (const r of fullRows) {
+    for (let c = 0; c < COLS; c++) {
+      const mesh = board[r][c];
+      if (mesh) {
+        shatterCube(mesh, c, r);
+        boardGroup.remove(mesh);
+        board[r][c] = null;
+      }
+    }
+  }
+
+  // Desplazar las filas de arriba hacia abajo
+  // Procesar de abajo hacia arriba
+  fullRows.sort((a, b) => a - b); // ascendente
+  // Para cada fila eliminada, todas las filas arriba bajan una
+  // Hacemos múltiples pasadas
+  for (const fullRow of fullRows) {
+    for (let r = fullRow; r > 0; r--) {
+      for (let c = 0; c < COLS; c++) {
+        board[r][c] = board[r-1][c];
+        if (board[r][c]) {
+          // Actualizar posición visual con animación suave
+          const mesh = board[r][c];
+          const pos = gridToWorld(c, r);
+          // Animación de caída suave
+          animateMeshTo(mesh, pos.x, pos.y, 0.25);
+        }
+      }
+    }
+    for (let c = 0; c < COLS; c++) board[0][c] = null;
+  }
+
+  // Score y level
+  const linesScored = fullRows.length;
+  const points = [0, 100, 300, 500, 800][linesScored] * level;
+  score += points;
+  lines += linesScored;
+  level = Math.floor(lines / 10) + 1;
+  dropInterval = Math.max(0.08, 0.8 - (level - 1) * 0.06);
+  updateHUD();
+}
+
+const animations = [];
+function animateMeshTo(mesh, x, y, duration) {
+  animations.push({
+    mesh,
+    startX: mesh.position.x,
+    startY: mesh.position.y,
+    endX: x,
+    endY: y,
+    t: 0,
+    duration,
+  });
+}
+
+function updateAnimations(dt) {
+  for (let i = animations.length - 1; i >= 0; i--) {
+    const a = animations[i];
+    a.t += dt;
+    const k = Math.min(1, a.t / a.duration);
+    // Easing out cubic
+    const e = 1 - Math.pow(1 - k, 3);
+    a.mesh.position.x = a.startX + (a.endX - a.startX) * e;
+    a.mesh.position.y = a.startY + (a.endY - a.startY) * e;
+    if (k >= 1) animations.splice(i, 1);
+  }
+}
+
+function updateHUD() {
+  scoreEl.textContent = score.toLocaleString();
+  linesEl.textContent = lines;
+  levelEl.textContent = level;
+}
+
+// ===== SHATTER (cascada gravitacional satisfactoria) =====
+// Pool de partículas instanciadas
+const MAX_PARTICLES = 4096;
+const subGeo = new THREE.BoxGeometry(SUB_SIZE * 0.92, SUB_SIZE * 0.92, SUB_SIZE * 0.92);
+const subMaterial = woodMaterial.clone(); // Mismo material para coherencia visual
+const particles = new THREE.InstancedMesh(subGeo, subMaterial, MAX_PARTICLES);
+particles.castShadow = false; // Desactivar sombras en partículas (perf)
+particles.receiveShadow = false;
+particles.count = 0;
+scene.add(particles);
+
+// Estado de cada partícula activa
+const activeParticles = []; // { idx, pos, vel, rot, rotVel, life, age }
+const freeIndices = [];
+for (let i = MAX_PARTICLES - 1; i >= 0; i--) freeIndices.push(i);
+
+const _matrix = new THREE.Matrix4();
+const _quat = new THREE.Quaternion();
+const _euler = new THREE.Euler();
+const _scale = new THREE.Vector3(1, 1, 1);
+const _pos = new THREE.Vector3();
+
+function shatterCube(mesh, col, row) {
+  const wp = gridToWorld(col, row);
+  const baseX = wp.x;
+  const baseY = wp.y;
+  const baseZ = 0;
+
+  // Velocidad inicial sesgada hacia la diagonal (como en el ad)
+  // El barrido va típicamente hacia abajo-derecha o abajo-izquierda
+  const sweepDir = (col / COLS) < 0.5 ? -1 : 1; // izquierda o derecha según la mitad
+  const baseVx = sweepDir * (3 + Math.random() * 2);
+  const baseVy = 5 + Math.random() * 3; // hacia arriba inicial (luego cae)
+
+  for (let sx = 0; sx < SUBDIV; sx++) {
+    for (let sy = 0; sy < SUBDIV; sy++) {
+      for (let sz = 0; sz < SUBDIV; sz++) {
+        if (freeIndices.length === 0) return;
+        const idx = freeIndices.pop();
+
+        const offX = (sx - SUBDIV/2 + 0.5) * SUB_SIZE;
+        const offY = (sy - SUBDIV/2 + 0.5) * SUB_SIZE;
+        const offZ = (sz - SUBDIV/2 + 0.5) * SUB_SIZE;
+
+        // Velocidad: la del cubo + variación radial desde el centro del cubo
+        const radialX = offX * 4 + (Math.random() - 0.5) * 2;
+        const radialY = offY * 4 + (Math.random() - 0.5) * 2;
+        const radialZ = offZ * 6 + (Math.random() - 0.5) * 2 + 2; // sale hacia adelante
+
+        activeParticles.push({
+          idx,
+          x: baseX + offX,
+          y: baseY + offY,
+          z: baseZ + offZ,
+          vx: baseVx + radialX,
+          vy: baseVy + radialY,
+          vz: radialZ,
+          rx: Math.random() * Math.PI * 2,
+          ry: Math.random() * Math.PI * 2,
+          rz: Math.random() * Math.PI * 2,
+          rvx: (Math.random() - 0.5) * 12,
+          rvy: (Math.random() - 0.5) * 12,
+          rvz: (Math.random() - 0.5) * 12,
+          age: 0,
+        });
+      }
+    }
+  }
+  particles.count = MAX_PARTICLES; // Mostrar todas, las inactivas las ponemos en escala 0
+}
+
+function updateParticles(dt) {
+  let visibleMax = 0;
+  // Reset matrix de las activas + libera las muertas
+  for (let i = activeParticles.length - 1; i >= 0; i--) {
+    const p = activeParticles[i];
+    p.age += dt;
+    if (p.age >= PARTICLE_LIFE) {
+      // Liberar
+      _scale.set(0, 0, 0);
+      _matrix.compose(_pos.set(0, -1000, 0), _quat.identity(), _scale);
+      particles.setMatrixAt(p.idx, _matrix);
+      freeIndices.push(p.idx);
+      activeParticles.splice(i, 1);
+      continue;
+    }
+
+    // Física
+    p.vy += GRAVITY * dt;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.z += p.vz * dt;
+    p.rx += p.rvx * dt;
+    p.ry += p.rvy * dt;
+    p.rz += p.rvz * dt;
+
+    // Fade-out por escala en el último 30% de vida
+    const lifeFrac = p.age / PARTICLE_LIFE;
+    let s = 1;
+    if (lifeFrac > 0.7) s = 1 - (lifeFrac - 0.7) / 0.3;
+
+    _euler.set(p.rx, p.ry, p.rz);
+    _quat.setFromEuler(_euler);
+    _scale.set(s, s, s);
+    _pos.set(p.x, p.y, p.z);
+    _matrix.compose(_pos, _quat, _scale);
+    particles.setMatrixAt(p.idx, _matrix);
+
+    if (p.idx > visibleMax) visibleMax = p.idx;
+  }
+
+  // Las inactivas que estén con escala > 0 ya las pusimos en 0 antes; de todas formas
+  // ponemos las del freeIndices en 0 una vez más por si acaso al iniciar.
+  particles.instanceMatrix.needsUpdate = true;
+  particles.count = MAX_PARTICLES;
+}
+
+// Inicializar todas las partículas en escala 0
+for (let i = 0; i < MAX_PARTICLES; i++) {
+  _scale.set(0, 0, 0);
+  _matrix.compose(_pos.set(0, -1000, 0), _quat.identity(), _scale);
+  particles.setMatrixAt(i, _matrix);
+}
+particles.instanceMatrix.needsUpdate = true;
+particles.count = MAX_PARTICLES;
+
+// ===== HARD DROP =====
+function hardDrop() {
+  if (!currentPiece || gameOver || paused) return;
+  let dist = 0;
+  while (!collides(currentPiece, 0, dist + 1)) dist++;
+  if (dist > 0) {
+    move(0, dist);
+    score += dist * 2;
+  }
+  lockPiece();
+  dropTimer = 0;
+}
+
+function softDrop() {
+  if (move(0, 1)) {
+    score += 1;
+    updateHUD();
+    dropTimer = 0;
+  }
+}
+
+// ===== INPUT =====
+const keys = {};
+window.addEventListener('keydown', (e) => {
+  if (gameOver) return;
+  if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { togglePause(); return; }
+  if (paused) return;
+  if (keys[e.key]) return;
+  keys[e.key] = true;
+  if (e.key === 'ArrowLeft') move(-1, 0);
+  else if (e.key === 'ArrowRight') move(1, 0);
+  else if (e.key === 'ArrowUp') rotate();
+  else if (e.key === 'ArrowDown') softDrop();
+  else if (e.key === ' ') { e.preventDefault(); hardDrop(); }
+});
+window.addEventListener('keyup', (e) => { keys[e.key] = false; });
+
+// Touch controls
+const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+if (isTouch) {
+  document.getElementById('touchControls').classList.add('show');
+  document.getElementById('hint').style.display = 'none';
+}
+document.querySelectorAll('.tc-btn').forEach(btn => {
+  const action = btn.dataset.action;
+  let interval = null;
+  const trigger = () => {
+    if (action === 'left') move(-1, 0);
+    else if (action === 'right') move(1, 0);
+    else if (action === 'rotate') rotate();
+    else if (action === 'soft') softDrop();
+    else if (action === 'hard') hardDrop();
+  };
+  btn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    trigger();
+    if (action === 'left' || action === 'right' || action === 'soft') {
+      interval = setInterval(trigger, 130);
+    }
+  }, { passive: false });
+  btn.addEventListener('touchend', () => { if (interval) { clearInterval(interval); interval = null; } });
+  btn.addEventListener('touchcancel', () => { if (interval) { clearInterval(interval); interval = null; } });
+  btn.addEventListener('mousedown', trigger);
+});
+
+// Swipe gestures (alternativa a botones)
+let touchStartX = 0, touchStartY = 0, touchStartT = 0;
+renderer.domElement.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 0) return;
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  touchStartT = performance.now();
+});
+renderer.domElement.addEventListener('touchend', (e) => {
+  if (e.changedTouches.length === 0) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  const dt = performance.now() - touchStartT;
+  const absX = Math.abs(dx), absY = Math.abs(dy);
+  if (absX < 20 && absY < 20 && dt < 300) {
+    rotate(); // tap = rotate
+  } else if (absX > absY && absX > 30) {
+    move(dx > 0 ? 1 : -1, 0);
+  } else if (absY > absX && absY > 30) {
+    if (dy > 80 && dt < 250) hardDrop();
+    else if (dy > 30) softDrop();
+  }
+});
+
+// ===== PAUSE / GAME OVER =====
+const overlay = document.getElementById('overlay');
+const overlayTitle = document.getElementById('overlayTitle');
+const overlaySubtitle = document.getElementById('overlaySubtitle');
+const overlayBtn = document.getElementById('overlayBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+
+function togglePause() {
+  if (gameOver) return;
+  paused = !paused;
+  if (paused) {
+    overlayTitle.textContent = 'Paused';
+    overlaySubtitle.textContent = 'Take a breath';
+    overlayBtn.textContent = 'Resume';
+    overlay.classList.add('show');
+  } else {
+    overlay.classList.remove('show');
+  }
+}
+
+function triggerGameOver() {
+  gameOver = true;
+  overlayTitle.textContent = 'Game Over';
+  overlaySubtitle.textContent = `${score.toLocaleString()} points · ${lines} lines`;
+  overlayBtn.textContent = 'Restart';
+  overlay.classList.add('show');
+}
+
+function restart() {
+  // Limpiar tablero
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (board[r][c]) { boardGroup.remove(board[r][c]); board[r][c] = null; }
+    }
+  }
+  if (currentPiece) {
+    for (const b of currentPiece.blocks) boardGroup.remove(b.mesh);
+    currentPiece = null;
+  }
+  score = 0; lines = 0; level = 1; dropInterval = 0.8;
+  gameOver = false; paused = false;
+  updateHUD();
+  overlay.classList.remove('show');
+  spawnPiece();
+}
+
+overlayBtn.addEventListener('click', () => {
+  if (gameOver) restart();
+  else togglePause();
+});
+pauseBtn.addEventListener('click', togglePause);
+
+// ===== RESIZE =====
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  // Ajustar zoom según aspect ratio para que el tablero siempre encaje
+  const targetH = ROWS * CUBE_SIZE * 1.15;
+  const fovRad = camera.fov * Math.PI / 180;
+  let distance = (targetH / 2) / Math.tan(fovRad / 2);
+  // Si es muy estrecho (móvil portrait), también ajustar por ancho
+  const targetW = COLS * CUBE_SIZE * 1.15;
+  const distanceForW = (targetW / 2) / Math.tan(fovRad / 2) / camera.aspect;
+  distance = Math.max(distance, distanceForW);
+  camera.position.z = distance;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+window.dispatchEvent(new Event('resize'));
+
+// ===== LOOP =====
+let lastT = performance.now();
+function tick() {
+  requestAnimationFrame(tick);
+  const now = performance.now();
+  const dt = Math.min(0.05, (now - lastT) / 1000);
+  lastT = now;
+
+  if (!paused && !gameOver) {
+    dropTimer += dt;
+    if (dropTimer >= dropInterval) {
+      dropTimer = 0;
+      if (currentPiece && !move(0, 1)) {
+        lockPiece();
+      }
+    }
+  }
+
+  updateAnimations(dt);
+  updateParticles(dt);
+
+  renderer.render(scene, camera);
+}
+
+spawnPiece();
+updateHUD();
+tick();
+
+</script>
+</body>
+</html>

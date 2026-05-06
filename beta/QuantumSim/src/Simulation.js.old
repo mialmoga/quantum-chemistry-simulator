@@ -1,0 +1,206 @@
+/**
+ * Simulation.js
+ *
+ * The main simulation loop. Orchestrates:
+ *   1. Force accumulation (ColorField)
+ *   2. Integration (QuantumEntity)
+ *   3. Hadron detection and lifecycle
+ *   4. Nuclear force between hadrons
+ *   5. State snapshot emission (for renderer)
+ *
+ * The simulation knows nothing about rendering.
+ * It produces snapshots. Someone else decides what to do with them.
+ *
+ * On O(n) complexity:
+ *   The inner loops here are O(n²) in the worst case, but in practice:
+ *   - Each quark only interacts with neighbors in its field radius
+ *   - SpatialHash (next milestone) will make neighbor lookup O(1)
+ *   - For nuclear scales (< 300 quarks for any real nucleus) n² is fine
+ *   - We architect for SpatialHash from the start — the interface won't change
+ *
+ * Design note on the loop order:
+ *   1. resetForce     — clear last tick's forces
+ *   2. ColorField     — compute quark-quark color forces (gluon exchange)
+ *   3. NuclearForce   — compute hadron-hadron residual forces
+ *   4. integrate      — advance positions
+ *   5. detectHadrons  — recognize new neutral groups
+ *   6. cleanupHadrons — dissolve broken groups
+ *   7. snapshot       — export state to renderer
+ */
+
+import { ColorField } from './ColorField.js';
+import { Hadron } from './Hadron.js';
+
+export class Simulation {
+
+    constructor(opts = {}) {
+        // All quark entities in the simulation
+        this.entities = [];
+
+        // All recognized hadrons
+        this.hadrons  = [];
+
+        // Simulation time
+        this.tick  = 0;
+        this.dt    = opts.dt ?? 0.016; // ~60fps equivalent timestep
+
+        // Callback fired every tick with a state snapshot
+        // (renderer subscribes to this)
+        this.onSnapshot = opts.onSnapshot ?? null;
+
+        // Pause state
+        this.paused = false;
+
+        // Stats
+        this.stats = {
+            entities: 0,
+            hadrons:  0,
+            protons:  0,
+            neutrons: 0,
+            freeQuarks: 0,
+            tick: 0,
+        };
+    }
+
+    // ─── Entity management ────────────────────────────────────────────────────
+
+    /**
+     * Add a quark to the simulation.
+     * @param {QuantumEntity} entity
+     */
+    add(entity) {
+        this.entities.push(entity);
+        return this;
+    }
+
+    /**
+     * Remove a quark and clean up any hadron it belongs to.
+     * @param {QuantumEntity} entity
+     */
+    remove(entity) {
+        if (entity.hadron) {
+            this._dissolveHadron(entity.hadron);
+        }
+        this.entities = this.entities.filter(e => e !== entity);
+    }
+
+    /**
+     * Remove all entities and hadrons.
+     */
+    clear() {
+        this.entities = [];
+        this.hadrons  = [];
+    }
+
+    // ─── Main loop ────────────────────────────────────────────────────────────
+
+    /**
+     * Advance the simulation by one tick.
+     * Call this from your requestAnimationFrame loop.
+     */
+    step() {
+        if (this.paused) return;
+
+        // 1. Reset forces
+        for (const e of this.entities) {
+            e.resetForce();
+        }
+
+        // 2. Color forces (gluon exchange as computation, not entity)
+        ColorField.resolve(this.entities);
+
+        // 3. Nuclear force between stable hadrons
+        for (let i = 0; i < this.hadrons.length; i++) {
+            for (let j = i + 1; j < this.hadrons.length; j++) {
+                Hadron.applyNuclearForce(this.hadrons[i], this.hadrons[j]);
+            }
+        }
+
+        // 4. Integrate positions
+        for (const e of this.entities) {
+            e.integrate(this.dt);
+        }
+
+        // 5. Detect new neutral groups → form hadrons
+        this._detectHadrons();
+
+        // 6. Clean up broken hadrons
+        this._cleanupHadrons();
+
+        // 7. Tick hadron age
+        for (const h of this.hadrons) {
+            h.tick();
+        }
+
+        // 8. Update stats
+        this._updateStats();
+
+        this.tick++;
+
+        // 9. Emit snapshot for renderer
+        if (this.onSnapshot) {
+            this.onSnapshot(this._snapshot());
+        }
+    }
+
+    // ─── Hadron lifecycle ─────────────────────────────────────────────────────
+
+    _detectHadrons() {
+        // Only look at free quarks (not already in a hadron)
+        const free = this.entities.filter(e => e.hadron === null);
+
+        const groups = ColorField.detectNeutralGroups(free);
+
+        for (const group of groups) {
+            const hadron = new Hadron(group);
+            this.hadrons.push(hadron);
+        }
+    }
+
+    _cleanupHadrons() {
+        const broken = this.hadrons.filter(h => !h.isIntact());
+
+        for (const h of broken) {
+            this._dissolveHadron(h);
+        }
+    }
+
+    _dissolveHadron(hadron) {
+        hadron.dissolve();
+        this.hadrons = this.hadrons.filter(h => h !== hadron);
+    }
+
+    // ─── Stats ────────────────────────────────────────────────────────────────
+
+    _updateStats() {
+        this.stats.entities   = this.entities.length;
+        this.stats.hadrons    = this.hadrons.length;
+        this.stats.protons    = this.hadrons.filter(h => h.identity === 'proton').length;
+        this.stats.neutrons   = this.hadrons.filter(h => h.identity === 'neutron').length;
+        this.stats.freeQuarks = this.entities.filter(e => e.hadron === null).length;
+        this.stats.tick       = this.tick;
+    }
+
+    // ─── Snapshot ─────────────────────────────────────────────────────────────
+
+    /**
+     * Full state snapshot for the renderer.
+     * Pure data — no references to live objects.
+     */
+    _snapshot() {
+        return {
+            tick:       this.tick,
+            dt:         this.dt,
+            stats:      { ...this.stats },
+            entities:   this.entities.map(e => e.snapshot()),
+            hadrons:    this.hadrons.map(h => h.snapshot()),
+        };
+    }
+
+    /**
+     * Manual snapshot — call anytime to get current state.
+     */
+    getSnapshot() {
+        return this._snapshot();
+    }
+}

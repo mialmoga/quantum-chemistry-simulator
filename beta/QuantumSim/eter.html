@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AtOhmEter V1.3 - Emergent Orbitals</title>
+    <style>
+        body { margin: 0; background: #000205; color: #44ddcc; font-family: 'Courier New', monospace; overflow: hidden; }
+        #ui { position: absolute; top: 20px; left: 20px; border-left: 3px solid #ff5555; padding-left: 15px; background: rgba(0,0,0,0.5); padding: 10px; pointer-events: auto; }
+        button { background: #1a1a1a; color: #44ddcc; border: 1px solid #44ddcc; padding: 5px 10px; cursor: pointer; font-family: inherit; margin-right: 5px; }
+        button:hover { background: #44ddcc; color: #000; }
+        #stats { margin-top: 10px; font-size: 10px; color: #ffaa00; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <h1 style="font-size: 16px; margin: 0;">AtOhmEter // V1.3</h1>
+        <div style="margin-top:10px;">
+            <button id="addP">+ Protón</button>
+            <button id="addN">+ Neutrón</button>
+            <button id="reset">Reset</button>
+        </div>
+        <div id="stats">Z: 2 (Helio) | NUCLEONES: 4</div>
+    </div>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "/lib/three/build/three.module.js",
+        "three/addons/": "/lib/three/examples/jsm/"
+      }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        camera.position.set(0, 2, 4);
+        controls.enableDamping = true;
+
+        // ─── CONFIGURACIÓN DEL NÚCLEO ────────────────────────────────
+        let nucleones = [
+            { type: 'P', pos: new THREE.Vector3(0.3, 0, 0) },
+            { type: 'P', pos: new THREE.Vector3(-0.3, 0, 0) },
+            { type: 'N', pos: new THREE.Vector3(0, 0.3, 0) },
+            { type: 'N', pos: new THREE.Vector3(0, -0.3, 0) }
+        ];
+
+        function updateNucleusGeometry() {
+            // Lógica de empaquetamiento simple: repulsión para formar geometrías
+            const spacing = 0.45;
+            nucleones.forEach((n, i) => {
+                const phi = Math.acos(-1 + (2 * i) / nucleones.length);
+                const theta = Math.sqrt(nucleones.length * Math.PI) * phi;
+                n.pos.set(
+                    spacing * Math.cos(theta) * Math.sin(phi),
+                    spacing * Math.sin(theta) * Math.sin(phi),
+                    spacing * Math.cos(phi)
+                );
+            });
+            
+            // Actualizar Uniforms (convertir a array de floats para el shader)
+            const sourceArray = new Array(32).fill(new THREE.Vector3(0,0,0));
+            nucleones.forEach((n, i) => { if(i < 32) sourceArray[i] = n.pos; });
+            material.uniforms.sources.value = sourceArray;
+            material.uniforms.sourceCount.value = nucleones.length;
+            
+            document.getElementById('stats').innerText = `Z: ${nucleones.filter(n=>n.type==='P').length} | NUCLEONES: ${nucleones.length}`;
+        }
+
+        // ─── NUBE VOLUMÉTRICA ────────────────────────────────────────
+        const pointCount = 90000;
+        const positions = new Float32Array(pointCount * 3);
+        for (let i = 0; i < pointCount; i++) {
+            const r = 4.0 * Math.pow(Math.random(), 0.6);
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2.0 * Math.random() - 1.0);
+            positions[i*3] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i*3+2] = r * Math.cos(phi);
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 },
+                sourceCount: { value: 4 },
+                sources: { value: new Array(32).fill(new THREE.Vector3(0,0,0)) }
+            },
+            vertexShader: `
+                varying vec3 vPosition;
+                void main() {
+                    vPosition = position;
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    gl_PointSize = 3.0 * (2.0 / -mvPosition.z); 
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                uniform int sourceCount;
+                uniform vec3 sources[32];
+                varying vec3 vPosition;
+
+                void main() {
+                    float totalAmp = 0.0;
+                    for(int i = 0; i < 32; i++) {
+                        if(i >= sourceCount) break;
+                        float d = distance(vPosition, sources[i]);
+                        totalAmp += exp(-d * d * 3.8) * cos(16.0 * d - time * 5.0);
+                    }
+
+                    vec3 col = vec3(0.0);
+                    col += vec3(1.0, 0.1, 0.3) * max(0.0, totalAmp) * 0.7;
+                    col += vec3(0.1, 0.7, 1.0) * max(0.0, -totalAmp) * 0.7;
+
+                    // ORBITAL EMERGENTE (Resonancia Dorada)
+                    float resonance = smoothstep(0.6, 0.8, abs(totalAmp)) * smoothstep(1.3, 0.8, abs(totalAmp));
+                    col += vec3(1.0, 0.8, 0.3) * resonance * 1.5;
+
+                    // Glow del Núcleo
+                    float core = exp(-length(vPosition) * 4.0);
+                    col += vec3(1.0) * core * 0.6;
+
+                    gl_FragColor = vec4(col, 0.75);
+                }
+            `,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const points = new THREE.Points(geometry, material);
+        scene.add(points);
+
+        // ─── EVENTOS ─────────────────────────────────────────────────
+        document.getElementById('addP').onclick = () => { nucleones.push({type:'P', pos:new THREE.Vector3()}); updateNucleusGeometry(); };
+        document.getElementById('addN').onclick = () => { nucleones.push({type:'N', pos:new THREE.Vector3()}); updateNucleusGeometry(); };
+        document.getElementById('reset').onclick = () => { nucleones = []; updateNucleusGeometry(); };
+
+        updateNucleusGeometry();
+
+        function animate(t) {
+            requestAnimationFrame(animate);
+            material.uniforms.time.value = t / 1000;
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

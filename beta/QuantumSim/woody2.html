@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wood Block Puzzle - Sombras Difusas SSAO</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #0a0a0a; 
+            font-family: sans-serif;
+        }
+        canvas { 
+            display: block; 
+        }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 1px 1px 2px black;
+            pointer-events: none;
+            z-index: 10;
+        }
+        h1 { margin: 0; font-size: 24px; font-weight: 300; letter-spacing: 2px;}
+        p { margin: 5px 0 0 0; font-size: 16px; color: #aaa;}
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "three":          "./lib/three/build/three.module.js",
+        "three/addons/":  "./lib/three/examples/jsm/"
+      }
+    }
+    </script>
+</head>
+<body>
+    <div id="ui">
+        <h1>SCORE: <span id="score">0</span></h1>
+        <p>Flechas para mover. Arriba para rotar.</p>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        // Importamos los módulos de post-proceso
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
+        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+        // ==========================================
+        // 1. CONFIGURACIÓN DEL MOTOR Y RENDERER
+        // ==========================================
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#0f0d0b'); 
+
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(4.5, 12, 21);
+        camera.lookAt(4.5, 9, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Mantener suaves las sombras arrojadas
+        
+        // Ajustes base de color/tono (Velvet)
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        
+        document.body.appendChild(renderer.domElement);
+
+        // ==========================================
+        // ** NUEVO ** CONFIGURACIÓN DE POST-PROCESADO
+        // ==========================================
+        const composer = new EffectComposer(renderer);
+        
+        // 1. RenderPass: Renderiza la escena base
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        // 2. SSAOPass: Añade la Oclusión Ambiental profunda y difusa
+        const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
+        // Ajustes para blocks de tamaño ~1x1
+        ssaoPass.kernelRadius = 0.8;      // Radio de oclusión, ajusta para suavizar
+        ssaoPass.minDistance = 0.001;
+        ssaoPass.maxDistance = 0.1;
+        ssaoPass.strength = 1.0;          // Intensidad del efecto
+        // ssaoPass.output = SSAOPass.OUTPUT.SSAO; // Descomenta para ver *solo* el mapa de SSAO (en blanco y negro) para depurar
+        composer.addPass(ssaoPass);
+
+        // 3. OutputPass: Asegura que el mapeo de tonos y color sea correcto al final
+        const outputPass = new OutputPass();
+        composer.addPass(outputPass);
+
+        // ==========================================
+        // 2. ILUMINACIÓN SUAVIZADA (MÁS DIFUSA)
+        // ==========================================
+        // Aumentamos la luz ambiente para rellenar, dejando que SSAO defina los huecos
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x555555, 0.7);
+        scene.add(hemiLight);
+
+        // Suavizamos la luz direccional principal (reducimos intensidad)
+        const mainLight = new THREE.DirectionalLight(0xffdfb0, 1.8);
+        mainLight.position.set(5, 15, 10);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 1024; // Reducimos resolución de shadowmap para ayudar a difuminar
+        mainLight.shadow.mapSize.height = 1024;
+        mainLight.shadow.camera.left = -10;
+        mainLight.shadow.camera.right = 20;
+        mainLight.shadow.camera.top = 25;
+        mainLight.shadow.camera.bottom = -5;
+        mainLight.shadow.bias = -0.001; // Ajuste bias para oclusión de contacto
+        mainLight.shadow.radius = 4; // Radio de PCF para suavizar más los bordes de la sombra arrojada
+        scene.add(mainLight);
+
+        // ==========================================
+        // 3. CARGA DE TEXTURAS Y MATERIALES (Mismo V1.1)
+        // ==========================================
+        const textureLoader = new THREE.TextureLoader();
+        
+        function loadWoodSet(baseName) {
+            const map = textureLoader.load(`./img/${baseName}.png`);
+            const normalMap = textureLoader.load(`./img/${baseName}_n.png`);
+            const roughnessMap = textureLoader.load(`./img/${baseName}_r.png`);
+            map.colorSpace = THREE.SRGBColorSpace;
+            return { map, normalMap, roughnessMap };
+        }
+
+        const wood1 = loadWoodSet('wood1'); // Tablero
+        const wood2 = loadWoodSet('wood2'); // Piezas
+
+        const boardMaterial = new THREE.MeshStandardMaterial({
+            map: wood1.map, normalMap: wood1.normalMap, roughnessMap: wood1.roughnessMap,
+            roughness: 0.8, metalness: 0.05
+        });
+
+        const pieceMaterial = new THREE.MeshStandardMaterial({
+            map: wood2.map, normalMap: wood2.normalMap, roughnessMap: wood2.roughnessMap,
+            roughness: 0.7, metalness: 0.1
+        });
+
+        const blockGeometry = new THREE.BoxGeometry(0.96, 0.96, 0.96);
+
+        // ==========================================
+        // 4. CREACIÓN DEL ESCENARIO (Mismo V1.1)
+        // ==========================================
+        const COLS = 10;
+        const ROWS = 20;
+
+        const boardBgGeo = new THREE.BoxGeometry(COLS, ROWS, 1);
+        const boardBg = new THREE.Mesh(boardBgGeo, boardMaterial);
+        boardBg.position.set(COLS/2 - 0.5, ROWS/2 - 0.5, -0.8);
+        boardBg.receiveShadow = true;
+        scene.add(boardBg);
+
+        const borderGeoSide = new THREE.BoxGeometry(1, ROWS, 2);
+        const borderLeft = new THREE.Mesh(borderGeoSide, boardMaterial);
+        borderLeft.position.set(-1, ROWS/2 - 0.5, -0.3);
+        borderLeft.receiveShadow = true; borderLeft.castShadow = true;
+        scene.add(borderLeft);
+
+        const borderRight = new THREE.Mesh(borderGeoSide, boardMaterial);
+        borderRight.position.set(COLS, ROWS/2 - 0.5, -0.3);
+        borderRight.receiveShadow = true; borderRight.castShadow = true;
+        scene.add(borderRight);
+
+        // ==========================================
+        // 5. LÓGICA DE TETRIS (Mismo V1.1)
+        // ==========================================
+        let grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+        let score = 0;
+        let scoreEl = document.getElementById('score');
+
+        const SHAPES = [[[1, 1, 1, 1]], [[1, 1], [1, 1]], [[0, 1, 0], [1, 1, 1]], [[1, 0, 0], [1, 1, 1]], [[0, 0, 1], [1, 1, 1]], [[0, 1, 1], [1, 1, 0]], [[1, 1, 0], [0, 1, 1]]];
+        let currentPiece = null;
+        let dropCounter = 0;
+        let dropInterval = 1000;
+        let lastTime = 0;
+
+        function createPieceMesh(shape) {
+            const group = new THREE.Group();
+            group.userData.shape = shape;
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        const mesh = new THREE.Mesh(blockGeometry, pieceMaterial);
+                        mesh.position.set(x, -y, 0);
+                        mesh.castShadow = true;
+                        mesh.receiveShadow = true;
+                        
+                        // Ajuste UV aleatorio por bloque
+                        const uOffset = Math.random(); const vOffset = Math.random();
+                        mesh.geometry = mesh.geometry.clone();
+                        const uvs = mesh.geometry.attributes.uv;
+                        for(let i=0; i<uvs.count; i++) {
+                            uvs.setX(i, uvs.getX(i) * 0.5 + uOffset * 0.5);
+                            uvs.setY(i, uvs.getY(i) * 0.5 + vOffset * 0.5);
+                        }
+                        group.add(mesh);
+                    }
+                }
+            }
+            return group;
+        }
+
+        function spawnPiece() {
+            const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+            currentPiece = {
+                mesh: createPieceMesh(shape),
+                shape: shape,
+                x: Math.floor(COLS / 2) - Math.floor(shape[0].length / 2),
+                y: ROWS - 1
+            };
+            scene.add(currentPiece.mesh);
+            updatePiecePosition();
+            if (checkCollision(currentPiece.x, currentPiece.y, currentPiece.shape)) {
+                // Game Over rápido
+                grid.forEach(row => row.forEach(cell => cell && scene.remove(cell)));
+                grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+                score = 0; scoreEl.innerText = score;
+            }
+        }
+
+        function updatePiecePosition() { if (currentPiece) currentPiece.mesh.position.set(currentPiece.x, currentPiece.y, 0); }
+        function checkCollision(nx, ny, shape) {
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        const gridX = nx + x; const gridY = ny - y;
+                        if (gridX < 0 || gridX >= COLS || gridY < 0 || gridY >= ROWS || (gridY < ROWS && grid[gridY][gridX])) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function rotateShape(shape) {
+            const newShape = [];
+            for (let x = 0; x < shape[0].length; x++) {
+                newShape[x] = [];
+                for (let y = 0; y < shape.length; y++) newShape[x][y] = shape[shape.length - 1 - y][x];
+            }
+            return newShape;
+        }
+
+        // ==========================================
+        // 6. SISTEMA DE CASCADA Y DESTRUCCIÓN (Mismo V1.1)
+        // ==========================================
+        let fallingBlocks = [];
+
+        function lockPiece() {
+            currentPiece.mesh.children.forEach(child => {
+                const worldPos = new THREE.Vector3();
+                child.getWorldPosition(worldPos);
+                const gridX = Math.round(worldPos.x);
+                const gridY = Math.round(worldPos.y);
+                if(gridY >= 0 && gridY < ROWS && gridX >= 0 && gridX < COLS) {
+                    const block = child.clone();
+                    block.position.set(gridX, gridY, 0);
+                    scene.add(block);
+                    grid[gridY][gridX] = block;
+                }
+            });
+            scene.remove(currentPiece.mesh);
+            currentPiece = null;
+            clearLines();
+            spawnPiece();
+        }
+
+        function clearLines() {
+            let linesCleared = 0;
+            for (let y = 0; y < ROWS; y++) {
+                let isFull = true;
+                for (let x = 0; x < COLS; x++) if (!grid[y][x]) isFull = false;
+                
+                if (isFull) {
+                    linesCleared++;
+                    for (let x = 0; x < COLS; x++) {
+                        const block = grid[y][x];
+                        fallingBlocks.push({
+                            mesh: block,
+                            vx: (Math.random() - 0.5) * 4, vy: Math.random() * 5 + 2, vz: Math.random() * 6 + 4, // Salto adelante
+                            rx: (Math.random() - 0.5) * 0.2, ry: (Math.random() - 0.5) * 0.2, rz: (Math.random() - 0.5) * 0.2
+                        });
+                        grid[y][x] = null;
+                    }
+                    for (let yy = y; yy < ROWS - 1; yy++) {
+                        for (let x = 0; x < COLS; x++) {
+                            grid[yy][x] = grid[yy + 1][x];
+                            if (grid[yy][x]) grid[yy][x].position.y = yy;
+                        }
+                    }
+                    for (let x = 0; x < COLS; x++) grid[ROWS - 1][x] = null;
+                    y--;
+                }
+            }
+            if (linesCleared > 0) {
+                score += (linesCleared * linesCleared) * 100;
+                scoreEl.innerText = score;
+            }
+        }
+
+        // ==========================================
+        // 7. CONTROLES Y GAMELOOP
+        // ==========================================
+        document.addEventListener('keydown', (e) => {
+            if (!currentPiece) return;
+            if (e.key === 'ArrowLeft' && !checkCollision(currentPiece.x - 1, currentPiece.y, currentPiece.shape)) { currentPiece.x--; updatePiecePosition(); }
+            else if (e.key === 'ArrowRight' && !checkCollision(currentPiece.x + 1, currentPiece.y, currentPiece.shape)) { currentPiece.x++; updatePiecePosition(); }
+            else if (e.key === 'ArrowDown' && !checkCollision(currentPiece.x, currentPiece.y - 1, currentPiece.shape)) { currentPiece.y--; updatePiecePosition(); }
+            else if (e.key === 'ArrowUp') {
+                const rotated = rotateShape(currentPiece.shape);
+                if (!checkCollision(currentPiece.x, currentPiece.y, rotated)) {
+                    currentPiece.shape = rotated;
+                    scene.remove(currentPiece.mesh);
+                    currentPiece.mesh = createPieceMesh(rotated);
+                    scene.add(currentPiece.mesh);
+                    updatePiecePosition();
+                }
+            }
+        });
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            const deltaTime = time - lastTime;
+            lastTime = time;
+
+            if (currentPiece) {
+                dropCounter += deltaTime;
+                if (dropCounter > dropInterval) {
+                    if (!checkCollision(currentPiece.x, currentPiece.y - 1, currentPiece.shape)) { currentPiece.y--; updatePiecePosition(); }
+                    else lockPiece();
+                    dropCounter = 0;
+                }
+            }
+
+            const gravity = -15;
+            for (let i = fallingBlocks.length - 1; i >= 0; i--) {
+                const b = fallingBlocks[i];
+                const dtSec = deltaTime / 1000;
+                b.vy += gravity * dtSec;
+                b.mesh.position.x += b.vx * dtSec; b.mesh.position.y += b.vy * dtSec; b.mesh.position.z += b.vz * dtSec;
+                b.mesh.rotation.x += b.rx; b.mesh.rotation.y += b.ry; b.mesh.rotation.z += b.rz;
+                if (b.mesh.position.y < -15) { scene.remove(b.mesh); fallingBlocks.splice(i, 1); }
+            }
+
+            // ** ACTUALIZADO ** Renderizamos usando el composer, no directo al renderer
+            composer.render();
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight); // Ajustar tamaño del composer
+        });
+
+        spawnPiece();
+        requestAnimationFrame((t) => { lastTime = t; animate(t); });
+    </script>
+</body>
+</html>

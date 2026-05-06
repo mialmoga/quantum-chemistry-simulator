@@ -1,0 +1,280 @@
+/**
+ * ColorField.js
+ *
+ * The color interaction engine — this is where gluons "happen"
+ * without being entities.
+ *
+ * A gluon is not an object in this simulation.
+ * A gluon is the force that emerges when two color fields overlap.
+ * We compute it and it's gone. It never had an address in memory.
+ *
+ * This module is responsible for:
+ *   1. Computing color attraction/repulsion between quarks
+ *   2. Updating tension on each quark based on its local color environment
+ *   3. Applying confinement: the force grows with distance (string tension),
+ *      and drops to near-zero when a color-neutral group forms
+ *
+ * The one rule that makes everything:
+ *   R + G + B = neutral (white) = confined = hadronic
+ *   Any incomplete combination = tension > 0 = wants to resolve
+ *
+ * Units: forces in simulation units, distances in pm (wu)
+ */
+
+import * as THREE from 'three';
+import { COLOR } from './QuantumEntity.js';
+
+// ─── Color Complementarity Table ──────────────────────────────────────────────
+// For a group of quarks to be color-neutral, it needs one of each color.
+// This table defines what a given color "wants" to be near.
+// A quark is attracted to colors it doesn't already have in its local group.
+const COLOR_SET = new Set([COLOR.R, COLOR.G, COLOR.B]);
+
+/**
+ * Returns the two colors complementary to the given one.
+ * R wants [G, B], G wants [R, B], B wants [R, G].
+ */
+function complementaryColors(color) {
+    return [...COLOR_SET].filter(c => c !== color);
+}
+
+/**
+ * Check if a set of color charges is neutral (R+G+B present, each once).
+ * @param {string[]} colors
+ * @returns {boolean}
+ */
+function isColorNeutral(colors) {
+    if (colors.length !== 3) return false;
+    const s = new Set(colors);
+    return s.has(COLOR.R) && s.has(COLOR.G) && s.has(COLOR.B);
+}
+
+
+// ─── Force Parameters ─────────────────────────────────────────────────────────
+// These are tunable — but they should reflect QCD qualitative behavior:
+//   - Attraction grows with distance (unlike EM) → string tension
+//   - At very short range, quarks are asymptotically free (repulsion kicks in)
+//   - Neutral groups are screened: very little external color field
+
+const PARAMS = {
+    // String tension: how fast the attractive force grows with distance.
+    // Real QCD: ~1 GeV/fm. Here it's a tuning handle.
+    STRING_TENSION:     0.8,
+
+    // Short-range repulsion: prevents quark collapse (asymptotic freedom proxy).
+    // Kicks in below this distance (pm).
+    CORE_REPULSION_RADIUS: 0.05,
+    CORE_REPULSION_STRENGTH: 12.0,
+
+    // Color attraction strength at unit distance.
+    COLOR_ATTRACTION:   1.2,
+
+    // Screening factor: how much a neutral (confined) group's internal
+    // forces are reduced. 0 = fully screened, 1 = unscreened.
+    CONFINEMENT_SCREEN: 0.04,
+
+    // Maximum force magnitude per interaction (prevents explosions).
+    FORCE_CLAMP:        8.0,
+};
+
+
+// ─── ColorField ───────────────────────────────────────────────────────────────
+
+export class ColorField {
+
+    /**
+     * Process all color interactions for a list of entities.
+     * Only pairs within mutual field range interact — this is the locality rule.
+     *
+     * @param {QuantumEntity[]} entities   All entities in the simulation
+     */
+    static resolve(entities) {
+        // Reset tension before recomputing
+        for (const e of entities) {
+            e.tension = 1.0;
+        }
+
+        // Pairwise — but only within field radius.
+        // In practice with spatial hashing this becomes O(n * k)
+        // where k = average neighbors in field. For nuclear scales k << n.
+        for (let i = 0; i < entities.length; i++) {
+            for (let j = i + 1; j < entities.length; j++) {
+                const a = entities[i];
+                const b = entities[j];
+
+                if (!a.inFieldOf(b)) continue;
+
+                ColorField._interact(a, b);
+            }
+        }
+
+        // Update tension based on local color environment
+        ColorField._updateTension(entities);
+    }
+
+
+    /**
+     * Compute and apply the color force between two quarks.
+     * This IS the gluon exchange — happening right here, leaving no trace.
+     *
+     * @param {QuantumEntity} a
+     * @param {QuantumEntity} b
+     */
+    static _interact(a, b) {
+        const delta = new THREE.Vector3()
+            .subVectors(b.position, a.position);
+
+        const dist = delta.length();
+        if (dist < 1e-6) return; // coincident — skip
+
+        const dir = delta.clone().divideScalar(dist); // normalized
+
+        // ── Short-range repulsion (asymptotic freedom proxy) ─────────────────
+        // dir = A→B. To push apart: A gets -dir, B gets +dir.
+        if (dist < PARAMS.CORE_REPULSION_RADIUS) {
+            const repulsion = (PARAMS.CORE_REPULSION_RADIUS - dist)
+                * PARAMS.CORE_REPULSION_STRENGTH;
+            a.applyForce(dir.clone().multiplyScalar(-repulsion));
+            b.applyForce(dir.clone().multiplyScalar( repulsion));
+            return;
+        }
+
+        // ── Inter-hadron exclusion ────────────────────────────────────────────
+        // Quarks from different hadrons don't interact via color —
+        // the hadron is color-neutral, so its internal color is screened.
+        // They only interact via nuclear force (Hadron.applyNuclearForce).
+        // Without this: quarks from different hadrons steal each other's partners.
+        const aDifferentHadron = a.hadron !== null
+            && b.hadron !== null
+            && a.hadron !== b.hadron;
+
+        if (aDifferentHadron) return;
+
+        // ── Color attraction / repulsion ──────────────────────────────────────
+        // Convention: forceMagnitude > 0 = attraction (pull toward each other)
+        //             forceMagnitude < 0 = repulsion (push away)
+        //
+        // dir points from A → B.
+        // Attraction: forceOnA = +dir (toward B), forceOnB = -dir (toward A)
+        // Repulsion:  forceOnA = -dir (away from B), forceOnB = +dir (away from A)
+
+        const sameColor = (a.color === b.color);
+
+        let forceMagnitude;
+
+        if (sameColor) {
+            // Same color: REPEL. Two reds don't want to be together.
+            // Repulsion falls off with distance squared (like EM).
+            // Negative = repulsion in our convention.
+            forceMagnitude = -PARAMS.COLOR_ATTRACTION / (dist * dist);
+        } else {
+            // Different colors: ATTRACT with string tension.
+            // String tension grows with distance — the further apart, the stronger the pull.
+            // This is what makes confinement: you can't pull quarks apart indefinitely.
+            // At short range the 1/(dist+0.1) term dominates (softer close-range pull).
+            // Positive = attraction in our convention.
+            forceMagnitude = PARAMS.STRING_TENSION * dist
+                + PARAMS.COLOR_ATTRACTION / (dist + 0.1);
+        }
+
+        // Screening: quarks in the same hadron feel reduced internal forces.
+        // The hadron has already "resolved" — internal jostling is gentle.
+        const sameHadron = a.hadron !== null && a.hadron === b.hadron;
+        if (sameHadron) {
+            forceMagnitude *= PARAMS.CONFINEMENT_SCREEN;
+        }
+
+        // Clamp to prevent instability at very close range
+        forceMagnitude = Math.max(
+            -PARAMS.FORCE_CLAMP,
+            Math.min(PARAMS.FORCE_CLAMP, forceMagnitude)
+        );
+
+        // Apply: attraction (positive) → A moves toward B, B moves toward A
+        //        dir = A→B, so forceOnA = +dir, forceOnB = -dir
+        const forceOnA = dir.clone().multiplyScalar(forceMagnitude);
+        const forceOnB = forceOnA.clone().negate();
+
+        a.applyForce(forceOnA);
+        b.applyForce(forceOnB);
+    }
+
+
+    /**
+     * Update tension scalar on each entity based on its local color environment.
+     *
+     * Tension = 0 means: "I am part of a color-neutral group. I am resolved."
+     * Tension = 1 means: "I am isolated. I desperately want to bind."
+     *
+     * This drives the emergent hadron formation — quarks don't "know" they're
+     * forming a proton. They just follow tension toward zero.
+     *
+     * @param {QuantumEntity[]} entities
+     */
+    static _updateTension(entities) {
+        for (const entity of entities) {
+            // Collect colors of all neighbors within field
+            const neighborColors = [entity.color];
+
+            for (const other of entities) {
+                if (other === entity) continue;
+                if (!entity.inFieldOf(other)) continue;
+                neighborColors.push(other.color);
+            }
+
+            // Is the local color environment neutral?
+            if (isColorNeutral(neighborColors)) {
+                entity.tension = 0.0;
+            } else {
+                // Partial satisfaction: how many of the 3 required colors are present?
+                const uniqueColors = new Set(neighborColors).size;
+                // 1 color = tension 1.0, 2 colors = tension 0.5, 3 = 0.0
+                entity.tension = 1.0 - ((uniqueColors - 1) / 2);
+            }
+        }
+    }
+
+
+    /**
+     * Detect emergent hadrons: groups of 3 quarks that are mutually
+     * color-neutral and within each other's fields.
+     *
+     * Returns an array of hadron candidate arrays: [[q1,q2,q3], ...]
+     * The Hadron class uses this to decide whether to formalize the group.
+     *
+     * @param {QuantumEntity[]} entities
+     * @returns {QuantumEntity[][]}
+     */
+    static detectNeutralGroups(entities) {
+        const groups = [];
+        const claimed = new Set();
+
+        for (let i = 0; i < entities.length; i++) {
+            if (claimed.has(i)) continue;
+            const a = entities[i];
+
+            for (let j = i + 1; j < entities.length; j++) {
+                if (claimed.has(j)) continue;
+                const b = entities[j];
+                if (!a.inFieldOf(b)) continue;
+
+                for (let k = j + 1; k < entities.length; k++) {
+                    if (claimed.has(k)) continue;
+                    const c = entities[k];
+                    if (!a.inFieldOf(c)) continue;
+                    if (!b.inFieldOf(c)) continue;
+
+                    const colors = [a.color, b.color, c.color];
+                    if (isColorNeutral(colors)) {
+                        groups.push([a, b, c]);
+                        claimed.add(i);
+                        claimed.add(j);
+                        claimed.add(k);
+                    }
+                }
+            }
+        }
+
+        return groups;
+    }
+}

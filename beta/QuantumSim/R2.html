@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AtOhmEter V1.5.1 - Bloom Edition</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #44ddcc; background: rgba(0,0,0,0.8); padding: 15px; border-left: 2px solid #ff5555; z-index: 10; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <h1 style="font-size: 16px; margin: 0;">AtOhmEter // V1.5.1</h1>
+        <p style="font-size: 10px; color: #ffaa00;">MODO: GAS CUÁNTICO + UNREAL BLOOM</p>
+    </div>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "/lib/three/build/three.module.js",
+        "three/addons/": "/lib/three/examples/jsm/"
+      }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        // Addons necesarios para el brillo
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.toneMapping = THREE.ReinhardToneMapping; // Ayuda al bloom
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        camera.position.z = 6;
+
+        // ─── POST-PROCESAMIENTO (BLOOM) ─────────────────────────────
+        const renderScene = new RenderPass(scene, camera);
+        
+        // Parámetros de brillo: (resolución, fuerza, radio, umbral)
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight), 
+            1.5,  // Fuerza del brillo (Súbelo si quieres que "queme")
+            0.4,  // Radio de dispersión
+            0.1   // Umbral (qué tan brillante debe ser algo para brillar)
+        );
+
+        const outputPass = new OutputPass();
+
+        const composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+        composer.addPass(outputPass);
+
+        // ─── EL OBJETO VOLUMÉTRICO ──────────────────────────────────
+        const geometry = new THREE.BoxGeometry(6, 6, 6);
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                uTime: { value: 0 },
+                uCameraPos: { value: new THREE.Vector3() }
+            },
+            vertexShader: `
+                varying vec3 vWorldPos;
+                void main() {
+                    vec4 worldPos = modelMatrix * vec4(position, 1.0);
+                    vWorldPos = worldPos.xyz;
+                    gl_Position = projectionMatrix * viewMatrix * worldPos;
+                }
+            `,
+            fragmentShader: `
+                precision highp float;
+                varying vec3 vWorldPos;
+                uniform vec3 uCameraPos;
+                uniform float uTime;
+
+                float map(vec3 p) {
+                    float d1 = distance(p, vec3(0.6, 0.0, 0.0));
+                    float d2 = distance(p, vec3(-0.6, 0.0, 0.0));
+                    // Música de interferencia
+                    float wave = cos(14.0 * d1 - uTime * 4.0) * exp(-d1 * 1.2);
+                    wave += cos(14.0 * d2 - uTime * 4.0) * exp(-d2 * 1.2);
+                    return wave;
+                }
+
+                void main() {
+                    vec3 rayDir = normalize(vWorldPos - uCameraPos);
+                    vec3 rayPos = vWorldPos;
+                    vec4 finalColor = vec4(0.0);
+
+                    for(int i = 0; i < 35; i++) {
+                        float f = map(rayPos);
+                        float af = abs(f);
+                        if (af > 0.3) {
+                            // Colores HDR para que el Bloom los detecte mejor
+                            vec3 col = (f > 0.0) ? vec3(2.5, 0.2, 0.5) : vec3(0.2, 1.5, 2.5);
+                            
+                            // Toque dorado intenso en resonancia
+                            float gold = smoothstep(0.5, 0.9, af);
+                            col += vec3(3.0, 2.0, 0.5) * gold;
+
+                            float alpha = (af - 0.3) * 0.15;
+                            finalColor.rgb += col * alpha * (1.0 - finalColor.a);
+                            finalColor.a += alpha;
+                        }
+                        rayPos += rayDir * 0.15;
+                        if (finalColor.a >= 0.98) break;
+                    }
+                    gl_FragColor = finalColor;
+                }
+            `,
+            transparent: true,
+            side: THREE.BackSide,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // ─── LOOP ───────────────────────────────────────────────────
+        function animate(t) {
+            requestAnimationFrame(animate);
+            material.uniforms.uTime.value = t / 1000;
+            material.uniforms.uCameraPos.value.copy(camera.position);
+            controls.update();
+            
+            // Usamos el composer en lugar del renderer directo
+            composer.render();
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+            composer.setSize(width, height);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AtOhmEter V1.4 - Quantum Layers</title>
+    <style>
+        body { margin: 0; background: #000205; color: #44ddcc; font-family: 'Courier New', monospace; overflow: hidden; }
+        #ui { position: absolute; top: 20px; left: 20px; border-left: 3px solid #ff5555; padding: 15px; background: rgba(0,0,0,0.7); pointer-events: auto; }
+        button { background: #1a1a1a; color: #44ddcc; border: 1px solid #44ddcc; padding: 5px 10px; cursor: pointer; font-family: inherit; margin: 2px; font-size: 11px; }
+        button:hover { background: #44ddcc; color: #000; }
+        #stats { margin-top: 10px; font-size: 11px; color: #ffaa00; border-top: 1px solid #333; padding-top: 5px; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <h1 style="font-size: 16px; margin: 0; letter-spacing: 2px;">AtOhmEter // V1.4</h1>
+        <div style="margin-top:10px;">
+            <button id="addP">+ Protón</button>
+            <button id="addN">+ Neutrón</button>
+            <button id="reset">Reset</button>
+            <br>
+            <button id="toggleShells" style="margin-top:8px; border-color: #ffaa00;">Alternar Capas (n)</button>
+        </div>
+        <div id="stats">Z: 2 (Helio) | NUCLEONES: 4</div>
+    </div>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        camera.position.set(0, 2, 5);
+        controls.enableDamping = true;
+
+        // ─── LÓGICA DEL NÚCLEO ────────────────────────────────────────
+        let nucleones = [
+            { type: 'P', pos: new THREE.Vector3(0.3, 0, 0) },
+            { type: 'P', pos: new THREE.Vector3(-0.3, 0, 0) },
+            { type: 'N', pos: new THREE.Vector3(0, 0.3, 0) },
+            { type: 'N', pos: new THREE.Vector3(0, -0.3, 0) }
+        ];
+
+        function updateNucleus() {
+            const spacing = 0.45;
+            nucleones.forEach((n, i) => {
+                const phi = Math.acos(-1 + (2 * i) / nucleones.length);
+                const theta = Math.sqrt(nucleones.length * Math.PI) * phi;
+                n.pos.set(
+                    spacing * Math.cos(theta) * Math.sin(phi),
+                    spacing * Math.sin(theta) * Math.sin(phi),
+                    spacing * Math.cos(phi)
+                );
+            });
+            
+            const sourceArray = new Array(32).fill(new THREE.Vector3(0,0,0));
+            nucleones.forEach((n, i) => { if(i < 32) sourceArray[i] = n.pos; });
+            material.uniforms.sources.value = sourceArray;
+            material.uniforms.sourceCount.value = nucleones.length;
+            
+            document.getElementById('stats').innerText = `Z: ${nucleones.filter(n=>n.type==='P').length} | NUCLEONES: ${nucleones.length}`;
+        }
+
+        // ─── NUBE DE PUNTOS VOLUMÉTRICA ──────────────────────────────
+        const pointCount = 90000;
+        const positions = new Float32Array(pointCount * 3);
+        for (let i = 0; i < pointCount; i++) {
+            const r = 4.5 * Math.pow(Math.random(), 0.6);
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2.0 * Math.random() - 1.0);
+            positions[i*3] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i*3+2] = r * Math.cos(phi);
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 },
+                sourceCount: { value: 4 },
+                sources: { value: new Array(32).fill(new THREE.Vector3(0,0,0)) },
+                showShells: { value: 1.0 }
+            },
+            vertexShader: `
+                varying vec3 vPosition;
+                void main() {
+                    vPosition = position;
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    gl_PointSize = 3.2 * (2.0 / -mvPosition.z); 
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                uniform int sourceCount;
+                uniform vec3 sources[32];
+                uniform float showShells;
+                varying vec3 vPosition;
+
+                void main() {
+                    float d_center = length(vPosition);
+                    float totalAmp = 0.0;
+                    
+                    for(int i = 0; i < 32; i++) {
+                        if(i >= sourceCount) break;
+                        float d = distance(vPosition, sources[i]);
+                        
+                        // Onda base del nucleón
+                        float amp = exp(-d * d * 3.6) * cos(17.0 * d - time * 5.0);
+                        
+                        // MODULACIÓN DE CAPA (Emergencia de n=1, n=2...)
+                        if(showShells > 0.5) {
+                            amp *= sin(d_center * 2.8); 
+                        }
+                        
+                        totalAmp += amp;
+                    }
+
+                    vec3 col = vec3(0.0);
+                    
+                    // Mapa de Fase (Rojo/Cian)
+                    col += vec3(1.0, 0.2, 0.3) * max(0.0, totalAmp) * 0.7;
+                    col += vec3(0.2, 0.7, 1.0) * max(0.0, -totalAmp) * 0.7;
+
+                    // RESONANCIA DORADA (El Orbital)
+                    float resonance = smoothstep(0.5, 0.7, abs(totalAmp));
+                    float shellMask = (showShells > 0.5) ? abs(sin(d_center * 2.8)) : 1.0;
+                    col += vec3(1.0, 0.8, 0.3) * resonance * shellMask * 1.5;
+
+                    // Brillo del Núcleo
+                    float core = exp(-d_center * 5.0);
+                    col += vec3(1.0) * core * 0.8;
+
+                    gl_FragColor = vec4(col, 0.75);
+                }
+            `,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const points = new THREE.Points(geometry, material);
+        scene.add(points);
+
+        // ─── INTERFACES Y BOTONES ───────────────────────────────────
+        document.getElementById('addP').onclick = () => { nucleones.push({type:'P', pos:new THREE.Vector3()}); updateNucleus(); };
+        document.getElementById('addN').onclick = () => { nucleones.push({type:'N', pos:new THREE.Vector3()}); updateNucleus(); };
+        document.getElementById('reset').onclick = () => { nucleones = []; updateNucleus(); };
+        document.getElementById('toggleShells').onclick = () => { 
+            material.uniforms.showShells.value = material.uniforms.showShells.value > 0.5 ? 0.0 : 1.0; 
+        };
+
+        updateNucleus();
+
+        function animate(t) {
+            requestAnimationFrame(animate);
+            material.uniforms.time.value = t / 1000;
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

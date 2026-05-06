@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AtOhmEter V2.4 — Shell Geometry Edition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; overflow: hidden; font-family: 'Courier New', monospace; touch-action: none; }
+
+        #ui {
+            position: absolute; top: 0; left: 0; right: 0;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 18px 20px; pointer-events: none; z-index: 10;
+        }
+
+        #identity h1 {
+            font-size: 13px; letter-spacing: 0.25em; color: rgba(255,255,255,0.18);
+            text-transform: uppercase;
+        }
+        #element-display {
+            margin-top: 6px;
+            font-size: 11px; letter-spacing: 0.1em; color: rgba(255,200,100,0.6);
+        }
+
+        #stats {
+            text-align: right; pointer-events: none;
+            font-size: 10px; line-height: 2.0; letter-spacing: 0.06em;
+            color: rgba(255,255,255,0.3);
+        }
+        #stats span { color: rgba(255,255,255,0.7); }
+        #stats .accent { color: #44ddcc; }
+
+        #controls {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            display: flex; justify-content: center; align-items: center;
+            gap: 8px; padding: 20px; z-index: 10;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.55);
+            font-family: 'Courier New', monospace;
+            font-size: 11px; letter-spacing: 0.1em;
+            padding: 8px 16px; cursor: pointer;
+            border-radius: 2px; transition: all 0.12s;
+            user-select: none; -webkit-user-select: none;
+        }
+        .btn:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.9);
+        }
+        .btn.danger { border-color: rgba(255,80,80,0.3); color: rgba(255,80,80,0.5); }
+        .btn.accent { border-color: rgba(68,221,204,0.3); color: rgba(68,221,204,0.5); }
+        .btn.special { border-color: rgba(255,255,255,0.6); color: #fff; background: rgba(255,255,255,0.1); }
+
+        #bloom {
+            position: absolute; top: 18px; right: 20px;
+            background: rgba(0,0,0,0.6);
+            border-left: 1px solid rgba(255,255,255,0.08);
+            padding: 12px 14px;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        #bloom label { display: block; font-size: 8px; color: rgba(255,200,80,0.45); margin-top: 8px; }
+        #bloom input { width: 110px; display: block; accent-color: #ff5555; }
+
+        #zoom-hint {
+            position: absolute; bottom: 85px; right: 20px;
+            font-size: 9px; color: rgba(255,255,255,0.15);
+            text-align: right; pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="ui">
+    <div id="identity">
+        <h1>AtOhmEter // V2.4</h1>
+        <div id="element-display">— vacío cuántico —</div>
+    </div>
+    <div id="stats">
+        <div>protones &nbsp;<span id="s-p">0</span></div>
+        <div>neutrones <span id="s-n">0</span></div>
+        <div>nucleones <span id="s-a">0</span></div>
+        <div>zoom &nbsp;&nbsp;&nbsp;&nbsp;<span class="accent" id="s-z">núcleo</span></div>
+    </div>
+</div>
+
+<div id="zoom-hint">
+    scroll/pinch → zoom<br>
+    drag → órbita<br>
+    geometría: shell-based
+</div>
+
+<div id="bloom">
+    <label>BLOOM STR</label><input type="range" id="bStr" min="0" max="5" step="0.05" value="2.2">
+    <label>BLOOM RAD</label><input type="range" id="bRad" min="0" max="1" step="0.01" value="0.5">
+    <label>THRESHOLD</label><input type="range" id="bThr" min="0" max="0.5" step="0.005" value="0.06">
+    <label>EXPOSURE</label><input type="range" id="bExp" min="0.2" max="3" step="0.05" value="1.4">
+</div>
+
+<div id="controls">
+    <button class="btn special" id="btn-nextZ">+ PRÓXIMO Z</button>
+    <button class="btn" id="btn-addP">+ P</button>
+    <button class="btn" id="btn-addN">+ N</button>
+    <button class="btn danger" id="btn-remP">− P</button>
+    <button class="btn danger" id="btn-remN">− N</button>
+    <button class="btn accent" id="btn-shells">Capas ON</button>
+    <button class="btn" id="btn-reset">Reset</button>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "/lib/three/build/three.module.js",
+    "three/addons/": "/lib/three/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls }  from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass }     from 'three/addons/postprocessing/OutputPass.js';
+
+// ═══════════════════════════════════════════════════════════════
+//  DATOS ATÓMICOS & ESTABILIDAD
+// ═══════════════════════════════════════════════════════════════
+const ELEMENTS = ['—','H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S','Cl','Ar','K','Ca','Sc','Ti','V','Cr','Mn','Fe','Co','Ni','Cu','Zn'];
+const STABLE_N = [0, 0, 2, 4, 5, 6, 6, 7, 8, 10, 10, 12, 12, 14, 14, 16, 16, 18, 22, 20, 20, 24, 26, 28, 28, 30, 30, 32, 30, 34, 34];
+
+function getStableN(z) {
+    if (z < STABLE_N.length) return STABLE_N[z];
+    return Math.round(z * 1.25); // Aproximación para elementos pesados
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  GEOMETRÍA DE CAPAS (SHELL GEOMETRY)
+// ═══════════════════════════════════════════════════════════════
+function nucleonPositions(count) {
+    if (count === 0) return [];
+    const positions = [];
+    
+    // Definición de capas nucleares (números mágicos de ocupación visual)
+    const shells = [
+        { max: 2,  r: 0.15 },
+        { max: 8,  r: 0.35 },
+        { max: 20, r: 0.55 },
+        { max: 40, r: 0.75 },
+        { max: 70, r: 0.95 }
+    ];
+
+    let remaining = count;
+    const golden = Math.PI * (3.0 - Math.sqrt(5.0));
+
+    for (const shell of shells) {
+        if (remaining <= 0) break;
+        const inThisShell = Math.min(remaining, shell.max);
+        const R = shell.r * Math.pow(count, 0.2); // Escalamiento sutil
+
+        for (let i = 0; i < inThisShell; i++) {
+            const y = 1.0 - (i / Math.max(inThisShell - 1, 1)) * 2.0;
+            const r = Math.sqrt(Math.max(0, 1.0 - y * y));
+            const theta = golden * i;
+            positions.push(new THREE.Vector3(
+                R * r * Math.cos(theta),
+                R * y,
+                R * r * Math.sin(theta)
+            ));
+        }
+        remaining -= inThisShell;
+    }
+    return positions;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CORE & RENDERER
+// ═══════════════════════════════════════════════════════════════
+let Z = 1, N = 0;
+const MAX_SOURCES = 64;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = 1.4;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.001, 1000);
+camera.position.set(0, 0, 8);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.minDistance = 0.01;
+
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.2, 0.5, 0.06);
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(bloomPass);
+composer.addPass(new OutputPass());
+
+const uSources = new Array(MAX_SOURCES).fill(null).map(() => new THREE.Vector3());
+const uIsProton = new Float32Array(MAX_SOURCES);
+
+const uniforms = {
+    uTime: { value: 0 },
+    uCameraPos: { value: new THREE.Vector3() },
+    uBoxSize: { value: 4.0 },
+    uOmega: { value: 1.0 },
+    uZ: { value: 1.0 },
+    uA: { value: 1.0 },
+    uNucRadius: { value: 0.3 },
+    uShowShells: { value: 1.0 },
+    uZoomLevel: { value: 0.0 },
+    uOrbRadius: { value: 2.5 },
+    uNShells: { value: 1.0 },
+    uSources: { value: uSources },
+    uIsProton: { value: uIsProton },
+    uSourceCount: { value: 1 },
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  SHADERS (AtOhmEter Core V2.4)
+// ═══════════════════════════════════════════════════════════════
+const vertexShader = `
+    varying vec3 vWorldPos;
+    void main() {
+        vec4 wp = modelMatrix * vec4(position, 1.0);
+        vWorldPos = wp.xyz;
+        gl_Position = projectionMatrix * viewMatrix * wp;
+    }
+`;
+
+const fragmentShader = `
+precision highp float;
+varying vec3 vWorldPos;
+uniform vec3 uCameraPos;
+uniform float uTime, uOmega, uZ, uA, uNucRadius, uShowShells, uZoomLevel, uOrbRadius, uNShells, uBoxSize;
+uniform vec3 uSources[64];
+uniform float uIsProton[64];
+uniform int uSourceCount;
+
+float noise3(vec3 x) {
+    vec3 p = floor(x); vec3 f = fract(x);
+    f = f*f*(3.0-2.0*f);
+    float n = p.x + p.y*57.0 + 113.0*p.z;
+    return mix(mix(mix(fract(sin(n)*43758.5453), fract(sin(n+1.0)*43758.5453), f.x),
+                   mix(fract(sin(n+57.0)*43758.5453), fract(sin(n+58.0)*43758.5453), f.x), f.y),
+               mix(mix(fract(sin(n+113.0)*43758.5453), fract(sin(n+114.0)*43758.5453), f.x),
+                   mix(fract(sin(n+170.0)*43758.5453), fract(sin(n+171.0)*43758.5453), f.x), f.y), f.z);
+}
+
+float orbitalField(vec3 p, float R_orb, float nShells) {
+    float r = length(p); if (r < 0.001 || R_orb < 0.01) return 0.0;
+    float polar = acos(clamp(p.z / r, -1.0, 1.0));
+    float envelope = exp(-pow(max(0.0, r - R_orb) / (R_orb * 0.3), 2.0));
+    float cosP = cos(polar);
+    float d_mode = abs(3.0 * cosP * cosP - 1.0) * 0.5;
+    float angular = mix(1.0, d_mode, step(2.5, nShells) * 0.6);
+    return envelope * (sin(nShells * 3.14 * r / R_orb) * sin(nShells * 3.14 * r / R_orb)) * angular;
+}
+
+void main() {
+    vec3 rd = normalize(vWorldPos - uCameraPos);
+    vec3 p = vWorldPos;
+    vec4 col = vec4(0.0);
+    float stepSize = 0.12;
+
+    for(int i=0; i<40; i++) {
+        if(col.a > 0.95 || length(p) > uBoxSize) break;
+        
+        float nuc = 0.0;
+        for(int s=0; s<64; s++) {
+            if(s >= uSourceCount) break;
+            float d = distance(p, uSources[s]);
+            float wave = cos(uOmega * 15.0 * d - uTime * 5.0) * exp(-d * d * 30.0);
+            nuc += wave * (uIsProton[s] > 0.5 ? 1.0 : -1.0);
+        }
+
+        float orb = 0.0;
+        if(uShowShells > 0.5) orb = orbitalField(p, uOrbRadius, uNShells);
+
+        // Composicion de color
+        if(abs(nuc) > 0.1) {
+            vec3 c = nuc > 0.0 ? vec3(1.0, 0.2, 0.4) : vec3(0.2, 0.6, 1.0);
+            float a = abs(nuc) * 0.2;
+            col.rgb += c * a * (1.0 - col.a);
+            col.a += a;
+        }
+        if(orb > 0.05) {
+            float a = orb * 0.05;
+            col.rgb += vec3(0.2, 1.0, 0.8) * a * (1.0 - col.a);
+            col.a += a;
+        }
+        p += rd * stepSize;
+    }
+    if(col.a < 0.01) discard;
+    gl_FragColor = col;
+}
+`;
+
+const mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.ShaderMaterial({
+    uniforms, vertexShader, fragmentShader, transparent: true, depthWrite: false
+}));
+scene.add(mesh);
+
+// ═══════════════════════════════════════════════════════════════
+//  LÓGICA DE ACTUALIZACIÓN
+// ═══════════════════════════════════════════════════════════════
+function syncNucleus() {
+    const A = Z + N;
+    const period = Z <= 2 ? 1 : Z <= 10 ? 2 : Z <= 18 ? 3 : 4;
+    
+    uniforms.uOmega.value = 1.0 + (Z * 0.1);
+    uniforms.uZ.value = Z;
+    uniforms.uA.value = A;
+    uniforms.uSourceCount.value = Math.min(A, MAX_SOURCES);
+    uniforms.uNShells.value = period;
+    uniforms.uOrbRadius.value = 1.2 + period * 0.5;
+
+    const pos = nucleonPositions(A);
+    pos.forEach((v, i) => { if(i < MAX_SOURCES) { uSources[i].copy(v); uIsProton[i] = i < Z ? 1.0 : 0.0; } });
+
+    document.getElementById('element-display').textContent = `${ELEMENTS[Z] || 'Z'+Z} · Z=${Z} N=${N} A=${A}`;
+    document.getElementById('s-p').textContent = Z;
+    document.getElementById('s-n').textContent = N;
+    document.getElementById('s-a').textContent = A;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CONTROLES & EVENTOS
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('btn-nextZ').onclick = () => { Z++; N = getStableN(Z); syncNucleus(); };
+document.getElementById('btn-addP').onclick = () => { Z++; syncNucleus(); };
+document.getElementById('btn-addN').onclick = () => { N++; syncNucleus(); };
+document.getElementById('btn-remP').onclick = () => { if(Z>0) Z--; syncNucleus(); };
+document.getElementById('btn-remN').onclick = () => { if(N>0) N--; syncNucleus(); };
+document.getElementById('btn-reset').onclick = () => { Z=1; N=0; syncNucleus(); };
+document.getElementById('btn-shells').onclick = function() {
+    uniforms.uShowShells.value = uniforms.uShowShells.value > 0.5 ? 0.0 : 1.0;
+    this.textContent = uniforms.uShowShells.value > 0.5 ? 'Capas ON' : 'Capas OFF';
+};
+
+function animate(t) {
+    requestAnimationFrame(animate);
+    uniforms.uTime.value = t / 1000;
+    uniforms.uCameraPos.value.copy(camera.position);
+    controls.update();
+    composer.render();
+}
+
+syncNucleus();
+animate(0);
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
